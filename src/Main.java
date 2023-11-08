@@ -1,3 +1,5 @@
+package src;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
@@ -15,7 +17,7 @@ public class Main {
         System.out.println("Welcome!");
         System.out.println("Are you an existing user?");
         String existing = scan.nextLine();
-        String username = "";
+        String email = "";
         String password = "";
 
         boolean incorrectInput = false;
@@ -23,13 +25,13 @@ public class Main {
             //email/username
             do {
                 System.out.println("Input your email:");
-                username = scan.nextLine();
-                //check if username is already taken
+                email = scan.nextLine();
+                //check if email is already taken
 
-                if (User.isExistingUser(username)) {
+                if (User.isExistingUser(email)) {
                     System.out.println("That email is taken already.");
                     incorrectInput = true;
-                    username = "";
+                    email = "";
                 }
             } while (incorrectInput);
 
@@ -46,13 +48,13 @@ public class Main {
             System.out.println("Welcome! You have successfully made an account.");
         } else if (existing.equalsIgnoreCase("yes")) {
             //if user is an existing user
-            //username
+            //email
             do {
                 incorrectInput = false;
                 System.out.println("Input your email:");
-                username = scan.nextLine();
+                email = scan.nextLine();
                 //username does not exist
-                if (!User.isExistingUser(username)) {
+                if (!User.isExistingUser(email)) {
                     System.out.println("Not an existing email. Try again.");
                     incorrectInput = true;
                 }
@@ -63,7 +65,7 @@ public class Main {
                 password = scan.nextLine();
 
                 //if wrong password
-                if (!User.checkPassword(username, password)) {
+                if (!User.checkPassword(email, password)) {
                     System.out.println("Wrong password. Try again.");
                     incorrectInput = true;
                 }
@@ -78,13 +80,12 @@ public class Main {
             System.out.println("Are you a seller or customer?");
             String type = scan.nextLine();
             if (type.equalsIgnoreCase("seller")) {
-                Seller seller = new Seller(username, password);
-                System.out.println(seller.getUserID());
+                Seller seller = new Seller(email, password);
             } else if (type.equalsIgnoreCase("customer")){
-                Customer customer = new Customer(username, password);
-                System.out.println(customer.getUserID());
+                Customer customer = new Customer(email, password);
             } else {
                 System.out.println("Please input a valid option.");
+                //put into a do while
             }
         }
         //seller or customer here

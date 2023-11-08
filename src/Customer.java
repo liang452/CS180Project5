@@ -1,13 +1,11 @@
-/*
+package src;/*
  */
 
 import java.io.IOException;
 
 public class Customer extends User {
-    private int userID;
-    public Customer(String username, String password) throws IOException {
-        super(username, password);
-        this.userID = super.getUserID();
+    public Customer(String email, String password) throws IOException {
+        super(email, password);
     }
     public void purchase() {
 

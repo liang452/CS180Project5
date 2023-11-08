@@ -1,36 +1,32 @@
-/*
+package src;/*
  */
 
 import java.io.*;
 import java.util.Random;
 
 public abstract class User {
-    private String username;
+    private String email;
     private String password;
-    private int userID;
 
-    public User(String username, String password) throws IOException {
-        Random random = new Random();
-        //random userID
-        this.userID = random.nextInt(100000000);
+    public User(String email, String password) throws IOException {
 
-        this.username = username;
+        this.email = email;
         this.password = password;
         //export to file
         BufferedWriter bfr = new BufferedWriter(new FileWriter("logins.txt", true));
-        bfr.write(this.username + "," + this.password);
+        bfr.write(this.email + "," + this.password);
         bfr.write("\n");
         bfr.flush();
         bfr.close();
     }
 
-    public void setUsername(String username) {
-        //check if duplicate username
-        //need a file of usernames?
-        this.username = username;
+    public void Email(String email) {
+        //check if duplicate email
+        //need a file of emails?
+        this.email = email;
     }
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
     public void setPassword(String password) {
         this.password = password;
@@ -38,22 +34,16 @@ public abstract class User {
     public String getPassword() {
         return password;
     }
-    public int getUserID() {
-        return userID;
-    }
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-    public static boolean isExistingUser(String username) throws IOException {
-        //check file of usernames and passwords for if username already exists
+    public static boolean isExistingUser(String email) throws IOException {
+        //check file of emails and passwords for if email already exists
         BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
         String line = bfr.readLine();
         while (line != null) {
             //splits line into array
             String[] loginInfo = line.split(",", 0);
-            //first item is username
+            //first item is email
             String fileUser = loginInfo[0];
-            if (username.equals(fileUser)) {
+            if (email.equals(fileUser)) {
                 return true;
             }
             line = bfr.readLine();
@@ -61,33 +51,33 @@ public abstract class User {
         //if not found, return false
         return false;
     }
-    public static boolean checkPassword(String username, String password) throws IOException {
-        //check file of usernames and passwords for if username already exists
+    public static boolean checkPassword(String email, String password) throws IOException {
+        //check file of emails and passwords for if email already exists
         BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
         String line = bfr.readLine();
         while (line != null) {
             //splits line into array
             String[] loginInfo = line.split(",", 0);
-            //first item is username
+            //first item is email
             String fileUser = loginInfo[0];
             //second item is password
             String filePassword = loginInfo[1];
-            //if the given username matches the line in the file
-            if (username.equals(fileUser)) {
+            //if the given email matches the line in the file
+            if (email.equals(fileUser)) {
                 if (password.equals(filePassword)) {
                     return true;
                 }
             }
             line = bfr.readLine();
         }
-        //if not found, return false. if no username matches or password matches.
+        //if not found, return false. if no email matches or password matches.
         return false;
     }
-    public void deleteAccount(String username, String password) throws IOException {
+    public void deleteAccount(String email, String password) throws IOException {
         //delete the logins
         BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
         BufferedWriter bw = new BufferedWriter(new FileWriter("logins.txt"));
-        String combined = username + "," + password;
+        String combined = email + "," + password;
         String line = bfr.readLine();
         while (line != null) {
             if (!line.equals(combined)) {
