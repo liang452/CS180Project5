@@ -62,7 +62,7 @@ public class Product {
         System.out.println("Quantity: " + quantity);
         System.out.println("Price: $" + price);
     }
-
+//TODO: add other ways to change product quantity
     public void updateQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
             quantity -= purchasedQuantity;
