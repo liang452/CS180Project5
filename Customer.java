@@ -1,17 +1,33 @@
-package src;/*
- */
-
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Customer extends User {
-    public Customer(String email, String password) throws IOException {
-        super(email, password);
+    private HashMap<Product, Integer> cart;
+    public Customer(String username, String email, String password) throws IOException {
+        super(username, email, password);
+        File f = new File(username);
+        if (!f.exists()) {
+            f.createNewFile();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
+            bw.write("CUSTOMER");
+        } else {
+            //if existing user, basically.
+        }
+        //TODO: load cart in from file
     }
-    public void purchase() {
-
+    public int purchase(Product product, int purchaseAmount) {
+        //not sure if this is needed
+        if (product.removeQuantity(purchaseAmount)) {
+            return purchaseAmount;
+        } else {
+            return 0;
+        }
     }
-    public void addToCart() {
-
+    public void addToCart(Product product, int quantity) {
+        cart.put(product, quantity);
     }
     public void pastPurchases() {
 

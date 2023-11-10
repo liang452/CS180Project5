@@ -1,20 +1,31 @@
-package src;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.HashMap;
 
 /*
  */
 
 public class Seller extends User {
-    private Product product;
-    //keep track of what user this is
+    private HashMap<Store, Product> storeProductHashMap;
+    private String username;
 
-    public Seller(String email, String password) throws IOException {
-        super(email, password);
+    public Seller(String username, String email, String password) throws IOException {
+        super(username, email, password);
+        File f = new File(username);
+        if (!f.exists()) {
+            f.createNewFile();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
+            bw.write("SELLER");
+        }
+    }
+    //TODO: decide what to return there
+    public Store getStore() {
+        return new Store("");
+    }
+    public void setStore() {
+
     }
 
     //statistics display
