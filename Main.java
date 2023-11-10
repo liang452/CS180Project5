@@ -1,34 +1,43 @@
-package src;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //creates logins file
         File f = new File("logins.txt");
-        if (!f.isFile()) {
+        if (!f.exists()) {
             f.createNewFile();
         }
-
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Welcome!");
         System.out.println("Are you an existing user?");
         String existing = scan.nextLine();
+        String username = "";
         String email = "";
         String password = "";
 
         boolean incorrectInput = false;
         if (existing.equalsIgnoreCase("no")) {
-            //email/username
             do {
-                System.out.println("Input your email:");
-                email = scan.nextLine();
-                //check if email is already taken
+                //username
+                incorrectInput = false;
+                System.out.println("Input your username: ");
+                username = scan.nextLine();
 
-                if (User.isExistingUser(email)) {
+                if (User.isExistingUser(username)) {
+                    System.out.println("That username is taken already.");
+                    incorrectInput = true;
+                }
+            } while (incorrectInput);
+            //email
+            do {
+                incorrectInput = false;
+                System.out.println("Input your email: ");
+                email = scan.nextLine();
+
+                //check if email is already take
+                if (User.isExistingEmail(email)) {
                     System.out.println("That email is taken already.");
                     incorrectInput = true;
                     email = "";
@@ -80,15 +89,16 @@ public class Main {
             System.out.println("Are you a seller or customer?");
             String type = scan.nextLine();
             if (type.equalsIgnoreCase("seller")) {
-                Seller seller = new Seller(email, password);
+                Seller user = new Seller(username, email, password);
             } else if (type.equalsIgnoreCase("customer")){
-                Customer customer = new Customer(email, password);
+                Customer user = new Customer(username, email, password);
             } else {
                 System.out.println("Please input a valid option.");
                 //put into a do while
             }
+        } else {
+            //TODO: if an existing user
+
         }
-        //seller or customer here
-        //if seller: if they have no store, then ask for store
     }
 }

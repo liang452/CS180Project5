@@ -2,37 +2,27 @@ import java.util.Scanner;
 
 public class Product {
     private String name;
-    private String store;
     private String description;
     private int quantity;
     private double price;
 
-    public Product(String name, String store, String description, int quantity, double price) {
+    public Product(String name, String description, int quantity, double price) {
         this.name = name;
-        this.store = store;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getStore() {
-        return store;
-    }
-
-    public void setStore(String store) {
-        this.store = store;
-    }
-
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
@@ -57,19 +47,25 @@ public class Product {
 
     public void displayProductInfo() {
         System.out.println("Product: " + name);
-        System.out.println("Store: " + store);
         System.out.println("Description: " + description);
         System.out.println("Quantity: " + quantity);
         System.out.println("Price: $" + price);
     }
-//TODO: add other ways to change product quantity
-    public void updateQuantity(int purchasedQuantity) {
+    //TODO: add other ways to change product quantity
+    public boolean removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
             quantity -= purchasedQuantity;
-            System.out.println("Purchase successful!");
+            return true;
         } else {
-            System.out.println("Not enough quantity available.");
+            return false;
         }
+    }
+    public int addQuantity(int amountToAdd) {
+        if (amountToAdd <= 0) {
+            throw new InvalidQuantityError();
+        }
+        this.quantity += amountToAdd;
+        return this.quantity;
     }
 
     public static Product createProductFromUserInput() {
@@ -91,7 +87,7 @@ public class Product {
         System.out.println("Enter price:");
         double price = scanner.nextDouble();
 
-        return new Product(name, store, description, quantity, price);
+        return new Product(name, description, quantity, price);
     }
 }
 

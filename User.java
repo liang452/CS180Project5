@@ -1,26 +1,37 @@
-package src;/*
- */
-
 import java.io.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 public abstract class User {
     private String email;
     private String password;
+    private String username;
+    //hashmap of userids
 
-    public User(String email, String password) throws IOException {
-
+    public User(String username, String email, String password) throws IOException {
         this.email = email;
         this.password = password;
+        this.username = username;
         //export to file
+        File f = new File("logins.txt");
+        if (!f.exists()) {
+            f.createNewFile();
+        }
         BufferedWriter bfr = new BufferedWriter(new FileWriter("logins.txt", true));
-        bfr.write(this.email + "," + this.password);
+        bfr.write(this.username + "," + this.email + "," + this.password);
         bfr.write("\n");
-        bfr.flush();
         bfr.close();
     }
 
-    public void Email(String email) {
+
+    public String getUsername() {
+        return this.username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public void setEmail(String email) {
         //check if duplicate email
         //need a file of emails?
         this.email = email;
@@ -34,19 +45,47 @@ public abstract class User {
     public String getPassword() {
         return password;
     }
-    public static boolean isExistingUser(String email) throws IOException {
+    public static boolean isExistingUser(String username) throws IOException {
         //check file of emails and passwords for if email already exists
-        BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
-        String line = bfr.readLine();
-        while (line != null) {
-            //splits line into array
-            String[] loginInfo = line.split(",", 0);
-            //first item is email
-            String fileUser = loginInfo[0];
-            if (email.equals(fileUser)) {
-                return true;
+        try (BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"))) {
+            String line = bfr.readLine();
+            while (line != null) {
+                //splits line into array
+                String[] loginInfo = line.split(",", 0);
+                //first item is email
+                String existingUsername = loginInfo[0];
+                String existingEmail = loginInfo[1];
+                if (username.equals(existingUsername)) {
+                    return true;
+                }
+                line = bfr.readLine();
             }
-            line = bfr.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        //if not found, return false
+        return false;
+    }
+
+    public static boolean isExistingEmail(String email) throws IOException {
+        //check file of emails and passwords for if email already exists
+        try (BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"))) {
+            String line = bfr.readLine();
+            while (line != null) {
+                //splits line into array
+                String[] loginInfo = line.split(",", 0);
+                //first item is email
+                String existingEmail = loginInfo[1];
+
+                if (email.equals(existingEmail)) {
+                    return true;
+                }
+                line = bfr.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
         }
         //if not found, return false
         return false;
@@ -72,6 +111,9 @@ public abstract class User {
         }
         //if not found, return false. if no email matches or password matches.
         return false;
+    }
+    public boolean editAccount() {
+        return true;
     }
     public void deleteAccount(String email, String password) throws IOException {
         //delete the logins
