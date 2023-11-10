@@ -19,20 +19,40 @@ public class Product {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getStore() {
         return store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getQuantity() {
         return quantity;
     }
 
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     public double getPrice() {
         return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public void displayProductInfo() {
@@ -42,7 +62,7 @@ public class Product {
         System.out.println("Quantity: " + quantity);
         System.out.println("Price: $" + price);
     }
-  
+
     public void updateQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
             quantity -= purchasedQuantity;
@@ -73,3 +93,4 @@ public class Product {
         return new Product(name, store, description, quantity, price);
     }
 }
+
