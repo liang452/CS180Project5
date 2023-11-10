@@ -86,6 +86,7 @@ public class Product {
 
         System.out.println("Enter quantity available:");
         int quantity = scanner.nextInt();
+        scanner.nextLine();
 
         System.out.println("Enter price:");
         double price = scanner.nextDouble();
