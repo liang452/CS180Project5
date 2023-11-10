@@ -11,8 +11,15 @@ public class Main {
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Welcome!");
-        System.out.println("Are you an existing user?");
-        String existing = scan.nextLine();
+        String existing = "";
+        do {
+            System.out.println("Are you an existing user?");
+            existing = scan.nextLine();
+            if (!existing.equalsIgnoreCase("no") && !existing.equalsIgnoreCase("yes")) {
+                System.out.println("Incorrect input.");
+            }
+        } while (!existing.equalsIgnoreCase("no") && !existing.equalsIgnoreCase("yes"));
+
         String username = "";
         String email = "";
         String password = "";
@@ -80,8 +87,6 @@ public class Main {
                 }
             } while(incorrectInput);
             System.out.println("Logged in successfully. Welcome back!");
-        } else {
-            System.out.println("Incorrect input.");
         }
 
         //if not existing, instantiates
