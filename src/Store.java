@@ -11,4 +11,3 @@ private ArrayList<Product> products;
 //TODO: read from file, add to products list
 
 }
-}
