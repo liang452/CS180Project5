@@ -54,7 +54,6 @@ public abstract class User {
                 String[] loginInfo = line.split(",", 0);
                 //first item is email
                 String existingUsername = loginInfo[0];
-                String existingEmail = loginInfo[1];
                 if (username.equals(existingUsername)) {
                     return true;
                 }
@@ -72,12 +71,11 @@ public abstract class User {
         //check file of emails and passwords for if email already exists
         try (BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"))) {
             String line = bfr.readLine();
-            while (line != null) {
+            while (line != null && !line.equals("")) {
                 //splits line into array
                 String[] loginInfo = line.split(",", 0);
                 //first item is email
                 String existingEmail = loginInfo[1];
-
                 if (email.equals(existingEmail)) {
                     return true;
                 }
