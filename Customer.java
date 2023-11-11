@@ -1,11 +1,9 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Customer extends User {
-    private HashMap<Product, Integer> cart;
+    private ArrayList<Product> cart;
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
         File f = new File(username);
@@ -13,22 +11,50 @@ public class Customer extends User {
             f.createNewFile();
             BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
             bw.write("CUSTOMER");
+            //FORMAT OF FILE:
+            /* CUSTOMER
+             * CART - separate items separated by semicolons, separate item details separated by commas
+             * PAST PURCHASES
+             */
         } else {
             //if existing user, basically.
         }
         //TODO: load cart in from file
+        BufferedReader bfr = new BufferedReader(new FileReader(username));
+        String line = bfr.readLine();
+        while (line != null && !line.equals("")) {
+
+        }
     }
-    public boolean purchase(Product product, int purchaseAmount) {
-        //calls the removeQuantity method
-        product.removeQuantity(purchaseAmount);
+    public boolean purchase(Product product, int quantity) {
         return true;
-        //return true if purchase was successful, return false if not
     }
     public void addToCart(Product product, int quantity) {
-        cart.put(product, quantity);
+        Product cartProduct = product;
+        cartProduct.setQuantity(quantity);
+        cart.add(cartProduct);
     }
-    public void removeFromCart(Product product, int quantity) {
-        //remove an amount of item from cart, and if amount is equal to total amount, remove the item entirely
+    public boolean removeFromCart(Product product, int quantity) {
+        for (int i = 0; i < cart.size(); i++) {
+            if (product.equals(cart.get(i))) {//fix
+                //if quantity is equal to the amount in cart, remove item entirely
+                if (quantity == product.getQuantity()) {
+                    cart.remove(i);
+                    return true;
+                } else if (quantity < cart.get(i).getQuantity()){
+                    //saves product
+                    Product cartProduct = cart.get(i);
+                    cart.remove(i);
+                    cartProduct.removeQuantity(quantity);
+                    cart.add(cartProduct);
+                    return true;
+                } else if (quantity > cart.get(i).getQuantity() || quantity <= 0) {
+                    throw new InvalidQuantityError();
+                }
+            }
+        }
+        System.out.println("Product not found in shopping cart.");
+        return false;
     }
     public void pastPurchases() {
 

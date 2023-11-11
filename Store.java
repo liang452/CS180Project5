@@ -68,10 +68,14 @@ public class Store {
     
     public void displayStore() {
         System.out.println("Store Name:" + this.name);
-        System.out.println("Seller: " + "");
-        System.out.println("Products: ");
-        for (int i = 0; i < products.size(); i++) {
-            System.out.println(products.get(i).getName());
+        if (products.isEmpty()) {
+            System.out.println("You have no products.");
+        } else {
+            System.out.println("Seller: " + "");
+            System.out.println("Products: ");
+            for (int i = 0; i < products.size(); i++) {
+                System.out.println(products.get(i).getName());
+            }
         }
     }
 
