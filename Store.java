@@ -50,12 +50,22 @@ public class Store {
         }
     }
 
-    public void removeProduct() {
-
+    public void removeProduct(String productName) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getName().equalsIgnoreCase(productName)) {
+                products.remove(i);
+                System.out.println("Product '" + productName + "' removed successfully.");
+                return;
+            }
+        }
+        System.out.println("Product '" + productName + "' not found in the store.");
     }
-    public void addProduct() {
-        //adds product to the list manually
+    
+    public void addProduct(Product product) {
+        products.add(product);
+        System.out.println("Product '" + product.getName() + "' added to the store.");
     }
+    
     public void displayStore() {
         System.out.println("Store Name:" + this.name);
         System.out.println("Seller: " + "");

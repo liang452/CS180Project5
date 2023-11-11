@@ -51,13 +51,13 @@ public class Product {
         System.out.println("Quantity: " + quantity);
         System.out.println("Price: $" + price);
     }
-    //TODO: add other ways to change product quantity
-    public boolean removeQuantity(int purchasedQuantity) {
+    //TODO: add other ways to change product quantity : added setquantity
+    public int removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
             quantity -= purchasedQuantity;
-            return true;
+            return this.quantity;
         } else {
-            return false;
+            throw new InvalidQuantityError();
         }
     }
     public int addQuantity(int amountToAdd) {
@@ -66,6 +66,15 @@ public class Product {
         }
         this.quantity += amountToAdd;
         return this.quantity;
+    }
+
+    public int setQuantity(int newQuantity) {
+    if (newQuantity >= 0) {
+        quantity = newQuantity;
+        return this.quantity;
+    } else {
+            throw new InvalidQuantityError();
+        }
     }
 
     public static Product createProductFromUserInput() {
