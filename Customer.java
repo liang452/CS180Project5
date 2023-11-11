@@ -3,7 +3,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Customer extends User {
+    
     private ArrayList<Product> cart;
+    private List<Order> pastOrders;
+    
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
         File f = new File(username);
@@ -56,16 +59,43 @@ public class Customer extends User {
         System.out.println("Product not found in shopping cart.");
         return false;
     }
+    
     public void pastPurchases() {
-
+        System.out.println("Past Purchases:");
+        for (Order order : pastOrders) {
+            System.out.println("Order ID: " + order.getOrderID());
+            for (ShoppingCartEntry entry : order.getOrderedItems()) {
+                System.out.println("Store: " + entry.getSeller().getEmail());
+                System.out.println("  Product: " + entry.getProduct().getName());
+                System.out.println("  Quantity: " + entry.getProduct().getQuantity());
+                System.out.println("  Price: $" + entry.getProduct().getPrice());
+                System.out.println("  -------------");
+            }
+            System.out.println();
+        }
     }
+    
     public void viewCart() {
-
+        System.out.println("Shopping Cart:");
+        for (ShoppingCartEntry entry : cart) {
+            System.out.println("Store: " + entry.getSeller().getEmail());
+            System.out.println("  Product: " + entry.getProduct().getName());
+            System.out.println("  Quantity: " + entry.getProduct().getQuantity());
+            System.out.println("  Price: $" + entry.getProduct().getPrice());
+            System.out.println("  -------------");
+        }
     }
-    public void viewDashBord() {
-        //dashboard
-    }
+    
+    public void viewDashboard() {
+        List<StoreStatistics> storesByProductsSold = getStoresSortedByProductsSold();
+        List<StoreStatistics> storesByCustomerPurchases = getStoresSortedByCustomerPurchases();
 
+        System.out.println("Dashboard:");
+        System.out.println("1. Stores by Products Sold:");
+        displayStores(storesByProductsSold);
+        System.out.println("\n2. Stores by Customer Purchases:");
+        displayStores(storesByCustomerPurchases);
+    }
 }
 
 
