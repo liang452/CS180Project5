@@ -110,8 +110,11 @@ public abstract class User {
         //if not found, return false. if no email matches or password matches.
         return false;
     }
-    public boolean editAccount() {
+    public boolean editUsername() {
         return true;
+    }
+    public void editPassword(String newPassword) {
+        //TODO
     }
     public void deleteAccount(String email, String password) throws IOException {
         //delete the logins
