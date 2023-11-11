@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -103,7 +105,12 @@ public class Main {
             }
         } else {
             //TODO: if an existing user
-
+            //KNOWN ISSUE HERE: will keep putting in same logins. FIX.
+            if (User.accountType(username) == 1) {
+                Seller user = new Seller(username, email, password);
+            } else {
+                Customer user = new Customer(username, email, password);
+            }
         }
     }
 }

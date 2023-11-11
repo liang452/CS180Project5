@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Store {
     private String name;
     private ArrayList<Product> products;
-    private String sellerName;
+    private String seller;
 
     public Store(String name) {
         //declares without file; manually adds products later
@@ -74,7 +74,8 @@ public class Store {
             System.out.println("Seller: " + "");
             System.out.println("Products: ");
             for (int i = 0; i < products.size(); i++) {
-                System.out.println(products.get(i).getName());
+                //name, price
+                System.out.println(products.get(i).getName() + " - $" + products.get(i).getPrice());
             }
         }
     }

@@ -14,14 +14,6 @@ public abstract class User {
         this.password = password;
         this.username = username;
         //export to file
-        File f = new File("logins.txt");
-        if (!f.exists()) {
-            f.createNewFile();
-        }
-        BufferedWriter bfr = new BufferedWriter(new FileWriter("logins.txt", true));
-        bfr.write(this.username + "," + this.email + "," + this.password);
-        bfr.write("\n");
-        bfr.close();
     }
 
 
@@ -127,5 +119,22 @@ public abstract class User {
                 bw.write(line);
             }
         }
+    }
+    public static int accountType(String username) throws IOException {
+        //returns 0 if customer, 1 if seller
+        BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
+        String line = bfr.readLine();
+        while (line != null && !line.equals("")) {
+            String[] loginDetails = line.split(",");
+            if (loginDetails[0].equals(username)) {
+                if (loginDetails[3].equals("SELLER")) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            line = bfr.readLine();
+        }
+        return -1;
     }
 }
