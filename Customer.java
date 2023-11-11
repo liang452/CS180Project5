@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Comparator;
 
 public class Customer extends User {
     
@@ -96,6 +97,41 @@ public class Customer extends User {
         System.out.println("\n2. Stores by Customer Purchases:");
         displayStores(storesByCustomerPurchases);
     }
+
+
+    public void exportPurchaseHistory(String filename) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            for (Order order : pastOrders) {
+                writer.write("Order ID: " + order.getOrderID() + "\n");
+                for (ShoppingCartEntry entry : order.getOrderedItems()) {
+                    writer.write("Store: " + entry.getSeller().getEmail() + "\n");
+                    writer.write("  Product: " + entry.getProduct().getName() + "\n");
+                    writer.write("  Quantity: " + entry.getProduct().getQuantity() + "\n");
+                    writer.write("  Price: $" + entry.getProduct().getPrice() + "\n");
+                    writer.write("  -------------\n");
+                }
+                writer.write("\n");
+            }
+            System.out.println("Purchase history exported to " + filename);
+        } catch (IOException e) {
+            System.err.println("Error exporting purchase history: " + e.getMessage());
+        }
+    }
+
+    private List<StoreStatistics> getStoresSortedByProductsSold() {
+        List<StoreStatistics> storeStatisticsList = new ArrayList<>();
+
+        for (Order order : pastOrders) {
+            for (ShoppingCartEntry entry : order.getOrderedItems()) {
+                Seller seller = entry.getSeller();
+                StoreStatistics storeStatistics = getStoreStatistics(storeStatisticsList, seller);
+                storeStatistics.incrementProductsSold(entry.getProduct().getQuantity());
+            }
+        }
+
+        storeStatisticsList.sort(Comparator.comparingInt(StoreStatistics::getProductsSold).reversed());
+        return storeStatisticsList;
+    }    
 }
 
 
