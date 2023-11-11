@@ -33,8 +33,12 @@ public class Product {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setQuantity(int newQuantity) {
+        if (newQuantity >= 0) {
+            this.quantity = newQuantity;
+        } else {
+            throw new InvalidQuantityError();
+        }
     }
 
     public double getPrice() {
@@ -54,7 +58,7 @@ public class Product {
     //TODO: add other ways to change product quantity : added setquantity
     public int removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
-            quantity -= purchasedQuantity;
+            this.quantity -= purchasedQuantity;
             return this.quantity;
         } else {
             throw new InvalidQuantityError();
@@ -68,23 +72,11 @@ public class Product {
         return this.quantity;
     }
 
-    public int setQuantity(int newQuantity) {
-    if (newQuantity >= 0) {
-        quantity = newQuantity;
-        return this.quantity;
-    } else {
-            throw new InvalidQuantityError();
-        }
-    }
-
     public static Product createProductFromUserInput() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter product name:");
         String name = scanner.nextLine();
-
-        System.out.println("Enter store name:");
-        String store = scanner.nextLine();
 
         System.out.println("Enter product description:");
         String description = scanner.nextLine();

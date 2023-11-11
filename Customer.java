@@ -18,16 +18,17 @@ public class Customer extends User {
         }
         //TODO: load cart in from file
     }
-    public int purchase(Product product, int purchaseAmount) {
-        //not sure if this is needed
-        if (product.removeQuantity(purchaseAmount)) {
-            return purchaseAmount;
-        } else {
-            return 0;
-        }
+    public boolean purchase(Product product, int purchaseAmount) {
+        //calls the removeQuantity method
+        product.removeQuantity(purchaseAmount);
+        return true;
+        //return true if purchase was successful, return false if not
     }
     public void addToCart(Product product, int quantity) {
         cart.put(product, quantity);
+    }
+    public void removeFromCart(Product product, int quantity) {
+        //remove an amount of item from cart, and if amount is equal to total amount, remove the item entirely
     }
     public void pastPurchases() {
 
