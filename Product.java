@@ -52,10 +52,10 @@ public class Product {
         System.out.println("Price: $" + price);
     }
     //TODO: add other ways to change product quantity : added setquantity
-    public boolean removeQuantity(int purchasedQuantity) {
+    public int removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
             quantity -= purchasedQuantity;
-            return true;
+            return this.quantity;
         } else {
             throw new InvalidQuantityError();
         }
@@ -68,10 +68,10 @@ public class Product {
         return this.quantity;
     }
 
-    public boolean setQuantity(int newQuantity) {
+    public int setQuantity(int newQuantity) {
     if (newQuantity >= 0) {
         quantity = newQuantity;
-        return true;
+        return this.quantity;
     } else {
             throw new InvalidQuantityError();
         }
