@@ -90,5 +90,14 @@ public class Product {
 
         return new Product(name, description, quantity, price);
     }
+    public boolean equals(Product product) {
+        if (this.getName().equals(product.getName())
+                && this.getPrice() == product.getPrice()
+                && this.getDescription().equals(product.getDescription())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 

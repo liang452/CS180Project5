@@ -14,17 +14,26 @@ public class Customer extends User {
             //FORMAT OF FILE:
             /* CUSTOMER
              * CART - separate items separated by semicolons, separate item details separated by commas
-             * PAST PURCHASES
+             * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
              */
+            //initializes empty cart
+            this.cart = new ArrayList<Product>();
         } else {
-            //if existing user, basically.
+            //if existing customer:
+            BufferedReader bfr = new BufferedReader(new FileReader(username));
+            String line = bfr.readLine();
+            while (line != null && !line.equals("")) {
+                //read to second line
+                line = bfr.readLine(); // cart line
+                String[] cartArray = line.split(";"); //splits into separate items
+                for (int i = 0; i < cartArray.length; i++) {
+                    String[] productArray = cartArray[i].split(",");
+                    this.cart.add(new Product(productArray[0], productArray[1], Integer.parseInt(productArray[2]),
+                            Double.parseDouble(productArray[3])));
+                }
+            }
         }
         //TODO: load cart in from file
-        BufferedReader bfr = new BufferedReader(new FileReader(username));
-        String line = bfr.readLine();
-        while (line != null && !line.equals("")) {
-
-        }
     }
     public boolean purchase(Product product, int quantity) {
         return true;
