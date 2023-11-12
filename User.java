@@ -2,14 +2,19 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class User {
+    private String username;
     private String email;
     private String password;
-    private String username;
+    public User() {
+        username = "";
+        email = "";
+        password = "";
+    }
 
-    public User(String username, String email, String password) throws IOException {
+    public User(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
-        this.username = username;
     }
 
 
@@ -34,13 +39,13 @@ public class User {
         return password;
     }
     public static boolean isExistingUser(String username) throws IOException {
-        //check file of emails and passwords for if email already exists
+        //check file for if username already exists
         try (BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"))) {
             String line = bfr.readLine();
             while (line != null) {
                 //splits line into array
-                String[] loginInfo = line.split(",", 0);
-                //first item is email
+                String[] loginInfo = line.split(",");
+                //first item is username
                 String existingUsername = loginInfo[0];
                 if (username.equals(existingUsername)) {
                     return true;
@@ -123,22 +128,20 @@ public class User {
         File f = new File(username + ".csv");
         f.delete();
     }
-    public static int accountType(String username) throws IOException {
+    public static String accountType(String input) throws IOException {
         //returns 0 if customer, 1 if seller
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
-        while (line != null && !line.equals("")) {
+        while (line != null && !line.equals("")) { //while it's not empty
             String[] loginDetails = line.split(",");
-            if (loginDetails[0].equals(username)) {
-                if (loginDetails[3].equals("SELLER")) {
-                    return 1;
-                } else {
-                    //if customer, return 1
-                    return 0;
-                }
+            if (loginDetails[0].equals(input) || loginDetails[1].equals(input)) {
+                return loginDetails[3];
             }
             line = bfr.readLine();
         }
-        return -1;
+        bfr.close();
+        return "";
     }
+
+
 }
