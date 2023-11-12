@@ -16,7 +16,7 @@ public class Main {
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Welcome!");
-        String existing = "";
+        String existing;
         do {
             System.out.println("Are you an existing user?");
             existing = scan.nextLine();
@@ -180,6 +180,7 @@ public class Main {
             }
         }
 
+        Market market = new Market();
         if (user instanceof Customer) {
             //if customer, go straight to displaying stores.
             //print out options:
@@ -188,8 +189,9 @@ public class Main {
                 System.out.println("1 - View Marketplace");
                 System.out.println("2 - View Your Cart");
                 System.out.println("3 - View Statistics");
-                System.out.println("4 - Edit Account");
-                System.out.println("5 - Log Out");
+                System.out.println("4 - View Your Past Purchases");
+                System.out.println("5 - Edit Account");
+                System.out.println("6 - Log Out");
 
                 input = scan.nextLine();
 
@@ -197,21 +199,31 @@ public class Main {
                     System.out.println("Please input a valid option.");
                 }
                 else if (input.equals("1")) {
-                    boolean looping = true;
+                    boolean looping;
                     do {
-                        ArrayList<Product> listedProducts = Market.displayAllStores();
-                        looping = Market.displayProductsMenu(listedProducts);
+                        ArrayList<Product> listedProducts = market.displayAllProducts();
+                        looping = market.displayProductsMenu(listedProducts);
+                        if (!looping) {
+                            input = "0"; //returns to main menu if displayProductsMenu returns false
+                        }
                     } while(looping);
                 } else if (input.equals("2")) {
                     //display cart
                 } else if (input.equals("3")) {
                     //display statistics menu
                 } else if (input.equals("4")) {
-                    Market.editAccountMenu(username, email, password);
+                    //view past purchases
                 } else if (input.equals("5")) {
+                    //print out account details
+                    Market.editAccountMenu(username, email, password);
+                    System.out.println("1 - Continue Editing Account");
+                    System.out.println("2 - Return to Main Menu");
+                    //TODO
+                } else if (input.equals("6")) {
                     System.out.println("Are you sure you want to log out?");
                     String logout = scan.nextLine();
                     if (Util.yesNo(logout)) {
+                        //call save data method
                         System.out.println("Have a nice day!");
                         return;
                     } else if (!Util.yesNo(logout)) {
@@ -225,9 +237,10 @@ public class Main {
         if (user instanceof Seller) {
             System.out.println("1 - View Your Products");
             System.out.println("2 - View Your Sales By Store");
-            System.out.println("3 - View Statistics Menu");
+            System.out.println("3 - View Statistics");
             System.out.println("4 - View Customer Shopping Carts");
-            System.out.println("5 - Logout");
+            System.out.println("5 - Edit Account Details");
+            System.out.println("6 - Logout");
         }
     }
 }

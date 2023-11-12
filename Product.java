@@ -112,5 +112,14 @@ public class Product {
             return false;
         }
     }
+    public String toCSVFormat(Product product) {
+        String name = this.getName();
+        String storeName = this.getStore();
+        String description = this.getDescription();
+        String quantity = Integer.toString(this.getQuantity());
+        String price = Double.toString(this.getPrice());
+        String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
+        return csv;
+    }
 }
 

@@ -4,19 +4,11 @@ public class User {
     private String email;
     private String password;
     private String username;
-    //hashmap of userids
-
-    public User() {
-        this.email = "";
-        this.password = "";
-        this.username = "";
-    }
 
     public User(String username, String email, String password) throws IOException {
         this.email = email;
         this.password = password;
         this.username = username;
-        //export to file
     }
 
 
