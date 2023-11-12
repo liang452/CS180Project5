@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 /*
  *
@@ -11,10 +12,7 @@ public class Main {
         if (!f.exists()) {
             f.createNewFile();
         }
-        f = new File("storelist.csv");
-        if (!f.exists()) {
-            f.createNewFile();
-        }
+
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Welcome!");
@@ -36,7 +34,7 @@ public class Main {
         String password = "";
 
         boolean incorrectInput;
-        if (!Util.yesNo(existing)) {
+        if (!Util.yesNo(existing)) { //if not an existing user
             do {
                 //username
                 incorrectInput = false;
@@ -80,36 +78,33 @@ public class Main {
                     incorrectInput = true;
                 }
             } while (incorrectInput);
-        } else if (Util.yesNo(existing)) {
-            //if user is an existing user
+        } else if (Util.yesNo(existing)) { //if user is an existing user
             //email
             do {
                 incorrectInput = false;
                 System.out.println("Input your email:");
                 email = scan.nextLine();
-                //email does not exist
+
                 if (!User.isExistingEmail(email)) {
                     System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
                     incorrectInput = true;
+                    email = "";
+                } else if (email.equals("CANCEL")) {
+                    return;
                 }
             } while(incorrectInput);
             //password
             do {
+                incorrectInput = false;
                 System.out.println("Input your password: ");
                 password = scan.nextLine();
 
                 //if wrong password
                 if (!User.checkPassword(email, password)) {
                     System.out.println("Wrong password. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
                     incorrectInput = true;
+                } else if (password.equals("CANCEL")) {
+                        return;
                 }
             } while(incorrectInput);
             System.out.println("Logged in successfully. Welcome back!");
@@ -187,6 +182,44 @@ public class Main {
 
         if (user instanceof Customer) {
             //if customer, go straight to displaying stores.
+            //print out options:
+            String input = "";
+            do {
+                System.out.println("1 - View Marketplace");
+                System.out.println("2 - View Your Cart");
+                System.out.println("3 - View Statistics");
+                System.out.println("4 - Edit Account");
+                System.out.println("5 - Log Out");
+
+                input = scan.nextLine();
+
+                if (!Util.isNumeric(input)) {
+                    System.out.println("Please input a valid option.");
+                }
+                else if (input.equals("1")) {
+                    boolean looping = true;
+                    do {
+                        ArrayList<Product> listedProducts = Market.displayAllStores();
+                        looping = Market.displayProductsMenu(listedProducts);
+                    } while(looping);
+                } else if (input.equals("2")) {
+                    //display cart
+                } else if (input.equals("3")) {
+                    //display statistics menu
+                } else if (input.equals("4")) {
+                    Market.editAccountMenu(username, email, password);
+                } else if (input.equals("5")) {
+                    System.out.println("Are you sure you want to log out?");
+                    String logout = scan.nextLine();
+                    if (Util.yesNo(logout)) {
+                        System.out.println("Have a nice day!");
+                        return;
+                    } else if (!Util.yesNo(logout)) {
+                        System.out.println("Returning to the main menu...");
+                        input = "0";
+                    }
+                }
+            } while(input.equals("0"));
 
         }
     }

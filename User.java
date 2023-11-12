@@ -66,10 +66,10 @@ public class User {
         //check file of emails and passwords for if email already exists
         try (BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"))) {
             String line = bfr.readLine();
-            while (line != null && !line.equals("")) {
+            while (line != null) {
                 //splits line into array
                 String[] loginInfo = line.split(",");
-                //first item is email
+                //second item is email
                 String existingEmail = loginInfo[1];
                 if (email.equals(existingEmail)) {
                     return true;
