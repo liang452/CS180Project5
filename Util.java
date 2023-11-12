@@ -62,4 +62,11 @@ public abstract class Util {
         }
         return false;
     }
+    public static String toCSV(String[] loginDetails) {
+        String combined = "";
+        for (String string : loginDetails) {
+            combined += string + ",";
+        }
+        return combined;
+    }
 }

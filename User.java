@@ -103,11 +103,68 @@ public class User {
         //if not found, return false. if no email matches or password matches.
         return false;
     }
-    public static boolean editUsername() {
-        return true;
+    public static void editUsername(String oldUsername, String newUsername) throws IOException {
+        if (!User.isExistingEmail(newUsername)) {
+            BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
+            ArrayList<String> loginsList = new ArrayList<>();
+            String line = bfr.readLine();
+            String newLogin = "";
+            while (line != null && !line.isEmpty()) {
+                String[] loginDetails = line.split(",");
+                if (!loginDetails[1].equals(oldUsername)) {
+                    loginsList.add(Util.toCSV(loginDetails));
+                } else if (loginDetails[1].equals(oldUsername)) {
+                    newLogin = newUsername + "," + loginDetails[1] + "," +
+                            loginDetails[2] + "," + loginDetails[3];
+                }
+                line = bfr.readLine();
+            }
+            bfr.close();
+            //loop through array
+            loginsList.add(newLogin); //add login that was changed
+            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv"));
+            for (String string : loginsList) {
+                bw.write(string);
+                bw.write("\n");
+            }
+
+            bw.close();
+        } else {
+            System.out.println("This username already exists.");
+        }
     }
     public static void editPassword(String newPassword) {
         //TODO
+    }
+    public static void editEmail(String oldEmail, String newEmail) throws IOException {
+        if (!User.isExistingEmail(newEmail)) {
+            BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
+            ArrayList<String> loginsList = new ArrayList<>();
+            String line = bfr.readLine();
+            String newLogin = "";
+            while (line != null && !line.isEmpty()) {
+                String[] loginDetails = line.split(",");
+                if (!loginDetails[1].equals(oldEmail)) {
+                    loginsList.add(Util.toCSV(loginDetails));
+                } else if (loginDetails[1].equals(oldEmail)) {
+                    newLogin = loginDetails[0] + "," + newEmail + "," +
+                            loginDetails[2] + "," + loginDetails[3];
+                }
+                line = bfr.readLine();
+            }
+            bfr.close();
+            //loop through array
+            loginsList.add(newLogin); //add login that was changed
+            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv"));
+            for (String string : loginsList) {
+                bw.write(string);
+                bw.write("\n");
+            }
+
+            bw.close();
+        } else {
+            System.out.println("This email already exists.");
+        }
     }
     public static void deleteAccount(String username, String email, String password) throws IOException {
         //delete the logins

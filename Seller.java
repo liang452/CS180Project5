@@ -116,15 +116,14 @@ public class Seller extends User {
     }
 
     public void displayProductsByStore() {
-        for (Store store : stores) {
+        for (Store store : this.stores) {
             ArrayList<Product> products = store.getProducts();
-            System.out.println(store.getName().toUpperCase());
-            System.out.println("PRODUCTS:");
             for (Product product : products) {
-                System.out.println("\n" + product.getName());
+                System.out.println(product.getName());
                 System.out.println(product.getDescription());
+                System.out.println(product.getStore());
                 System.out.println(product.getQuantity());
-                System.out.println(product.getPrice());
+                System.out.println(product.getPrice() + "\n");
             }
         }
     }
