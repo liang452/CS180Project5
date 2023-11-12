@@ -222,5 +222,12 @@ public class Main {
             } while(input.equals("0"));
 
         }
+        if (user instanceof Seller) {
+            System.out.println("1 - View Your Products");
+            System.out.println("2 - View Your Sales By Store");
+            System.out.println("3 - View Statistics Menu");
+            System.out.println("4 - View Customer Shopping Carts");
+            System.out.println("5 - Logout");
+        }
     }
 }
