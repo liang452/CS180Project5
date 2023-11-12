@@ -256,7 +256,7 @@ public class Main {
                 input = scan.nextLine();
 
                 if (input.equals("1")) {
-                    ((Seller) user).displayProductsByStore();
+                    ((Seller) user).displayProducts();
                     System.out.println("Would you like to edit your products?");
                     //TODO
                     String edit = scan.nextLine();
@@ -273,26 +273,19 @@ public class Main {
                 } else if (input.equals("5")) {
                     boolean deleted;
                     do {
-                        deleted = Market.editAccountMenu(username, email, password);
-                        //returns true if account has been deleted
+                        deleted = Market.editAccountMenu(username, email, password); //returns true if account has been deleted
+                        ((Seller) user).exportToFile();
                         if (deleted) {
                             input = "0";
-                        } else { //if user chooses to cancel
-                            System.out.println("1 - Continue Editing Account");
-                            System.out.println("2 - Return to Main Menu");
-                            String cont = scan.nextLine();
-                            if (cont.equals("1")) {
-                                deleted = true;
-                            } else if (cont.equals("2")) {
-                                break;
-                            }
-                        }
+                            break;
+                        } //if user chooses to cancel, just keep looping
                     } while (!deleted); //loops if deleted is false.
                 } else if (input.equals("6")) {
                     //logout
                     System.out.println("Are you sure you want to log out?");
                     String logout = scan.nextLine();
                     if (Util.yesNo(logout)) {
+                        System.out.println("Have a nice day!");
                         break;
                     } else {
                         System.out.println("Returning to main menu...");

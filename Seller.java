@@ -105,7 +105,7 @@ public class Seller extends User {
                 }
             }
             for (String string : allStoreDetails) {
-                bw.write(string);
+                bw.write(string + "\n");
             }
             bw.close();
             return true;
@@ -114,15 +114,15 @@ public class Seller extends User {
         }
     }
 
-    public void displayProductsByStore() {
+    public void displayProducts() {
         for (Store store : this.stores) {
             ArrayList<Product> products = store.getProducts();
             for (Product product : products) {
                 System.out.println(product.getName());
-                System.out.println(product.getDescription());
-                System.out.println(product.getStore());
-                System.out.println(product.getQuantity());
-                System.out.println(product.getPrice() + "\n");
+                System.out.println("Description: " + product.getDescription());
+                System.out.println("Associated Store: " + product.getStore());
+                System.out.println("Amount in Stock: " + product.getQuantity());
+                System.out.println("$" + product.getPrice() + "\n");
             }
         }
     }
