@@ -1,11 +1,17 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
-
+/*
+ *
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
         //creates logins file
         File f = new File("logins.csv");
+        if (!f.exists()) {
+            f.createNewFile();
+        }
+        f = new File("storelist.csv");
         if (!f.exists()) {
             f.createNewFile();
         }
@@ -124,7 +130,7 @@ public class Main {
             System.out.println("Welcome! You have successfully made an account.");
         }
         //TODO: if an existing user
-        //KNOWN ISSUE HERE: will keep putting in same logins. FIX.
+
         User user;
         if (User.accountType(username) == 1 || accountType.equalsIgnoreCase("seller")) {
             user = new Seller(username, email, password);
@@ -132,6 +138,7 @@ public class Main {
             user = new Customer(username, email, password);
         }
 
+        //seller specific part; asks if
         if (user instanceof Seller) {
             if (!Util.yesNo(existing) || ((Seller) user).getStore() == null) {
                 do {
@@ -180,6 +187,7 @@ public class Main {
 
         if (user instanceof Customer) {
             //if customer, go straight to displaying stores.
+
         }
     }
 }

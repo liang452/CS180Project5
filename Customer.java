@@ -61,6 +61,7 @@ public class Customer extends User {
     }
 
     public boolean purchase(Product product, int quantity) {
+        //TODO
         return true;
     }
 
