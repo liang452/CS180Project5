@@ -11,35 +11,25 @@ public class Customer extends User {
 
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
-        this.cart = new ArrayList<Product>();
-        this.pastPurchases = new ArrayList<Product>();
+        this.cart = new ArrayList<>();
+        this.pastPurchases = new ArrayList<>();
 
-        File f = new File("logins.txt");
-        if (!f.exists()) {
-            f.createNewFile();
-        }
-        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.txt", true));
-        bw.write(username + "," + email + "," + password + "," + "CUSTOMER");
-        bw.write("\n");
-        bw.close();
-
-        //reads from file
-        f = new File(username);
-        if (!f.exists()) {
-            f.createNewFile();
-            bw = new BufferedWriter(new FileWriter(f, true));
-            bw.write("CUSTOMER");
+        if (!User.isExistingUser(username)) {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
+            bw.write(username + "," + email + "," + password + "," + "CUSTOMER");
+            bw.write("\n");
+            bw.close();
+        } else {
             //FORMAT OF FILE:
             /* CUSTOMER
              * CART - separate items separated by semicolons, separate item details separated by commas
              * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
              */
-        } else {
             //if existing customer:
-            BufferedReader bfr = new BufferedReader(new FileReader(username));
-            String line = bfr.readLine();
-            //read to second line
-            line = bfr.readLine(); // cart line
+            BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
+            bfr.readLine();
+
+            String line = bfr.readLine(); // cart line
             if (line != null && !line.equals("")) {
                 String[] cartArray = line.split(";"); //splits into separate items
                 for (int i = 0; i < cartArray.length; i++) {
@@ -63,6 +53,7 @@ public class Customer extends User {
     }
 
     public boolean purchase(Product product, int quantity) {
+        //TODO
         return true;
     }
 
@@ -93,6 +84,10 @@ public class Customer extends User {
         }
         System.out.println("Product not found in shopping cart.");
         return false;
+    }
+
+    public void purchaseShoppingCart() {
+        //TODO
     }
 
     public void getPastPurchases() {
@@ -126,10 +121,36 @@ public class Customer extends User {
             System.out.println("-------\n");
         }
     }
+    public void exportToFile() {
+        //TODO
+        //export cart
+        //export pastpurchases
+    }
+
+    public boolean exportPastPurchases(String filename) throws IOException {
+        //exports to a file
+        File f = new File(filename);
+        if (f.exists()) {
+            System.out.println("This file already exists.");
+            return false;
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+        for (int i = 0; i < pastPurchases.size(); i++) {
+            String name = pastPurchases.get(i).getName();
+            String storeName = pastPurchases.get(i).getStore();
+            String description = pastPurchases.get(i).getDescription();
+            int quantityBought = pastPurchases.get(i).getQuantity();
+            double price = pastPurchases.get(i).getPrice();
+            bw.write(name + "," + storeName + "," + description + "," + quantityBought + ","+ price);
+        }
+        bw.close();
+        return true;
+    }
 
     public void storesByProductsSold() {
         //TODO
         System.out.println("Stores sorted by number of products sold: ");
+
     }
 }
     
