@@ -69,6 +69,9 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
+    public void displayProduct() {
+        System.out.println(this.name + " - " + this.getStore() + " - $" + this.getPrice());
+    }
 
     public void displayProductInfo() {
         System.out.println("Product: " + this.name);
@@ -135,7 +138,6 @@ public class Product {
         String price = Double.toString(this.getPrice());
         String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
         return csv;
-        return new Product(name, store, description, quantity, price);
     }
 }
 
