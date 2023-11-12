@@ -85,13 +85,13 @@ public class Product {
         return this.quantity;
     }
 
-    public static Product createProductFromUserInput() {
+    public static Product createProductFromUserInput(String storeName) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter product name:");
         String name = scanner.nextLine();
 
-        System.out.println("Enter product description:");
+        System.out.println("Enter description:");
         String description = scanner.nextLine();
 
         System.out.println("Enter quantity available:");
@@ -101,7 +101,7 @@ public class Product {
         System.out.println("Enter price:");
         double price = scanner.nextDouble();
 
-        return new Product(name, description, quantity, price);
+        return new Product(name, storeName, description, quantity, price);
     }
     public boolean equals(Product product) {
         if (this.getName().equals(product.getName())

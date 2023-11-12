@@ -31,23 +31,28 @@ public class Store {
             //read in
         }
     }
-    public void importProducts(String fileName) throws IOException {
+    public boolean importProducts(String fileName) {
         //reads file
         try (BufferedReader bfr = new BufferedReader(new FileReader(fileName))) {
             String line = bfr.readLine();
-            while (line != null) {
+            while (line != null && !line.equals("")) {
                 String[] productDetails = line.split(",");
+                if (productDetails.length != 5) {
+                    System.out.println("Please input a properly formatted file.");
+                    return false;
+                }
                 String name = productDetails[0];
                 String storeName = productDetails[1];
                 String desc = productDetails[2];
                 int quantity = Integer.parseInt(productDetails[3]);
                 double price = Double.parseDouble(productDetails[4]);
-                this.products.add(new Product(name, desc, quantity, price));
+                this.products.add(new Product(name, storeName, desc, quantity, price));
                 line = bfr.readLine();
             }
+            return true;
         } catch (IOException e) {
             System.out.println("Please input a valid file.");
-            throw e;
+            return false;
         }
     }
 

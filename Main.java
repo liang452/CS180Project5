@@ -1,11 +1,10 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        //creates logins file
         File f = new File("logins.csv");
         if (!f.exists()) {
             f.createNewFile();
@@ -31,7 +30,7 @@ public class Main {
         String password = "";
 
         boolean incorrectInput;
-        if (existing.equalsIgnoreCase("no")) {
+        if (!Util.yesNo(existing)) {
             do {
                 //username
                 incorrectInput = false;
@@ -75,7 +74,7 @@ public class Main {
                     incorrectInput = true;
                 }
             } while (incorrectInput);
-        } else if (existing.equalsIgnoreCase("yes")) {
+        } else if (Util.yesNo(existing)) {
             //if user is an existing user
             //email
             do {
@@ -134,32 +133,53 @@ public class Main {
         }
 
         if (user instanceof Seller) {
-            if (existing.equalsIgnoreCase("no") || ((Seller) user).getStore().isEmpty()) {
+            if (!Util.yesNo(existing) || ((Seller) user).getStore() == null) {
                 do {
                     incorrectInput = false;
+                    System.out.println("Would you like to set up your store manually?");
+                    String input = scan.nextLine();
                     System.out.println("What would you like your store name to be?");
                     String storeName = scan.nextLine();
+                    Store store = new Store(storeName);
 
-                    System.out.println("Please input a .csv file name to upload your products.");
-                    String filename = scan.nextLine();
+                    if (Util.yesNo(input)) {
+                        boolean repeat = false;
+                        do {
+                            store.addProduct(Product.createProductFromUserInput(storeName));
+                            System.out.println("Would you like to create another product?");
+                            repeat = Util.yesNo(scan.nextLine());
+                        } while(repeat);
 
-                    Store storeOne = new Store(storeName, filename);
-                    System.out.println("This is your store: ");
-                    storeOne.displayStore();
-
+                    } else {
+                        System.out.println("Please input a .csv file name to upload your products.");
+                        String filename = scan.nextLine();
+                        boolean checker;
+                        do {
+                            checker = store.importProducts(filename);
+                        } while (!checker);
+                        System.out.println("Successfully imported!");
+                    }
+                    store.displayStore();
                     System.out.println("Is this what you want?");
                     String ans = scan.nextLine();
 
-                    if (ans.equalsIgnoreCase("yes")) {
-                        ((Seller) user).addStore(storeOne);
-                    } else if (ans.equals("no")) {
-                        incorrectInput = true;
+                    if (Util.yesNo(ans)) {
+                        System.out.println("OK! Saving data...");
+                        //TODO: write out to file
+                        //and done with initial creation of store!
+                        ((Seller) user).addStore(store);
+                        ((Seller) user).exportToFile();
+                        System.out.println("Successfully saved!");
                     } else {
-                        System.out.println("This is a yes or no question.");
+                        System.out.println("Returning to editing stage...");
                         incorrectInput = true;
                     }
                 } while(incorrectInput);
             }
+        }
+
+        if (user instanceof Customer) {
+            //if customer, go straight to displaying stores.
         }
     }
 }
