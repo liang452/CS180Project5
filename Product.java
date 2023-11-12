@@ -2,10 +2,11 @@ import java.util.Scanner;
 
 public class Product {
     private String name;
-    private String storeName;
+    private String store;
     private String description;
     private int quantity;
     private double price;
+
 
     public Product(String name, String description, int quantity, double price) {
         this.name = name;
@@ -13,11 +14,10 @@ public class Product {
         this.quantity = quantity;
         this.price = price;
     }
-
-    public Product(String name, String storeName, String description, int quantity, double price) {
-        //with storename
+  
+    public Product(String name, String store, String description, int quantity, double price) {
         this.name = name;
-        this.storeName = storeName;
+        this.store = store;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
@@ -31,6 +31,15 @@ public class Product {
         this.name = name;
     }
 
+
+    public String getStore() {
+        return this.store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
+    }
+
     public String getDescription() {
         return this.description;
     }
@@ -38,13 +47,11 @@ public class Product {
     public void setDescription(String description) {
         this.description = description;
     }
-    public String getStore() {
-        return this.storeName;
-    }
 
     public int getQuantity() {
         return quantity;
     }
+
 
     public void setQuantity(int newQuantity) {
         if (newQuantity >= 0) {
@@ -52,6 +59,7 @@ public class Product {
         } else {
             throw new InvalidQuantityError();
         }
+
     }
 
     public double getPrice() {
@@ -63,11 +71,13 @@ public class Product {
     }
 
     public void displayProductInfo() {
-        System.out.println("Product: " + name);
-        System.out.println("Description: " + description);
-        System.out.println("Quantity: " + quantity);
-        System.out.println("Price: $" + price);
+        System.out.println("Product: " + this.name);
+        System.out.println("Store: " + this.store);
+        System.out.println("Description: " + this.description);
+        System.out.println("Quantity: " + this.quantity);
+        System.out.println("Price: $" + this.price);
     }
+  
     //TODO: add other ways to change product quantity : added setquantity
     public int removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
@@ -86,12 +96,14 @@ public class Product {
     }
 
     public static Product createProductFromUserInput(String storeName) {
-        Scanner scanner = new Scanner(System.in);
-
         System.out.println("Enter product name:");
         String name = scanner.nextLine();
 
-        System.out.println("Enter description:");
+        System.out.println("Enter store name:");
+        String store = scanner.nextLine();
+
+        System.out.println("Enter product description:");
+
         String description = scanner.nextLine();
 
         System.out.println("Enter quantity available:");
@@ -103,6 +115,7 @@ public class Product {
 
         return new Product(name, storeName, description, quantity, price);
     }
+      
     public boolean equals(Product product) {
         if (this.getName().equals(product.getName())
                 && this.getPrice() == product.getPrice()
@@ -112,6 +125,7 @@ public class Product {
             return false;
         }
     }
+      
     public String toCSVFormat(Product product) {
         String name = this.getName();
         String storeName = this.getStore();
@@ -120,6 +134,7 @@ public class Product {
         String price = Double.toString(this.getPrice());
         String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
         return csv;
+        return new Product(name, store, description, quantity, price);
     }
 }
 
