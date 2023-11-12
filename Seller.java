@@ -127,18 +127,18 @@ public class Seller extends User {
         }
     }
        
-//    public void viewCustomerShoppingCarts() throws IOException{
-//        System.out.println("Customer Shopping Carts:");
-//        for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
-//            Customer customer = entry.getCustomer();
-//            Product product = entry.getProduct();
-//            System.out.println("Customer: " + customer.getEmail());
-//            System.out.println("  Product: " + product.getName());
-//            System.out.println("  Quantity: " + entry.getQuantity());
-//            System.out.println("  Price: $" + product.getPrice());
-//            System.out.println("  -------------");
-//        }
-//    }
+    public void viewCustomerShoppingCarts() {
+        System.out.println("Customer Shopping Carts:");
+        for (Customer entry : customerCarts) {
+            System.out.println("Customer: " + entry.getUsername());
+            for (Product product : entry.cart) {
+                System.out.println("  Product: " + product.getName());
+                System.out.println("  Quantity: " + product.getQuantity());
+                System.out.println("  Price: $" + product.getPrice());
+                System.out.println("  -------------");
+            }
+        }
+    }
 
 //    public void viewSales() throws IOException {
 //        System.out.println("Sales:");
