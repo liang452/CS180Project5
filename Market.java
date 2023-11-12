@@ -162,16 +162,28 @@ public class Market {
                         //TODO: change email in files.
                         repeat = true;
                         User.editEmail(email, newEmail);
+                        email = newEmail;
                         System.out.println("Successfully changed!");
                     }
                 } while(!valid);
             } else if (input.equals("2")) {
-                System.out.println("What would you like your new password to be?");
+                System.out.println("What would you like your new password to be? Type CANCEL to exit.");
+                String newPassword = scan.nextLine();
+                if (!newPassword.equals("CANCEL")) {
+                    User.editPassword(email, newPassword);
+                    password = newPassword;
+                    System.out.println("Successfully changed.");
+                }
+                repeat = true;
             } else if (input.equals("3")) {
-                System.out.println("What would you like your new username to be?");
+                System.out.println("What would you like your new username to be? Type CANCEL to exit.");
                 String newUser = scan.nextLine();
-                User.editUsername(username, newUser);
-                System.out.println("Successfully changed!");
+                if (!newUser.equals("CANCEL")) {
+                    User.editUsername(username, newUser);
+                    System.out.println("Successfully changed!");
+                    username = newUser;
+                    System.out.println("This is your new username: " + username);
+                }
                 repeat = true;
             } else if (input.equals("4")) {
                 System.out.println("Are you sure?");
@@ -186,7 +198,7 @@ public class Market {
                     return false;
                 }
             } else if (input.equals("5")) {
-
+                repeat = false;
             }
         } while (repeat);
         return true;
