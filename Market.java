@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 /*
@@ -13,36 +14,36 @@ public class Market {
     private ArrayList<String> sellerNames;
 
     public Market() throws IOException {
-        ArrayList<Product> listedProducts = new ArrayList<>();
         //iterate through logins, find all sellers and their usernames
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
         this.sellerNames = new ArrayList<>();
+        this.listedProducts = new ArrayList<>();
         while (line != null) {
             String[] loginDetails = line.split(",");
             if (User.accountType(loginDetails[0]).equals("SELLER")) {
-                this.sellerNames.add(loginDetails[0]);
+                this.sellerNames.add(loginDetails[0]); //adds username
             }
             line = bfr.readLine();
         }
         bfr.close();
 
         this.listedProducts = new ArrayList<>();
-        for (int i = 0; i < this.sellerNames.size(); i++) {
-            File f = new File(this.sellerNames.get(i) + ".csv");
+        for (String name : sellerNames) {
+            File f = new File(name + ".csv");
             if (f.exists()) {
                 //read from user file, display as it iterates through
                 bfr = new BufferedReader(new FileReader(f));
                 line = bfr.readLine();
                 while (line != null) {
                     String[] productDetails = line.split(",");
-                    for (int j = 0; i < productDetails.length; i += 4) {
-                        String name = productDetails[j];
-                        String storeName = productDetails[j + 1];
-                        String description = productDetails[j + 2];
-                        int quantity = Integer.parseInt(productDetails[j + 3]);
-                        double price = Double.parseDouble(productDetails[j + 4]);
-                        this.listedProducts.add(new Product(name, storeName, description, quantity, price));
+                    for (int i = 0;  i < productDetails.length; i += 5) {
+                        String prodName = productDetails[i];
+                        String storeName = productDetails[i + 1];
+                        String description = productDetails[i + 2];
+                        int quantity = Integer.parseInt(productDetails[i + 3]);
+                        double price = Double.parseDouble(productDetails[i + 4]);
+                        this.listedProducts.add(new Product(prodName, storeName, description, quantity, price));
                     }
                     line = bfr.readLine();
                 }
@@ -50,7 +51,7 @@ public class Market {
         }
     }
 
-    public ArrayList<Product> displayAllProducts() {
+    public ArrayList<Product> listProducts() {
         //iterate through listedProducts
         for (int i = 0; i < this.listedProducts.size(); i++) {
             Product product = this.listedProducts.get(i);
@@ -65,69 +66,86 @@ public class Market {
 
     public boolean displayProductsMenu(ArrayList<Product> products) {
         Scanner scan = new Scanner(System.in);
-        System.out.println("1 - Select a Product You are Interested in");
-        System.out.println("2 - Search for a Product by Keyword");
-        System.out.println("3 - Return to the Main Menu");
-        String option = scan.nextLine();
-        if (option.equals("1")) {
-            System.out.println("Input the product name:");
-            String selection = scan.nextLine();
-            for (int i = 0; i < products.size(); i++) {
-                if (products.get(i).getName().equals(selection)) {
-                    Product viewing = products.get(i);
-                    System.out.println(viewing.getName());
-                    System.out.println("Store: " + viewing.getStore());
-                    System.out.println("Description: " + viewing.getDescription());
-                    System.out.println("Amount in Stock: " + viewing.getQuantity());
-                    System.out.println("$" + viewing.getPrice());
+        boolean repeat;
+        do {
+            repeat = false;
+            System.out.println("1 - Select a Product You are Interested in");
+            System.out.println("2 - Search for a Product by Keyword");
+            System.out.println("3 - Return to the Main Menu");
+            String option = scan.nextLine();
+            if (option.equals("1")) {
+                System.out.println("Input the product name:");
+                String selection = scan.nextLine();
+                for (int i = 0; i < products.size(); i++) {
+                    if (products.get(i).getName().equals(selection)) {
+                        Product viewing = products.get(i);
+                        System.out.println(viewing.getName());
+                        System.out.println("Store: " + viewing.getStore());
+                        System.out.println("Description: " + viewing.getDescription());
+                        System.out.println("Amount in Stock: " + viewing.getQuantity());
+                        System.out.println("$" + viewing.getPrice());
 
-                    //mini little menu within
-                    boolean looping = false;
-                    do {
-                        System.out.println("1 - Purchase");
-                        System.out.println("2 - Add To Cart");
-                        String buy = scan.nextLine();
-                        if (buy.equals("1")) {
-                            System.out.println("How much would you like to purchase?");
-                            String amt = scan.nextLine();
-                            if (!Util.isNumeric(amt)) {
-                                System.out.println("Please input a number.");
+                        //mini little menu within
+                        boolean looping = false;
+                        do {
+                            System.out.println("1 - Purchase");
+                            System.out.println("2 - Add To Cart");
+                            System.out.println("3 - Cancel");
+                            String buy = scan.nextLine();
+                            if (buy.equals("1")) {
+                                System.out.println("How much would you like to purchase?");
+                                String amt = scan.nextLine();
+                                if (!Util.isNumeric(amt)) {
+                                    System.out.println("Please input a number.");
+                                }
+                                System.out.println("Purchasing...");
+                                products.remove(i);
+                                viewing.removeQuantity(Integer.parseInt(amt));
+                                products.add(viewing);
+                                System.out.println("You have bought " + amt + " " + viewing.getName());
+                                //add to purchase history as well
+                                return true;
+                            } else if (buy.equals("2")) {
+                                return true;
+                            } else if (buy.equals("3")) {
+                                looping = false;
+                                break;
+                            } else {
+                                System.out.println("Please select a valid option.");
+                                looping = true;
                             }
-                            System.out.println("Purchasing...");
-                            products.remove(i);
-                            viewing.removeQuantity(Integer.parseInt(amt));
-                            products.add(viewing);
-                            System.out.println("You have bought " + amt + " " + viewing.getName());
-                            //add to purchase history as well
-                            return true;
-                        } else if (buy.equals("2")) {
-                            return true;
-                        } else {
-                            System.out.println("Please select a valid option.");
-                            looping = true;
-                        }
-                    } while (looping);
+                        } while (looping);
+                    }
                 }
+                System.out.println("No matching products found.");
+            } else if (option.equals("2")) {
+                System.out.println("What would you like to search for?");
+                String search = scan.nextLine();
+                ArrayList<Product> results = this.searchProducts(search);
+                if (results.isEmpty()) {
+                    System.out.println("No matching products found.");
+                } else {
+                    System.out.println("Your Search Results: ");
+                    for (Product product : results) {
+                        product.displayProduct();
+                    }
+                }
+                repeat = true;
+            } else if (option.equals("3")) {
+                return false;
             }
-            System.out.println("No matching products found.");
-        } else if (option.equals("2")) {
-            System.out.println("What would you like to search for?");
-            String search = scan.nextLine();
-            //TODO search through names, stores, descriptions.
-            this.searchProducts(search);
-        } else if (option.equals("3")) {
-            return false;
-        }
+        } while(repeat);
         return true;
     }
 
     public ArrayList<Product> searchProducts(String input) {
         ArrayList<Product> matches = new ArrayList<>();
+        input = input.toUpperCase();
         //loop through listedProducts
         for (int i = 0; i < listedProducts.size(); i++) {
-            String name = listedProducts.get(i).getName();
-            String storeName = listedProducts.get(i).getStore();
-            String description = listedProducts.get(i).getDescription();
+            String name = listedProducts.get(i).getName().toUpperCase();
+            String storeName = listedProducts.get(i).getStore().toUpperCase();
+            String description = listedProducts.get(i).getDescription().toUpperCase();
             if (name.contains(input)) {
                 matches.add(listedProducts.get(i));
             } else if (storeName.contains(input)) {

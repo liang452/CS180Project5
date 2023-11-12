@@ -125,7 +125,6 @@ public class Main {
             //assign username if an existing user
             username = Util.getUserFromEmail(email);
         }
-        //TODO: if an existing user
 
         User user;
         if (User.accountType(email).equals("SELLER") || accountType.equalsIgnoreCase("seller")) {
@@ -199,14 +198,13 @@ public class Main {
                 System.out.println("6 - Log Out");
 
                 input = scan.nextLine();
-
                 if (!Util.isNumeric(input)) {
                     System.out.println("Please input a valid option.");
                 }
                 else if (input.equals("1")) {
                     boolean looping;
                     do {
-                        ArrayList<Product> listedProducts = market.displayAllProducts();
+                        ArrayList<Product> listedProducts = market.listProducts();
                         looping = market.displayProductsMenu(listedProducts);
                         if (!looping) {
                             input = "0"; //returns to main menu if displayProductsMenu returns false

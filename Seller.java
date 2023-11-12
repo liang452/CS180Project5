@@ -8,7 +8,7 @@ import java.util.Locale;
 public class Seller extends User {
     private ArrayList<Store> stores;
     private ArrayList<Product> sales;
-    private ArrayList<CustomerShoppingCartEntry> customerShoppingCarts;
+    private ArrayList<Product> customerShoppingCarts;
 
     public Seller(String username, String email, String password) throws IOException {
         super(username, email, password);
@@ -127,36 +127,36 @@ public class Seller extends User {
         }
     }
        
-    public void viewCustomerShoppingCarts() throws IOException{
-        System.out.println("Customer Shopping Carts:");
-        for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
-            Customer customer = entry.getCustomer();
-            Product product = entry.getProduct();
-            System.out.println("Customer: " + customer.getEmail());
-            System.out.println("  Product: " + product.getName());
-            System.out.println("  Quantity: " + entry.getQuantity());
-            System.out.println("  Price: $" + product.getPrice());
-            System.out.println("  -------------");
-        }
-    }
+//    public void viewCustomerShoppingCarts() throws IOException{
+//        System.out.println("Customer Shopping Carts:");
+//        for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
+//            Customer customer = entry.getCustomer();
+//            Product product = entry.getProduct();
+//            System.out.println("Customer: " + customer.getEmail());
+//            System.out.println("  Product: " + product.getName());
+//            System.out.println("  Quantity: " + entry.getQuantity());
+//            System.out.println("  Price: $" + product.getPrice());
+//            System.out.println("  -------------");
+//        }
+//    }
 
-    public void viewSales() throws IOException {
-        System.out.println("Sales:");
-        for (Product product : sales) {
-            int quantitySold = 0;
-            double totalRevenue = 0;
-
-            for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
-                if (entry.getProduct().equals(product)) {
-                    quantitySold += entry.getQuantity();
-                    totalRevenue += entry.getQuantity() * product.getPrice();
-                }
-            }
-
-            System.out.println("Product: " + product.getName());
-            System.out.println("  Quantity Sold: " + quantitySold);
-            System.out.println("  Total Revenue: $" + totalRevenue);
-            System.out.println("  -------------");
-        }
-    }
+//    public void viewSales() throws IOException {
+//        System.out.println("Sales:");
+//        for (Product product : sales) {
+//            int quantitySold = 0;
+//            double totalRevenue = 0;
+//
+//            for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
+//                if (entry.getProduct().equals(product)) {
+//                    quantitySold += entry.getQuantity();
+//                    totalRevenue += entry.getQuantity() * product.getPrice();
+//                }
+//            }
+//
+//            System.out.println("Product: " + product.getName());
+//            System.out.println("  Quantity Sold: " + quantitySold);
+//            System.out.println("  Total Revenue: $" + totalRevenue);
+//            System.out.println("  -------------");
+//        }
+//    }
 }
