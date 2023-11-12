@@ -14,20 +14,18 @@ public class Customer extends User {
         this.cart = new ArrayList<Product>();
         this.pastPurchases = new ArrayList<Product>();
 
-        File f = new File("logins.txt");
-        if (!f.exists()) {
-            f.createNewFile();
+        if (User.isExistingUser(username)) {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
+            bw.write(username + "," + email + "," + password + "," + "CUSTOMER");
+            bw.write("\n");
+            bw.close();
         }
-        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.txt", true));
-        bw.write(username + "," + email + "," + password + "," + "CUSTOMER");
-        bw.write("\n");
-        bw.close();
 
         //reads from file
-        f = new File(username);
+        File f = new File(username + ".csv");
         if (!f.exists()) {
             f.createNewFile();
-            bw = new BufferedWriter(new FileWriter(f, true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
             bw.write("CUSTOMER");
             //FORMAT OF FILE:
             /* CUSTOMER
@@ -36,7 +34,7 @@ public class Customer extends User {
              */
         } else {
             //if existing customer:
-            BufferedReader bfr = new BufferedReader(new FileReader(username));
+            BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
             String line = bfr.readLine();
             //read to second line
             line = bfr.readLine(); // cart line
@@ -155,6 +153,7 @@ public class Customer extends User {
     public void storesByProductsSold() {
         //TODO
         System.out.println("Stores sorted by number of products sold: ");
+
     }
 }
     

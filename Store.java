@@ -15,7 +15,7 @@ public class Store {
     }
     public Store(String name, String filename) throws IOException {
         this.name = name;
-        this.readProductsFromFile(filename);
+        this.importProducts(filename);
     }
     public String getName() {
         return name;
@@ -31,16 +31,17 @@ public class Store {
             //read in
         }
     }
-    public void readProductsFromFile(String fileName) throws IOException {
+    public void importProducts(String fileName) throws IOException {
         //reads file
         try (BufferedReader bfr = new BufferedReader(new FileReader(fileName))) {
             String line = bfr.readLine();
             while (line != null) {
-                String[] productDetails = line.split(",", 0);
+                String[] productDetails = line.split(",");
                 String name = productDetails[0];
-                String desc = productDetails[1];
-                int quantity = Integer.parseInt(productDetails[2]);
-                double price = Double.parseDouble(productDetails[3]);
+                String storeName = productDetails[1];
+                String desc = productDetails[2];
+                int quantity = Integer.parseInt(productDetails[3]);
+                double price = Double.parseDouble(productDetails[4]);
                 this.products.add(new Product(name, desc, quantity, price));
                 line = bfr.readLine();
             }
@@ -67,7 +68,7 @@ public class Store {
     }
     
     public void displayStore() {
-        System.out.println("Store Name:" + this.name);
+        System.out.println("Store Name: " + this.name);
         if (products.isEmpty()) {
             System.out.println("You have no products.");
         } else {

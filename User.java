@@ -1,13 +1,16 @@
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
 
-public abstract class User {
+public class User {
     private String email;
     private String password;
     private String username;
     //hashmap of userids
+
+    public User() {
+        this.email = "";
+        this.password = "";
+        this.username = "";
+    }
 
     public User(String username, String email, String password) throws IOException {
         this.email = email;
@@ -39,7 +42,7 @@ public abstract class User {
     }
     public static boolean isExistingUser(String username) throws IOException {
         //check file of emails and passwords for if email already exists
-        try (BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"))) {
+        try (BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"))) {
             String line = bfr.readLine();
             while (line != null) {
                 //splits line into array
@@ -61,11 +64,11 @@ public abstract class User {
 
     public static boolean isExistingEmail(String email) throws IOException {
         //check file of emails and passwords for if email already exists
-        try (BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"))) {
+        try (BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"))) {
             String line = bfr.readLine();
             while (line != null && !line.equals("")) {
                 //splits line into array
-                String[] loginInfo = line.split(",", 0);
+                String[] loginInfo = line.split(",");
                 //first item is email
                 String existingEmail = loginInfo[1];
                 if (email.equals(existingEmail)) {
@@ -82,15 +85,15 @@ public abstract class User {
     }
     public static boolean checkPassword(String email, String password) throws IOException {
         //check file of emails and passwords for if email already exists
-        BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
+        BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
         while (line != null) {
             //splits line into array
-            String[] loginInfo = line.split(",", 0);
-            //first item is email
-            String fileUser = loginInfo[0];
-            //second item is password
-            String filePassword = loginInfo[1];
+            String[] loginInfo = line.split(",");
+            //second item is email
+            String fileUser = loginInfo[1];
+            //third item is password
+            String filePassword = loginInfo[2];
             //if the given email matches the line in the file
             if (email.equals(fileUser)) {
                 if (password.equals(filePassword)) {
@@ -110,8 +113,8 @@ public abstract class User {
     }
     public void deleteAccount(String email, String password) throws IOException {
         //delete the logins
-        BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
-        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.txt"));
+        BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
+        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv"));
         String combined = email + "," + password;
         String line = bfr.readLine();
         while (line != null) {
@@ -122,7 +125,7 @@ public abstract class User {
     }
     public static int accountType(String username) throws IOException {
         //returns 0 if customer, 1 if seller
-        BufferedReader bfr = new BufferedReader(new FileReader("logins.txt"));
+        BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
         while (line != null && !line.equals("")) {
             String[] loginDetails = line.split(",");
@@ -130,6 +133,7 @@ public abstract class User {
                 if (loginDetails[3].equals("SELLER")) {
                     return 1;
                 } else {
+                    //if customer, return 1
                     return 0;
                 }
             }

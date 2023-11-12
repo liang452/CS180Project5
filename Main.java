@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        File f = new File("logins.txt");
+        File f = new File("logins.csv");
         if (!f.exists()) {
             f.createNewFile();
         }
@@ -18,7 +18,11 @@ public class Main {
             System.out.println("Are you an existing user?");
             existing = scan.nextLine();
             if (!existing.equalsIgnoreCase("no") && !existing.equalsIgnoreCase("yes")) {
-                System.out.println("Incorrect input.");
+                System.out.println("Incorrect input. Try again, or type CANCEL to exit.");
+                String cancel = scan.nextLine();
+                if (cancel.equals("CANCEL")) {
+                    return;
+                }
             }
         } while (!existing.equalsIgnoreCase("no") && !existing.equalsIgnoreCase("yes"));
 
@@ -26,7 +30,7 @@ public class Main {
         String email = "";
         String password = "";
 
-        boolean incorrectInput = false;
+        boolean incorrectInput;
         if (existing.equalsIgnoreCase("no")) {
             do {
                 //username
@@ -35,7 +39,11 @@ public class Main {
                 username = scan.nextLine();
 
                 if (User.isExistingUser(username)) {
-                    System.out.println("That username is taken already.");
+                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
                     incorrectInput = true;
                 }
             } while (incorrectInput);
@@ -47,7 +55,11 @@ public class Main {
 
                 //check if email is already take
                 if (User.isExistingEmail(email)) {
-                    System.out.println("That email is taken already.");
+                    System.out.println("That email is taken already. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
                     incorrectInput = true;
                     email = "";
                 }
@@ -63,7 +75,6 @@ public class Main {
                     incorrectInput = true;
                 }
             } while (incorrectInput);
-            System.out.println("Welcome! You have successfully made an account.");
         } else if (existing.equalsIgnoreCase("yes")) {
             //if user is an existing user
             //email
@@ -71,9 +82,13 @@ public class Main {
                 incorrectInput = false;
                 System.out.println("Input your email:");
                 email = scan.nextLine();
-                //username does not exist
-                if (!User.isExistingUser(email)) {
-                    System.out.println("Not an existing email. Try again.");
+                //email does not exist
+                if (!User.isExistingEmail(email)) {
+                    System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
                     incorrectInput = true;
                 }
             } while(incorrectInput);
@@ -84,7 +99,11 @@ public class Main {
 
                 //if wrong password
                 if (!User.checkPassword(email, password)) {
-                    System.out.println("Wrong password. Try again.");
+                    System.out.println("Wrong password. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
                     incorrectInput = true;
                 }
             } while(incorrectInput);
@@ -92,24 +111,54 @@ public class Main {
         }
 
         //if not existing, instantiates
+        String accountType = "";
         if (existing.equalsIgnoreCase("no")) {
-            System.out.println("Are you a seller or customer?");
-            String type = scan.nextLine();
-            if (type.equalsIgnoreCase("seller")) {
-                Seller user = new Seller(username, email, password);
-            } else if (type.equalsIgnoreCase("customer")){
-                Customer user = new Customer(username, email, password);
-            } else {
-                System.out.println("Please input a valid option.");
-                //put into a do while
-            }
+            do {
+                incorrectInput = false;
+                System.out.println("Are you a seller or customer?");
+                accountType = scan.nextLine();
+                if (!accountType.equalsIgnoreCase("seller") && !accountType.equalsIgnoreCase("customer")) {
+                    System.out.println("Please input a valid option.");
+                    incorrectInput = true;
+                }
+            } while (incorrectInput);
+            System.out.println("Welcome! You have successfully made an account.");
+        }
+        //TODO: if an existing user
+        //KNOWN ISSUE HERE: will keep putting in same logins. FIX.
+        User user;
+        if (User.accountType(username) == 1 || accountType.equalsIgnoreCase("seller")) {
+            user = new Seller(username, email, password);
         } else {
-            //TODO: if an existing user
-            //KNOWN ISSUE HERE: will keep putting in same logins. FIX.
-            if (User.accountType(username) == 1) {
-                Seller user = new Seller(username, email, password);
-            } else {
-                Customer user = new Customer(username, email, password);
+            user = new Customer(username, email, password);
+        }
+
+        if (user instanceof Seller) {
+            if (existing.equalsIgnoreCase("no") || ((Seller) user).getStore().isEmpty()) {
+                do {
+                    incorrectInput = false;
+                    System.out.println("What would you like your store name to be?");
+                    String storeName = scan.nextLine();
+
+                    System.out.println("Please input a .csv file name to upload your products.");
+                    String filename = scan.nextLine();
+
+                    Store storeOne = new Store(storeName, filename);
+                    System.out.println("This is your store: ");
+                    storeOne.displayStore();
+
+                    System.out.println("Is this what you want?");
+                    String ans = scan.nextLine();
+
+                    if (ans.equalsIgnoreCase("yes")) {
+                        ((Seller) user).addStore(storeOne);
+                    } else if (ans.equals("no")) {
+                        incorrectInput = true;
+                    } else {
+                        System.out.println("This is a yes or no question.");
+                        incorrectInput = true;
+                    }
+                } while(incorrectInput);
             }
         }
     }

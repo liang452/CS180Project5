@@ -2,10 +2,10 @@ import java.util.Scanner;
 
 public class Product {
     private String name;
+    private String storeName;
     private String description;
     private int quantity;
     private double price;
-    private String storeName;
 
     public Product(String name, String description, int quantity, double price) {
         this.name = name;
@@ -14,12 +14,12 @@ public class Product {
         this.price = price;
     }
 
-    public Product(String name, String description, String storeName, int quantity, double price) {
+    public Product(String name, String storeName, String description, int quantity, double price) {
         //with storename
         this.name = name;
+        this.storeName = storeName;
         this.description = description;
         this.quantity = quantity;
-        this.storeName = storeName;
         this.price = price;
     }
 
