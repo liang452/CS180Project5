@@ -228,4 +228,3 @@ public class Market {
             }
         } while(loop);
     }
-}

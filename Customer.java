@@ -175,25 +175,6 @@ public class Customer extends User {
 //    }
 
 
-//    public void exportPurchaseHistory(String filename) {
-//        try (FileWriter writer = new FileWriter(filename)) {
-//            for (Order order : pastOrders) {
-//                writer.write("Order ID: " + order.getOrderID() + "\n");
-//                for (ShoppingCartEntry entry : order.getOrderedItems()) {
-//                    writer.write("Store: " + entry.getSeller().getEmail() + "\n");
-//                    writer.write("  Product: " + entry.getProduct().getName() + "\n");
-//                    writer.write("  Quantity: " + entry.getProduct().getQuantity() + "\n");
-//                    writer.write("  Price: $" + entry.getProduct().getPrice() + "\n");
-//                    writer.write("  -------------\n");
-//                }
-//                writer.write("\n");
-//            }
-//            System.out.println("Purchase history exported to " + filename);
-//        } catch (IOException e) {
-//            System.err.println("Error exporting purchase history: " + e.getMessage());
-//        }
-//    }
-
 //    private List<StoreStatistics> getStoresSortedByProductsSold() {
 //        List<StoreStatistics> storeStatisticsList = new ArrayList<>();
 //
@@ -214,13 +195,12 @@ public class Customer extends User {
 // I wrote some code below for the methods above, you can use it 
 // when you write the class
 
-/*
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
+/* import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 public class Customer extends User {
     private List<ShoppingCartEntry> shoppingCart;
     private List<Order> pastOrders;
@@ -230,7 +210,7 @@ public class Customer extends User {
         this.shoppingCart = new ArrayList<>();
         this.pastOrders = new ArrayList<>();
     }
-
+    
     public void removeFromShoppingCart(Seller seller, Product product) {
         ShoppingCartEntry entryToRemove = null;
         for (ShoppingCartEntry entry : shoppingCart) {
@@ -274,6 +254,8 @@ public class Customer extends User {
         }
     }
 
+    // Method to view the shopping cart
+
     public void viewCart() {
         System.out.println("Shopping Cart:");
         for (ShoppingCartEntry entry : shoppingCart) {
@@ -285,9 +267,10 @@ public class Customer extends User {
         }
     }
 
+
     public void viewDashboard() {
-        List<StoreStatistics> storesByProductsSold = getStoresSortedByProductsSold();
-        List<StoreStatistics> storesByCustomerPurchases = getStoresSortedByCustomerPurchases();
+        List<Seller> storesByProductsSold = getStoresSortedByProductsSold();
+        List<Seller> storesByCustomerPurchases = getStoresSortedByCustomerPurchases();
 
         System.out.println("Dashboard:");
         System.out.println("1. Stores by Products Sold:");
@@ -296,125 +279,70 @@ public class Customer extends User {
         displayStores(storesByCustomerPurchases);
     }
 
-    public void exportPurchaseHistory(String filename) {
-        try (FileWriter writer = new FileWriter(filename)) {
-            for (Order order : pastOrders) {
-                writer.write("Order ID: " + order.getOrderID() + "\n");
-                for (ShoppingCartEntry entry : order.getOrderedItems()) {
-                    writer.write("Store: " + entry.getSeller().getEmail() + "\n");
-                    writer.write("  Product: " + entry.getProduct().getName() + "\n");
-                    writer.write("  Quantity: " + entry.getProduct().getQuantity() + "\n");
-                    writer.write("  Price: $" + entry.getProduct().getPrice() + "\n");
-                    writer.write("  -------------\n");
-                }
-                writer.write("\n");
-            }
-            System.out.println("Purchase history exported to " + filename);
-        } catch (IOException e) {
-            System.err.println("Error exporting purchase history: " + e.getMessage());
-        }
-    }
-
-    private List<StoreStatistics> getStoresSortedByProductsSold() {
-        List<StoreStatistics> storeStatisticsList = new ArrayList<>();
-
+  
+    private List<Seller> getStoresSortedByProductsSold() {
+        Map<Seller, Integer> productsSoldMap = new HashMap<>();
         for (Order order : pastOrders) {
             for (ShoppingCartEntry entry : order.getOrderedItems()) {
                 Seller seller = entry.getSeller();
-                StoreStatistics storeStatistics = getStoreStatistics(storeStatisticsList, seller);
-                storeStatistics.incrementProductsSold(entry.getProduct().getQuantity());
+                int productsSold = productsSoldMap.getOrDefault(seller, 0);
+                productsSoldMap.put(seller, productsSold + entry.getProduct().getQuantity());
             }
         }
-
-        storeStatisticsList.sort(Comparator.comparingInt(StoreStatistics::getProductsSold).reversed());
-        return storeStatisticsList;
+        List<Map.Entry<Seller, Integer>> list = new ArrayList<>(productsSoldMap.entrySet());
+        list.sort(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
+        List<Seller> sortedStores = new ArrayList<>();
+        for (Map.Entry<Seller, Integer> entry : list) {
+            sortedStores.add(entry.getKey());
+        }
+        return sortedStores;
     }
-
-    private List<StoreStatistics> getStoresSortedByCustomerPurchases() {
-        List<StoreStatistics> storeStatisticsList = new ArrayList<>();
-
+    private List<Seller> getStoresSortedByCustomerPurchases() {
+        Map<Seller, Integer> customerPurchasesMap = new HashMap<>();
         for (Order order : pastOrders) {
             for (ShoppingCartEntry entry : order.getOrderedItems()) {
                 Seller seller = entry.getSeller();
-                StoreStatistics storeStatistics = getStoreStatistics(storeStatisticsList, seller);
-                storeStatistics.incrementCustomerPurchases();
+                int customerPurchases = customerPurchasesMap.getOrDefault(seller, 0);
+                customerPurchasesMap.put(seller, customerPurchases + 1);
             }
         }
-
-        storeStatisticsList.sort(Comparator.comparingInt(StoreStatistics::getCustomerPurchases).reversed());
-        return storeStatisticsList;
-    }
-
-    private StoreStatistics getStoreStatistics(List<StoreStatistics> storeStatisticsList, Seller seller) {
-        for (StoreStatistics storeStatistics : storeStatisticsList) {
-            if (storeStatistics.getSeller().equals(seller)) {
-                return storeStatistics;
-            }
+        List<Map.Entry<Seller, Integer>> list = new ArrayList<>(customerPurchasesMap.entrySet());
+        list.sort(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
+        List<Seller> sortedStores = new ArrayList<>();
+        for (Map.Entry<Seller, Integer> entry : list) {
+            sortedStores.add(entry.getKey());
         }
-
-        StoreStatistics newStoreStatistics = new StoreStatistics(seller);
-        storeStatisticsList.add(newStoreStatistics);
-        return newStoreStatistics;
+        return sortedStores;
     }
-
-    private void displayStores(List<StoreStatistics> storeStatisticsList) {
-        for (StoreStatistics storeStatistics : storeStatisticsList) {
-            Seller seller = storeStatistics.getSeller();
-            System.out.println("Store: " + seller.getEmail());
-            System.out.println("  Products Sold: " + storeStatistics.getProductsSold());
-            System.out.println("  Customer Purchases: " + storeStatistics.getCustomerPurchases());
+    private void displayStores(List<Seller> stores) {
+        for (Seller store : stores) {
+            System.out.println("Store: " + store.getEmail());
+            System.out.println("  Products Sold: " + getProductsSoldByStore(store));
+            System.out.println("  Customer Purchases: " + getCustomerPurchasesByStore(store));
             System.out.println("  -------------");
         }
     }
-
-    private static class StoreStatistics {
-        private Seller seller;
-        private int productsSold;
-        private int customerPurchases;
-
-        public StoreStatistics(Seller seller) {
-            this.seller = seller;
-            this.productsSold = 0;
-            this.customerPurchases = 0;
+    private int getProductsSoldByStore(Seller store) {
+        int productsSold = 0;
+        for (Order order : pastOrders) {
+            for (ShoppingCartEntry entry : order.getOrderedItems()) {
+                if (entry.getSeller().equals(store)) {
+                    productsSold += entry.getProduct().getQuantity();
+                }
+            }
         }
-
-        public Seller getSeller() {
-            return seller;
-        }
-
-        public int getProductsSold() {
-            return productsSold;
-        }
-
-        public int getCustomerPurchases() {
-            return customerPurchases;
-        }
-
-        public void incrementProductsSold(int quantity) {
-            this.productsSold += quantity;
-        }
-
-        public void incrementCustomerPurchases() {
-            this.customerPurchases++;
-        }
+        return productsSold;
     }
-
-    private static class ShoppingCartEntry {
-        private Seller seller;
-        private Product product;
-
-        public ShoppingCartEntry(Seller seller, Product product) {
-            this.seller = seller;
-            this.product = product;
+    private int getCustomerPurchasesByStore(Seller store) {
+        int customerPurchases = 0;
+        for (Order order : pastOrders) {
+            for (ShoppingCartEntry entry : order.getOrderedItems()) {
+                if (entry.getSeller().equals(store)) {
+                    customerPurchases++;
+                }
+            }
         }
-
-        public Seller getSeller() {
-            return seller;
-        }
-
-        public Product getProduct() {
-            return product;
-        }
+        return customerPurchases;
     }
 }
 */
