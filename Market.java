@@ -151,41 +151,81 @@ public class Market {
             if (input.equals("1")) {
                 do {
                     System.out.println("What would you like your new email to be? Type CANCEL to return.");
-                    String emailInput = scan.nextLine();
-                    valid = Util.isValidEmail(emailInput);
-                    if (!valid) { //if invalid email
+                    String newEmail = scan.nextLine();
+                    valid = Util.isValidEmail(newEmail);
+                    if (newEmail.equals("CANCEL")) { //if invalid email
+                        valid = true;
+                        repeat = true;
+                    } else if (!valid) {
                         System.out.println("Please input a valid email.");
-                    } else if (emailInput.equals("CANCEL")) {
-                        break;
                     } else {
                         //TODO: change email in files.
+                        repeat = true;
+                        User.editEmail(email, newEmail);
+                        System.out.println("Successfully changed!");
                     }
                 } while(!valid);
             } else if (input.equals("2")) {
                 System.out.println("What would you like your new password to be?");
             } else if (input.equals("3")) {
-
+                System.out.println("What would you like your new username to be?");
+                String newUser = scan.nextLine();
+                User.editUsername(username, newUser);
+                System.out.println("Successfully changed!");
+                repeat = true;
             } else if (input.equals("4")) {
                 System.out.println("Are you sure?");
                 String sure = scan.nextLine();
                 if (!Util.yesNo(sure)) {
                     System.out.println("OK! Returning to menu...");
-                    break;
+                    repeat = false;
+                } else {
+                    User.deleteAccount(username, email, password);
+                    System.out.println("Account successfully deleted!");
+                    System.out.println("Logging you out...");
+                    return false;
                 }
-                User.deleteAccount(username, email, password);
-                System.out.println("Account successfully deleted!");
-                System.out.println("Logging you out...");
-                return false;
             } else if (input.equals("5")) {
 
             }
         } while (repeat);
         return true;
     }
-    public void editProductsMenu() {
-        System.out.println("1 - Create a New Product");
-        System.out.println("2 - Edit an Existing Product");
-        System.out.println("3 - Delete a Product");
-        System.out.println("4 - Return");
+    public void editProductsMenu(Seller user) {
+        boolean loop;
+        Scanner scan = new Scanner(System.in);
+        do {
+            loop = false;
+            System.out.println("1 - Create a New Product");
+            System.out.println("2 - Edit an Existing Product");
+            System.out.println("3 - Delete a Product");
+            System.out.println("4 - Return");
+            String input = scan.nextLine();
+
+            if (input.equals("1")) {
+                System.out.println("What store would you like to add to?");
+                String storeName = scan.nextLine();
+                Product product = Product.createProductFromUserInput(storeName);
+                System.out.println("Sorry! This function isn't currently implemented.");
+                loop = true;
+            } else if (input.equals("2")) {
+                System.out.println("What product would you like to edit?");
+                String productName = scan.nextLine();
+                System.out.println("Sorry! This function isn't currently implemented.");
+                loop = true;
+            } else if (input.equals("3")) {
+                System.out.println("What product would you like to edit?");
+                String productName = scan.nextLine();
+                //search for product with matching name
+                System.out.println("Sorry! This function isn't currently implemented.");
+                loop = true;
+            } else if (input.equals("4")) {
+                System.out.println("Returning to main menu...");
+                break;
+            } else {
+                System.out.println("Please select a valid option.");
+                loop = true;
+            }
+        } while(loop);
     }
 }
