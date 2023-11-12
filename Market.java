@@ -166,6 +166,12 @@ public class Market {
             } else if (input.equals("3")) {
 
             } else if (input.equals("4")) {
+                System.out.println("Are you sure?");
+                String sure = scan.nextLine();
+                if (!Util.yesNo(sure)) {
+                    System.out.println("OK! Returning to menu...");
+                    break;
+                }
                 User.deleteAccount(username, email, password);
                 System.out.println("Account successfully deleted!");
                 System.out.println("Logging you out...");

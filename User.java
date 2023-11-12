@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 public class User {
     private String email;
@@ -106,14 +107,21 @@ public class User {
     public static void deleteAccount(String username, String email, String password) throws IOException {
         //delete the logins
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
-        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv"));
-        String combined = username + "," + email + "," + password;
         String line = bfr.readLine();
+        ArrayList<String> loginDetails = new ArrayList<>();
         while (line != null) {
-            if (!line.equals(combined)) {
+            loginDetails.add(line);
+            line = bfr.readLine();
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv")); //overwrite old logins.csv file
+        String combined = username + "," + email + "," + password;
+        for (String details : loginDetails) {
+            if (!details.equals(combined)) { //if line does not match
                 bw.write(line);
             }
         }
+        File f = new File(username + ".csv");
+        f.delete();
     }
     public static int accountType(String username) throws IOException {
         //returns 0 if customer, 1 if seller

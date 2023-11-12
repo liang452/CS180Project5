@@ -15,10 +15,10 @@ public class Seller extends User {
         this.stores = new ArrayList<Store>();
         File f = new File(username + ".csv");
         if (f.exists()) {
-            BufferedReader bfr = new BufferedReader(new FileReader(username));
+            BufferedReader bfr = new BufferedReader(new FileReader(username+ ".csv"));
             String line = bfr.readLine();
             //TODO
-            while (line != null && !line.equals("") && Util.isNumeric(line)) {
+            while (line != null && !line.equals("")) {
                 String[] storeDetails = line.split(";");
                 Store storeSaver = new Store(storeDetails[1]); //storename
                 for (int i = 2; i < storeDetails.length; i++) {
@@ -43,7 +43,8 @@ public class Seller extends User {
 
     public boolean exportToFile() throws IOException {
         //logins.csv:
-        if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) {
+        if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) { //if it's not an
+            // existing username or email - TESTED, WORKS
             try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
                 bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "SELLER");
@@ -56,29 +57,32 @@ public class Seller extends User {
         try {
             //file with username should have been created when account was created
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.getUsername() + ".csv"));
+            //overwrites file every time
             String storeString = "";
-            //every line with a store starts with an integer from 0
-            //0,Nike,running shoes,soft and comfortable,200,12.99,tennis shoes, etc
-            //1;Costco;sweater;warm and cozy;200;5.99; etc
-            for (int i = 0; i < this.stores.size(); i++) { //loops through entire list of stores
-                storeString += i;
-                storeString += ",";
-                storeString += stores.get(i).getName();
-                storeString += ",";
-                //products of store
-                ArrayList<Product> productList = stores.get(i).getProducts();
-                for (int j = 0; j < productList.size(); j++) {
-                    storeString += productList.get(j).getName();
+            ArrayList<String> allStoreDetails = new ArrayList<>();
+            //lists products
+            //TODO: a way to read this in. add way to read multiple stores into importFile method.
+            for (Store store : this.stores) { //loops through entire list of stores
+                ArrayList<Product> looper = store.getProducts();
+                for (Product product : looper) {
+                    storeString += product.getName();
                     storeString += ",";
-                    storeString += productList.get(j).getDescription();
+                    storeString += store.getName();
                     storeString += ",";
-                    storeString += productList.get(j).getQuantity();
+                    storeString += product.getDescription();
                     storeString += ",";
-                    storeString += productList.get(j).getPrice();
+                    storeString += product.getQuantity();
+                    storeString += ",";
+                    storeString += product.getPrice();
+                    System.out.println("Store: " + storeString);
+                    allStoreDetails.add(storeString);
+                    storeString = "";
                 }
-                bw.write(storeString);
-                storeString = "";
             }
+            for (String string : allStoreDetails) {
+                bw.write(string);
+            }
+            bw.close();
             return true;
         } catch (IOException e) {
             return false;

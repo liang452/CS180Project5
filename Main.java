@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 /*
@@ -142,23 +143,27 @@ public class Main {
                     String input = scan.nextLine();
                     System.out.println("What would you like your store name to be?");
                     String storeName = scan.nextLine();
-                    Store store = new Store(storeName);
-
+                    ArrayList<Product> products = new ArrayList<>();
+                    Store store;
                     if (Util.yesNo(input)) {
-                        boolean repeat = false;
+                        boolean repeat;
                         do {
-                            store.addProduct(Product.createProductFromUserInput(storeName));
+                           products.add(Product.createProductFromUserInput(storeName));
                             System.out.println("Would you like to create another product?");
                             repeat = Util.yesNo(scan.nextLine());
                         } while(repeat);
-
+                        store = new Store(storeName, products);
                     } else {
                         System.out.println("Please input a .csv file name to upload your products.");
                         String filename = scan.nextLine();
                         boolean checker;
                         do {
-                            checker = store.importProducts(filename);
-                        } while (!checker);
+                            store = new Store(filename);
+                            checker = true;
+                            if (!store.getProducts().isEmpty()) {
+                                checker = false;
+                            }
+                        } while(checker);
                         System.out.println("Successfully imported!");
                     }
                     store.displayStore();
@@ -170,7 +175,7 @@ public class Main {
                         //TODO: write out to file
                         //and done with initial creation of store!
                         ((Seller) user).addStore(store);
-                        ((Seller) user).exportToFile();
+                        ((Seller) user).exportToFile(); //TODO: fix this
                         System.out.println("Successfully saved!");
                     } else {
                         System.out.println("Returning to editing stage...");
