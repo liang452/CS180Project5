@@ -97,17 +97,17 @@ public class User {
         //if not found, return false. if no email matches or password matches.
         return false;
     }
-    public boolean editUsername() {
+    public static boolean editUsername() {
         return true;
     }
-    public void editPassword(String newPassword) {
+    public static void editPassword(String newPassword) {
         //TODO
     }
-    public void deleteAccount(String email, String password) throws IOException {
+    public static void deleteAccount(String username, String email, String password) throws IOException {
         //delete the logins
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv"));
-        String combined = email + "," + password;
+        String combined = username + "," + email + "," + password;
         String line = bfr.readLine();
         while (line != null) {
             if (!line.equals(combined)) {

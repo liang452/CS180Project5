@@ -215,7 +215,11 @@ public class Main {
                     //view past purchases
                 } else if (input.equals("5")) {
                     //print out account details
-                    Market.editAccountMenu(username, email, password);
+                    boolean deleted = Market.editAccountMenu(username, email, password);
+                    if (deleted) {
+                        input = "0";
+                        break;
+                    }
                     System.out.println("1 - Continue Editing Account");
                     System.out.println("2 - Return to Main Menu");
                     //TODO
