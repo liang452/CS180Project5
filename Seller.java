@@ -10,26 +10,82 @@ import java.util.List;
  */
 
 public class Seller extends User {
+    private ArrayList<Store> stores;
+    private ArrayList<Product> sales;
+    //private ArrayList<Product> customerShoppingCarts;
 
-    private List<Product> products;
+	// private List<CustomerShoppingCartEntry> customerShoppingCarts;
+
+    //private List<Product> products;
     private List<Sale> sales;
     private List<CustomerShoppingCartEntry> customerShoppingCarts;
 
     public Seller(String username, String email, String password) throws IOException {
         super(username, email, password);
-        File f = new File(username);
+
+        File f = new File("logins.txt");
         if (!f.exists()) {
             f.createNewFile();
-            BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
-            bw.write("SELLER");
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter("logins.txt", true));
+        bw.write(username + "," + email + "," + password + "," + "SELLER");
+        bw.write("\n");
+        bw.close();
+
+        f = new File(username);
+        if (!f.exists()) {
+            f.createNewFile();
+            bw = new BufferedWriter(new FileWriter(f, true));
+            /*
+             * file format -
+             * store list
+             * sales list - one big list
+             * customer shopping carts list
+             */
+			this.stores = new ArrayList<Store>();
+        } else {
+            BufferedReader bfr = new BufferedReader(new FileReader(username));
+            String line = bfr.readLine();
+            //TODO
         }
     }
-    //TODO: decide what to return there
-    public Store getStore() {
-        return new Store("");
+    public Seller getSeller() {
+        return this;
     }
-    public void setStore() {
+    //TODO: decide what to return there
+    public ArrayList<Store> getStore() {
+        return this.stores;
+    }
+    public void setStore(String name, String filename) throws IOException {
+        this.stores.add(new Store(name, filename));
+    }
 
+    public void exportToFile() throws IOException {
+        //file with username should have been created when account was created
+        BufferedWriter bw = new BufferedWriter(new FileWriter(this.getUsername()));
+        bw.write("SELLER");
+        bw.write("*");
+        String storeString = "";
+        //every line with a store starts with an integer from 0
+        //0;Nike;running shoes;soft and comfortable;200,12.99;tennis shoes, etc
+        //1;Costco;sweater;warm and cozy;200;5.99; etc
+        for (int i = 0; i < this.stores.size(); i++) {
+            storeString += i;
+            storeString += ";";
+            storeString += stores.get(i).getName();
+            storeString += ";";
+            //products of store
+            ArrayList<Product> storeProducts = stores.get(i).getProducts();
+            for (int j = 0; j < storeProducts.size(); j++) {
+                storeString += storeProducts.get(j).getName();
+                storeString += ";";
+                storeString += storeProducts.get(j).getDescription();
+                storeString += ";";
+                storeString += storeProducts.get(j).getQuantity();
+                storeString += ";";
+            }
+            bw.write(storeString);
+        }
     }
 
     public void viewCustomerShoppingCarts() {
@@ -42,8 +98,54 @@ public class Seller extends User {
             System.out.println("  Quantity: " + product.getQuantity());
             System.out.println("  Price: $" + product.getPrice());
             System.out.println("  -------------");
+
+        }
+        bw.write("*");
+        //write out sales in same way - sort by store
+        String saleString = "";
+        for (int i = 0; i < sales.size(); i++) {
+            saleString = sales.get(i).getStore();
+        }
+        bw.close();
+    }
+
+    public void viewSales() {
+        if (this.sales.isEmpty()) {
+            System.out.println("You have made no sales.");
+            return;
+        }
+        for (int i = 0; i < this.sales.size(); i++) {
+            //sales by store
         }
     }
+    }
+//    public void viewCustomerShoppingCarts() {
+//        System.out.println("Customer Shopping Carts:");
+//        for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
+//            Customer customer = entry.getCustomer();
+//            Product product = entry.getProduct();
+//            System.out.println("Customer: " + customer.getEmail());
+//            System.out.println("  Product: " + product.getName());
+//            System.out.println("  Quantity: " + product.getQuantity());
+//            System.out.println("  Price: $" + product.getPrice());
+//            System.out.println("  -------------");
+//        }
+//    }
+//
+//
+//
+//    public void makeSale(Customer customer, Product product, int quantity) {
+//        if (products.contains(product) && product.getQuantity() >= quantity) {
+//            product.updateQuantity(quantity); // Update the quantity of the product
+//            Sale sale = new Sale(customer, product, quantity);
+//            sales.add(sale); // Add the sale to the list
+//            updateCustomerShoppingCarts(sale);
+//            System.out.println("Sale successful!");
+//        } else {
+//            System.out.println("Product not found or insufficient quantity available.");
+//        }
+//    }
+//}
 
     public void viewDashboard() {
         List<CustomerStatistics> customerStats = getCustomerStats();
