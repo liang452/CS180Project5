@@ -262,11 +262,7 @@ public class Main {
                     String edit = scan.nextLine();
                     if (Util.yesNo(edit)) {
                         String storeToEdit = ((Seller) user).getStore().get(0).getName();
-                        market.editProductsMenu();
-                        if (((Seller) user).getStore().size() > 1) {
-                            System.out.println("What store would you like to edit?");
-                            String storeName = scan.nextLine();
-                        }
+                        market.editProductsMenu((Seller) user);
                     }
                 } else if (input.equals("2")) {
 
