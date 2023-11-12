@@ -6,7 +6,7 @@ import java.util.Comparator;
 
 public class Customer extends User {
 
-    private ArrayList<Product> cart;
+    public ArrayList<Product> cart;
     private ArrayList<Product> pastPurchases;
 //    private List<Order> pastOrders;
 
