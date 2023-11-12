@@ -1,29 +1,197 @@
-package src;/*
- */
-
-import java.io.IOException;
+import java.io.*;
+import java.nio.Buffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Comparator;
 
 public class Customer extends User {
-    public Customer(String email, String password) throws IOException {
-        super(email, password);
-    }
-    public void purchase() {
+
+    private ArrayList<Product> cart;
+    private ArrayList<Product> pastPurchases;
+//    private List<Order> pastOrders;
+
+    public Customer(String username, String email, String password) throws IOException {
+        super(username, email, password);
+        this.cart = new ArrayList<>();
+        this.pastPurchases = new ArrayList<>();
+
+        //FORMAT OF FILE:
+        /*
+         * CART - separate items separated by semicolons, separate item details separated by commas
+         * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
+         */
+
+        //if existing customer:
+        if (User.isExistingUser(username) && User.isExistingEmail(email)) {
+            BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
+            bfr.readLine();
+            String line = bfr.readLine(); // cart line
+            if (line != null && !line.equals("")) {
+                String[] cartArray = line.split(";"); //splits into separate items
+                for (int i = 0; i < cartArray.length; i++) {
+                    String[] productArray = cartArray[i].split(",");
+                    this.cart.add(new Product(productArray[0], productArray[1],
+                            productArray[2], Integer.parseInt(productArray[3]),
+                            Double.parseDouble(productArray[4])));
+                }
+            }
+
+            line = bfr.readLine(); //third line - pastPurchases
+            if (line != null && !line.equals("")) {
+                String[] cartArray = line.split(";"); //splits into separate items
+                for (int i = 0; i < cartArray.length; i++) {
+                    String[] productArray = cartArray[i].split(",");
+                    this.pastPurchases.add(new Product(productArray[0], productArray[1], Integer.parseInt(productArray[2]),
+                            Double.parseDouble(productArray[3])));
+                }
+            }
+        }
 
     }
-    public void addToCart() {
 
+    public boolean purchase(Product product, int quantity) {
+        //TODO
+        return true;
     }
-    public void pastPurchases() {
 
+    public void addToCart(Product product, int quantity) {
+        Product cartProduct = product;
+        cartProduct.setQuantity(quantity);
+        cart.add(cartProduct);
     }
+
+    public boolean removeFromCart(Product product, int quantity) {
+        for (int i = 0; i < cart.size(); i++) {
+            if (product.equals(cart.get(i))) {//fix
+                //if quantity is equal to the amount in cart, remove item entirely
+                if (quantity == product.getQuantity()) {
+                    cart.remove(i);
+                    return true;
+                } else if (quantity < cart.get(i).getQuantity()) {
+                    //saves product
+                    Product cartProduct = cart.get(i);
+                    cart.remove(i);
+                    cartProduct.removeQuantity(quantity);
+                    cart.add(cartProduct);
+                    return true;
+                } else if (quantity > cart.get(i).getQuantity() || quantity <= 0) {
+                    throw new InvalidQuantityError();
+                }
+            }
+        }
+        System.out.println("Product not found in shopping cart.");
+        return false;
+    }
+
+    public void purchaseShoppingCart() {
+        //TODO
+    }
+
+    public void getPastPurchases() {
+        if (pastPurchases.isEmpty()) {
+            System.out.println("You have made no purchases before.");
+            return;
+        }
+        System.out.println("Past Purchases: \n" + "-------");
+        for (int i = 0; i < this.pastPurchases.size(); i++) {
+            System.out.println("Product: " + this.pastPurchases.get(i).getName());
+            System.out.println("Store: " + this.pastPurchases.get(i).getStore());
+            System.out.println("Description: " + this.pastPurchases.get(i).getDescription());
+            System.out.println("Quantity: " + this.pastPurchases.get(i).getQuantity());
+            System.out.println("Price: $" + this.pastPurchases.get(i).getPrice());
+            System.out.println("-------\n");
+        }
+    }
+
     public void viewCart() {
+        if (cart.isEmpty()) {
+            System.out.println("Your shopping cart is empty.");
+            return;
+        }
+        System.out.println("Your Shopping Cart: ");
+        for (int i = 0; i < cart.size(); i++) {
+            System.out.println("Product: " + this.cart.get(i).getName());
+            System.out.println("Store: " + this.cart.get(i).getStore());
+            System.out.println("Description: " + this.cart.get(i).getDescription());
+            System.out.println("Quantity: " + this.cart.get(i).getQuantity());
+            System.out.println("Price: $" + this.cart.get(i).getPrice());
+            System.out.println("-------\n");
+        }
+    }
+    public void exportToFile() throws IOException {
+        //TODO
+        //export cart
+        //export pastpurchases
+        if (!User.isExistingUser(this.getUsername())) {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
+            bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "CUSTOMER");
+            bw.write("\n");
+            bw.close();
+        }
+        File f = new File(this.getUsername() + ".csv");
+        if (!f.exists()) {
+            f.createNewFile();
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
+        //write in cart data
+    }
+
+    public boolean exportPastPurchases(String filename) throws IOException {
+        //exports to a file
+        File f = new File(filename);
+        if (f.exists()) {
+            System.out.println("This file already exists.");
+            return false;
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+        for (int i = 0; i < pastPurchases.size(); i++) {
+            String name = pastPurchases.get(i).getName();
+            String storeName = pastPurchases.get(i).getStore();
+            String description = pastPurchases.get(i).getDescription();
+            int quantityBought = pastPurchases.get(i).getQuantity();
+            double price = pastPurchases.get(i).getPrice();
+            bw.write(name + "," + storeName + "," + description + "," + quantityBought + ","+ price);
+        }
+        bw.close();
+        return true;
+    }
+
+    public void storesByProductsSold() {
+        //TODO
+        System.out.println("Stores sorted by number of products sold: ");
 
     }
-    public void viewDashBord() {
-        //dashboard
-    }
-
 }
+    
+//    public void viewDashboard() {
+//        List<StoreStatistics> storesByProductsSold = getStoresSortedByProductsSold();
+//        List<StoreStatistics> storesByCustomerPurchases = getStoresSortedByCustomerPurchases();
+//
+//        System.out.println("Dashboard:");
+//        System.out.println("1. Stores by Products Sold:");
+//        displayStores(storesByProductsSold);
+//        System.out.println("\n2. Stores by Customer Purchases:");
+//        displayStores(storesByCustomerPurchases);
+//    }
+
+
+
+//    private List<StoreStatistics> getStoresSortedByProductsSold() {
+//        List<StoreStatistics> storeStatisticsList = new ArrayList<>();
+//
+//        for (Order order : pastOrders) {
+//            for (ShoppingCartEntry entry : order.getOrderedItems()) {
+//                Seller seller = entry.getSeller();
+//                StoreStatistics storeStatistics = getStoreStatistics(storeStatisticsList, seller);
+//                storeStatistics.incrementProductsSold(entry.getProduct().getQuantity());
+//            }
+//        }
+//
+//        storeStatisticsList.sort(Comparator.comparingInt(StoreStatistics::getProductsSold).reversed());
+//        return storeStatisticsList;
+//    }
+//}
+
 
 // I wrote some code below for the methods above, you can use it 
 // when you write the class
