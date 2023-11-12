@@ -175,7 +175,6 @@ public class Customer extends User {
 //    }
 
 
-
 //    private List<StoreStatistics> getStoresSortedByProductsSold() {
 //        List<StoreStatistics> storeStatisticsList = new ArrayList<>();
 //
@@ -205,11 +204,13 @@ import java.util.Map;
 public class Customer extends User {
     private List<ShoppingCartEntry> shoppingCart;
     private List<Order> pastOrders;
+
     public Customer(String email, String password) {
         super(email, password);
         this.shoppingCart = new ArrayList<>();
         this.pastOrders = new ArrayList<>();
     }
+    
     public void removeFromShoppingCart(Seller seller, Product product) {
         ShoppingCartEntry entryToRemove = null;
         for (ShoppingCartEntry entry : shoppingCart) {
@@ -225,16 +226,19 @@ public class Customer extends User {
             System.out.println("Product not found in the shopping cart.");
         }
     }
+
     public void purchase() {
         Order newOrder = new Order(this, shoppingCart);
         pastOrders.add(newOrder);
         shoppingCart.clear();
         System.out.println("Purchase completed!");
     }
+
     public void addToShoppingCart(Seller seller, Product product) {
         shoppingCart.add(new ShoppingCartEntry(seller, product));
         System.out.println("Product added to the shopping cart!");
     }
+
     public void pastPurchases() {
         System.out.println("Past Purchases:");
         for (Order order : pastOrders) {
@@ -249,7 +253,9 @@ public class Customer extends User {
             System.out.println();
         }
     }
+
     // Method to view the shopping cart
+
     public void viewCart() {
         System.out.println("Shopping Cart:");
         for (ShoppingCartEntry entry : shoppingCart) {
@@ -260,15 +266,20 @@ public class Customer extends User {
             System.out.println("  -------------");
         }
     }
+
+
     public void viewDashboard() {
         List<Seller> storesByProductsSold = getStoresSortedByProductsSold();
         List<Seller> storesByCustomerPurchases = getStoresSortedByCustomerPurchases();
+
         System.out.println("Dashboard:");
         System.out.println("1. Stores by Products Sold:");
         displayStores(storesByProductsSold);
         System.out.println("\n2. Stores by Customer Purchases:");
         displayStores(storesByCustomerPurchases);
     }
+
+  
     private List<Seller> getStoresSortedByProductsSold() {
         Map<Seller, Integer> productsSoldMap = new HashMap<>();
         for (Order order : pastOrders) {

@@ -105,7 +105,7 @@ public class Seller extends User {
                 }
             }
             for (String string : allStoreDetails) {
-                bw.write(string);
+                bw.write(string + "\n");
             }
             bw.close();
             return true;
@@ -114,20 +114,19 @@ public class Seller extends User {
         }
     }
 
-    public void displayProductsByStore() {
-        for (Store store : stores) {
+    public void displayProducts() {
+        for (Store store : this.stores) {
             ArrayList<Product> products = store.getProducts();
-            System.out.println(store.getName().toUpperCase());
-            System.out.println("PRODUCTS:");
             for (Product product : products) {
-                System.out.println("\n" + product.getName());
-                System.out.println(product.getDescription());
-                System.out.println(product.getQuantity());
-                System.out.println(product.getPrice());
+                System.out.println(product.getName());
+                System.out.println("Description: " + product.getDescription());
+                System.out.println("Associated Store: " + product.getStore());
+                System.out.println("Amount in Stock: " + product.getQuantity());
+                System.out.println("$" + product.getPrice() + "\n");
             }
         }
     }
-
+       
     public void viewCustomerShoppingCarts() throws IOException{
         System.out.println("Customer Shopping Carts:");
         for (CustomerShoppingCartEntry entry : customerShoppingCarts) {
@@ -159,18 +158,5 @@ public class Seller extends User {
             System.out.println("  Total Revenue: $" + totalRevenue);
             System.out.println("  -------------");
         }
-
-
-//
-//    public void makeSale(Customer customer, Product product, int quantity) {
-//        if (products.contains(product) && product.getQuantity() >= quantity) {
-//            product.updateQuantity(quantity); // Update the quantity of the product
-//            Sale sale = new Sale(customer, product, quantity);
-//            sales.add(sale); // Add the sale to the list
-//            updateCustomerShoppingCarts(sale);
-//            System.out.println("Sale successful!");
-//        } else {
-//            System.out.println("Product not found or insufficient quantity available.");
-//        }
-//    }
-//}
+    }
+}

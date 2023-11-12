@@ -7,6 +7,14 @@ public class Product {
     private int quantity;
     private double price;
 
+
+    public Product(String name, String description, int quantity, double price) {
+        this.name = name;
+        this.description = description;
+        this.quantity = quantity;
+        this.price = price;
+    }
+  
     public Product(String name, String store, String description, int quantity, double price) {
         this.name = name;
         this.store = store;
@@ -16,15 +24,16 @@ public class Product {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+
     public String getStore() {
-        return store;
+        return this.store;
     }
 
     public void setStore(String store) {
@@ -32,7 +41,7 @@ public class Product {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
@@ -43,8 +52,14 @@ public class Product {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+
+    public void setQuantity(int newQuantity) {
+        if (newQuantity >= 0) {
+            this.quantity = newQuantity;
+        } else {
+            throw new InvalidQuantityError();
+        }
+
     }
 
     public double getPrice() {
@@ -56,25 +71,31 @@ public class Product {
     }
 
     public void displayProductInfo() {
-        System.out.println("Product: " + name);
-        System.out.println("Store: " + store);
-        System.out.println("Description: " + description);
-        System.out.println("Quantity: " + quantity);
-        System.out.println("Price: $" + price);
+        System.out.println("Product: " + this.name);
+        System.out.println("Store: " + this.store);
+        System.out.println("Description: " + this.description);
+        System.out.println("Quantity: " + this.quantity);
+        System.out.println("Price: $" + this.price);
     }
-
-    public void updateQuantity(int purchasedQuantity) {
+  
+    //TODO: add other ways to change product quantity : added setquantity
+    public int removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
-            quantity -= purchasedQuantity;
-            System.out.println("Purchase successful!");
+            this.quantity -= purchasedQuantity;
+            return this.quantity;
         } else {
-            System.out.println("Not enough quantity available.");
+            throw new InvalidQuantityError();
         }
     }
+    public int addQuantity(int amountToAdd) {
+        if (amountToAdd <= 0) {
+            throw new InvalidQuantityError();
+        }
+        this.quantity += amountToAdd;
+        return this.quantity;
+    }
 
-    public static Product createProductFromUserInput() {
-        Scanner scanner = new Scanner(System.in);
-
+    public static Product createProductFromUserInput(String storeName) {
         System.out.println("Enter product name:");
         String name = scanner.nextLine();
 
@@ -82,14 +103,37 @@ public class Product {
         String store = scanner.nextLine();
 
         System.out.println("Enter product description:");
+
         String description = scanner.nextLine();
 
         System.out.println("Enter quantity available:");
         int quantity = scanner.nextInt();
+        scanner.nextLine();
 
         System.out.println("Enter price:");
         double price = scanner.nextDouble();
 
+        return new Product(name, storeName, description, quantity, price);
+    }
+      
+    public boolean equals(Product product) {
+        if (this.getName().equals(product.getName())
+                && this.getPrice() == product.getPrice()
+                && this.getDescription().equals(product.getDescription())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+      
+    public String toCSVFormat(Product product) {
+        String name = this.getName();
+        String storeName = this.getStore();
+        String description = this.getDescription();
+        String quantity = Integer.toString(this.getQuantity());
+        String price = Double.toString(this.getPrice());
+        String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
+        return csv;
         return new Product(name, store, description, quantity, price);
     }
 }
