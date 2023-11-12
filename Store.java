@@ -1,16 +1,22 @@
 import java.io.*;
+import java.sql.Array;
 import java.util.ArrayList;
 public class Store {
     private String name;
     private ArrayList<Product> products;
     private String seller;
 
+    public Store(String name) {
+        this.name = name;
+        this.products = new ArrayList<>();
+    }
+
     public Store(String name, ArrayList<Product> products) {
         //declares without file; manually adds products later
         this.name = name;
         this.products = products;
     }
-    public Store(String filename) throws IOException {
+    public Store(String name, String filename) throws IOException {
         //read name from file
         this.importProducts(filename);
 
@@ -48,6 +54,9 @@ public class Store {
             System.out.println("Please input a valid file.");
             return false;
         }
+    }
+    public void exportProducts() {
+
     }
 
     public void removeProduct(String productName) {

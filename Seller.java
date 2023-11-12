@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /*
  */
@@ -13,19 +14,44 @@ public class Seller extends User {
     public Seller(String username, String email, String password) throws IOException {
         super(username, email, password);
         this.stores = new ArrayList<Store>();
+
         File f = new File(username + ".csv");
         if (f.exists()) {
             BufferedReader bfr = new BufferedReader(new FileReader(username+ ".csv"));
             String line = bfr.readLine();
-            //TODO
+            //TODO: read in stores
             while (line != null && !line.equals("")) {
-                String[] storeDetails = line.split(";");
-                Store storeSaver = new Store(storeDetails[1]); //storename
-                for (int i = 2; i < storeDetails.length; i++) {
-                    storeSaver.addProduct(new Product(storeDetails[i], storeDetails[i + 1],
-                            Integer.parseInt(storeDetails[i + 2]), Double.parseDouble(storeDetails[i + 3])));
+                String[] productDetails = line.split(",");
+                Store store = new Store(productDetails[1]);
+                for (int i = 0; i < productDetails.length; i += 5) {
+                    String name = productDetails[i];
+                    String storeName = productDetails[i + 1];
+                    String description = productDetails[i + 2];
+                    int quantity = Integer.parseInt(productDetails[i + 3]);
+                    double price = Double.parseDouble(productDetails[i + 4]);
+                    //if store does not match and there is no already existing store with the same name, create new.
+                    if (!storeName.equals(store.getName())) {
+                        if (!Util.isExistingStore(storeName, this.stores)) {
+                            store = new Store(storeName);
+                        } else if (Util.isExistingStore(storeName, this.stores)) {
+                            //if already existing store
+                            //loop through stores list
+                            for (Store currStore : stores) {
+                                if (currStore.getName().equals(storeName)) {
+                                    Store placeholder = currStore;
+                                    placeholder.addProduct((new Product(name, storeName, description, quantity,
+                                            price)));
+                                    stores.remove(currStore);
+                                    stores.add(placeholder);
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        store.addProduct(new Product(name, storeName, description, quantity, price));
+                    }
+                    this.stores.add(store);
                 }
-                stores.add(storeSaver);
                 line = bfr.readLine();
             }
             bfr.close();
@@ -43,8 +69,8 @@ public class Seller extends User {
 
     public boolean exportToFile() throws IOException {
         //logins.csv:
-        if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) { //if it's not an
-            // existing username or email - TESTED, WORKS
+        if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) {
+            //if not an existing username or email
             try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
                 bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "SELLER");
@@ -86,6 +112,20 @@ public class Seller extends User {
             return true;
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    public void displayProductsByStore() {
+        for (Store store : stores) {
+            ArrayList<Product> products = store.getProducts();
+            System.out.println(store.getName().toUpperCase());
+            System.out.println("PRODUCTS:");
+            for (Product product : products) {
+                System.out.println("\n" + product.getName());
+                System.out.println(product.getDescription());
+                System.out.println(product.getQuantity());
+                System.out.println(product.getPrice());
+            }
         }
     }
 

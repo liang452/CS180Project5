@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Comparator;
@@ -14,21 +15,16 @@ public class Customer extends User {
         this.cart = new ArrayList<>();
         this.pastPurchases = new ArrayList<>();
 
-        if (!User.isExistingUser(username)) {
-            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
-            bw.write(username + "," + email + "," + password + "," + "CUSTOMER");
-            bw.write("\n");
-            bw.close();
-        } else {
-            //FORMAT OF FILE:
-            /* CUSTOMER
-             * CART - separate items separated by semicolons, separate item details separated by commas
-             * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
-             */
-            //if existing customer:
+        //FORMAT OF FILE:
+        /*
+         * CART - separate items separated by semicolons, separate item details separated by commas
+         * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
+         */
+
+        //if existing customer:
+        if (User.isExistingUser(username) && User.isExistingEmail(email)) {
             BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
             bfr.readLine();
-
             String line = bfr.readLine(); // cart line
             if (line != null && !line.equals("")) {
                 String[] cartArray = line.split(";"); //splits into separate items
@@ -50,6 +46,7 @@ public class Customer extends User {
                 }
             }
         }
+
     }
 
     public boolean purchase(Product product, int quantity) {
@@ -135,10 +132,22 @@ public class Customer extends User {
             System.out.println("-------\n");
         }
     }
-    public void exportToFile() {
+    public void exportToFile() throws IOException {
         //TODO
         //export cart
         //export pastpurchases
+        if (!User.isExistingUser(this.getUsername())) {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
+            bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "CUSTOMER");
+            bw.write("\n");
+            bw.close();
+        }
+        File f = new File(this.getUsername() + ".csv");
+        if (!f.exists()) {
+            f.createNewFile();
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
+        //write in cart data
     }
 
     public boolean exportPastPurchases(String filename) throws IOException {

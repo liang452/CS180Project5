@@ -19,7 +19,7 @@ public class Market {
         this.sellerNames = new ArrayList<>();
         while (line != null) {
             String[] loginDetails = line.split(",");
-            if (User.accountType(loginDetails[0]) == 1) {
+            if (User.accountType(loginDetails[0]).equals("SELLER")) {
                 this.sellerNames.add(loginDetails[0]);
             }
             line = bfr.readLine();
@@ -181,5 +181,11 @@ public class Market {
             }
         } while (repeat);
         return true;
+    }
+    public void editProductsMenu() {
+        System.out.println("1 - Create a New Product");
+        System.out.println("2 - Edit an Existing Product");
+        System.out.println("3 - Delete a Product");
+        System.out.println("4 - Return");
     }
 }
