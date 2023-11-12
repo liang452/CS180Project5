@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class Market {
     private ArrayList<Product> listedProducts;
     private ArrayList<String> sellerNames;
+
     public Market() throws IOException {
         ArrayList<Product> listedProducts = new ArrayList<>();
         //iterate through logins, find all sellers and their usernames
@@ -48,6 +49,7 @@ public class Market {
             }
         }
     }
+
     public ArrayList<Product> displayAllProducts() {
         //iterate through listedProducts
         for (int i = 0; i < this.listedProducts.size(); i++) {
@@ -118,6 +120,7 @@ public class Market {
         }
         return true;
     }
+
     public ArrayList<Product> searchProducts(String input) {
         ArrayList<Product> matches = new ArrayList<>();
         //loop through listedProducts
@@ -135,6 +138,7 @@ public class Market {
         }
         return matches;
     }
+
     public static boolean editAccountMenu(String username, String email, String password) throws IOException {
         //TODO
         Scanner scan = new Scanner(System.in);
@@ -165,7 +169,7 @@ public class Market {
                         email = newEmail;
                         System.out.println("Successfully changed!");
                     }
-                } while(!valid);
+                } while (!valid);
             } else if (input.equals("2")) {
                 System.out.println("What would you like your new password to be? Type CANCEL to exit.");
                 String newPassword = scan.nextLine();
@@ -203,6 +207,7 @@ public class Market {
         } while (repeat);
         return true;
     }
+
     public void editProductsMenu(Seller user) {
         boolean loop;
         Scanner scan = new Scanner(System.in);
@@ -238,5 +243,6 @@ public class Market {
                 System.out.println("Please select a valid option.");
                 loop = true;
             }
-        } while(loop);
+        } while (loop);
     }
+}

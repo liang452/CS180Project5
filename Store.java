@@ -16,20 +16,25 @@ public class Store {
         this.name = name;
         this.products = products;
     }
+
     public Store(String name, String filename) throws IOException {
         //read name from file
         this.importProducts(filename);
 
     }
+
     public String getName() {
         return this.name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public ArrayList<Product> getProducts() {
         return products;
     }
+
     public boolean importProducts(String fileName) {
         //reads file
         try (BufferedReader bfr = new BufferedReader(new FileReader(fileName))) {
@@ -55,6 +60,7 @@ public class Store {
             return false;
         }
     }
+
     public void exportProducts() {
 
     }
@@ -69,12 +75,12 @@ public class Store {
         }
         System.out.println("Product '" + productName + "' not found in the store.");
     }
-    
+
     public void addProduct(Product product) {
         products.add(product);
         System.out.println("Product '" + product.getName() + "' added to the store.");
     }
-    
+
     public void displayStore() {
         System.out.println("Store Name: " + this.name);
         if (products.isEmpty()) {
@@ -87,3 +93,4 @@ public class Store {
             }
         }
     }
+}
