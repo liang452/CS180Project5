@@ -96,24 +96,25 @@ public class Product {
     }
 
     public static Product createProductFromUserInput(String storeName) {
+        Scanner scan = new Scanner(System.in);
         System.out.println("Enter product name:");
-        String name = scanner.nextLine();
+        String name = scan.nextLine();
 
         System.out.println("Enter store name:");
-        String store = scanner.nextLine();
+        String store = scan.nextLine();
 
         System.out.println("Enter product description:");
 
-        String description = scanner.nextLine();
+        String description = scan.nextLine();
 
         System.out.println("Enter quantity available:");
-        int quantity = scanner.nextInt();
-        scanner.nextLine();
+        int quantity = scan.nextInt();
+        scan.nextLine();
 
         System.out.println("Enter price:");
-        double price = scanner.nextDouble();
+        double price = scan.nextDouble();
 
-        return new Product(name, storeName, description, quantity, price);
+        return new Product(name, store, description, quantity, price);
     }
       
     public boolean equals(Product product) {
