@@ -103,20 +103,6 @@ public class Customer extends User {
         }
     }
 
-    //    public void pastPurchases() {
-//        System.out.println("Past Purchases:");
-//        for (Order order : pastOrders) {
-//            System.out.println("Order ID: " + order.getOrderID());
-//            for (ShoppingCartEntry entry : order.getOrderedItems()) {
-//                System.out.println("Store: " + entry.getSeller().getEmail());
-//                System.out.println("  Product: " + entry.getProduct().getName());
-//                System.out.println("  Quantity: " + entry.getProduct().getQuantity());
-//                System.out.println("  Price: $" + entry.getProduct().getPrice());
-//                System.out.println("  -------------");
-//            }
-//            System.out.println();
-//        }
-//    }
     public void viewCart() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty.");
@@ -170,17 +156,6 @@ public class Customer extends User {
         return true;
     }
 
-    //
-//    public void viewCart() {
-//        System.out.println("Shopping Cart:");
-//        for (ShoppingCartEntry entry : cart) {
-//            System.out.println("Store: " + entry.getSeller().getEmail());
-//            System.out.println("  Product: " + entry.getProduct().getName());
-//            System.out.println("  Quantity: " + entry.getProduct().getQuantity());
-//            System.out.println("  Price: $" + entry.getProduct().getPrice());
-//            System.out.println("  -------------");
-//        }
-//    }
     public void storesByProductsSold() {
         //TODO
         System.out.println("Stores sorted by number of products sold: ");
