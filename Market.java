@@ -204,8 +204,10 @@ public class Market {
                                 System.out.println("How much of this item would you like to add to your cart?");
                                 String amt = scan.nextLine();
                                 if (!Util.isNumeric(amt)) {
+                                    // throw new InvalidInputError();
                                     System.out.println("Please input a number.");
                                 } else if (Integer.parseInt(amt) > viewing.getQuantity() || Integer.parseInt(amt) <= 0) {
+                                    // throw new InvalidQuantityError();
                                     System.out.println("Please input a valid quantity to add to cart.");
                                 } else {
                                     System.out.println(Integer.parseInt(amt));
