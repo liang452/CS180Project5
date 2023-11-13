@@ -2,10 +2,12 @@
 ## How to Run:
 Run Main.
 ### Notes on Formatting:
-Don't use commas in descriptions.
+- Don't use commas in descriptions.
+- When selecting an item from the market list, make sure to match case.
+  
 ## Who Submitted What
 Ashish - Submitted Report on Brightspace.
-
+Ruiwen - Submitted cod on Vocareum
 
 
 ## Documentation
