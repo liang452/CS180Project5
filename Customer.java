@@ -12,7 +12,8 @@ public class Customer extends User {
 
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
-
+        this.cart = new ArrayList<>();
+        this.pastPurchases = new ArrayList<>();
         //FORMAT OF FILE:
         /*
          * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
@@ -22,20 +23,16 @@ public class Customer extends User {
         //if existing customer:
         if (User.isExistingUser(username) && User.isExistingEmail(email)) {
             BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
-            bfr.readLine();
-            String line = bfr.readLine(); // cart line
+            String line = bfr.readLine(); // past purchases line
             if (line != null && !line.isEmpty()) {
                 this.pastPurchases = Util.readCSV(line);
             }
-            line = bfr.readLine(); //third line - pastPurchases
-            if (line != null && !line.equals("")) {
+            line = bfr.readLine(); //cart line
+            if (line != null && !line.isEmpty()) {
                 this.cart = Util.readCSV(line);
             }
-        } else {
-            this.cart = new ArrayList<>();
-            this.pastPurchases = new ArrayList<>();
+            bfr.close();
         }
-
     }
 
     public void addToPastPurchases(Book product, int quantity) {
@@ -48,6 +45,14 @@ public class Customer extends User {
         this.cart.add(product);
         //if already exists in cart, just add quantity onto it?
         //TODO
+    }
+
+    public ArrayList<Book> getCart() {
+        return this.cart;
+    }
+
+    public void setCart(ArrayList<Book> newCart) {
+        this.cart = newCart;
     }
 
     public boolean removeFromCart(String productName, int quantity) {
@@ -74,8 +79,11 @@ public class Customer extends User {
         return false;
     }
 
-    public void purchaseShoppingCart() {
-        //TODO
+    public ArrayList<Book> purchaseShoppingCart() {
+        //TODO - purchase all of cart (aka clears it out) returns the cart.
+        ArrayList<Book> placeholder = this.cart;
+        this.cart = new ArrayList<>();
+        return placeholder;
     }
 
     public void viewPastPurchases() {
@@ -117,23 +125,26 @@ public class Customer extends User {
             bw.write("\n");
             bw.close();
         }
+
         File f = new File(this.getUsername() + ".csv");
         if (!f.exists()) {
             f.createNewFile();
         }
         BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
         //write in cart data
-        String line = "";
-        for (Book cartItem : pastPurchases) {
-            line += cartItem.toCSVFormat();
+        String details = "";
+        for (Book pastItem : pastPurchases) {
+            details += pastItem.toCSVFormat();
         }
-        bw.write(line);
+        bw.write(details);
+        bw.close();
         //write in past purchases
-        line = "";
-        for (Book pastItem : cart) {
-            line += pastItem.toCSVFormat();
+        bw = new BufferedWriter((new FileWriter(f, true))); //appends into file
+        String cartItems = "";
+        for (Book cartProd : cart) {
+            cartItems += cartProd.toCSVFormat();
         }
-        bw.write(line);
+        bw.write(cartItems);
         bw.close();
     }
 

@@ -2,10 +2,10 @@
  */
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public abstract class Util {
     /*
@@ -21,16 +21,25 @@ public abstract class Util {
     }
     /*
      * Checks if input is yes or no, and returns a boolean based on that. Returns true if yes, returns false if no.
-     * Throws an error if neither.
      */
-    public static boolean yesNo(String input) throws InvalidInputError {
-        if (input.equalsIgnoreCase("YES") || input.equalsIgnoreCase("Y")) {
-            return true;
-        } else if (input.equalsIgnoreCase("NO") || input.equalsIgnoreCase("N")) {
-            return false;
-        } else {
-            throw new InvalidInputError("This is a yes or no question.");
-        }
+    public static boolean yesNo() {
+        boolean repeat;
+        boolean checker = false;
+        do {
+            System.out.println("Y/N: ");
+            Scanner scan = new Scanner(System.in);
+            String input = scan.nextLine();
+            repeat = false;
+            if (input.equalsIgnoreCase("YES") || input.equalsIgnoreCase("Y")) {
+                checker = true;
+            } else if (input.equalsIgnoreCase("NO") || input.equalsIgnoreCase("N")) {
+                checker = false;
+            } else {
+                System.out.println("This is a yes or no question.");
+                repeat = true;
+            }
+        } while(repeat);
+        return checker;
     }
     public static boolean isValidEmail(String email) {
         if (!email.contains("@")) {
@@ -81,25 +90,27 @@ public abstract class Util {
                         String storeName = productDetails[i + 4];
                         int quantity = Integer.parseInt(productDetails[i + 5]);
                         double price = Double.parseDouble(productDetails[i + 6]);
-                        books.add(new Book(name, author, genre, storeName, description, quantity, price));
+                        books.add(new Book(name, author, genre, description, storeName, quantity, price));
                     }
                 }
                 line = bfr.readLine();
             }
         } else { //if it's not a filename
-            String[] productDetails = input.split(",");
-            if (productDetails.length != 5) {
-                System.out.println("Please input a properly formatted file.");
-            } else {
-                for (int i = 0; i < productDetails.length; i += 6) {
-                    String name = productDetails[i];
-                    String author = productDetails[i + 1];
-                    String genre = productDetails[i + 2];
-                    String description = productDetails[i + 3];
-                    String storeName = productDetails[i + 4];
-                    int quantity = Integer.parseInt(productDetails[i + 5]);
-                    double price = Double.parseDouble(productDetails[i + 6]);
-                    books.add(new Book(name, author, genre, storeName, description, quantity, price));
+            if (!input.isEmpty()) {
+                String[] productDetails = input.split(",");
+                if (productDetails.length < 7) {
+                    System.out.println("Please input a properly formatted file.");
+                } else {
+                    for (int i = 0; i < productDetails.length; i += 7) {
+                        String name = productDetails[i];
+                        String author = productDetails[i + 1];
+                        String genre = productDetails[i + 2];
+                        String description = productDetails[i + 3];
+                        String storeName = productDetails[i + 4];
+                        int quantity = Integer.parseInt(productDetails[i + 5]);
+                        double price = Double.parseDouble(productDetails[i + 6]);
+                        books.add(new Book(name, author, genre, description, storeName, quantity, price));
+                    }
                 }
             }
         }

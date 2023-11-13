@@ -3,9 +3,9 @@ import java.util.Scanner;
 public class Book {
     private String name;
     private String author;
-    private String store;
     private static Genre genre;
     private String description;
+    private String store;
     private int quantity;
     private double price;
 
@@ -60,8 +60,8 @@ public class Book {
         return this.genre;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setGenre(String genre) {
+        this.genre = readGenre(genre);
     }
 
     public static Genre readGenre(String genreString) {
@@ -69,7 +69,7 @@ public class Book {
         if (genreString.equalsIgnoreCase("FANTASY")) {
             readGenre = Genre.FANTASY;
         } else if (genreString.equalsIgnoreCase("SCIENCE FICTION") ||
-        genreString.equalsIgnoreCase("scifi")) {
+        genreString.equalsIgnoreCase("SCIENCE_FICTION")) {
             readGenre = Genre.SCIENCE_FICTION;
         } else if (genreString.equalsIgnoreCase("HORROR")) {
             readGenre = Genre.HORROR;
@@ -81,7 +81,8 @@ public class Book {
             readGenre = Genre.NONFICTION;
         } else if (genreString.equalsIgnoreCase("ROMANCE")) {
             readGenre = Genre.ROMANCE;
-        } else if (genreString.equalsIgnoreCase("YOUNG ADULT")) {
+        } else if (genreString.equalsIgnoreCase("YOUNG ADULT") ||
+                genreString.equalsIgnoreCase("YOUNG_ADULT")) {
             readGenre = Genre.YOUNG_ADULT;
         } else {
             readGenre = Genre.INVALID_GENRE;
@@ -127,10 +128,10 @@ public class Book {
         System.out.println("Price: $" + this.price);
     }
   
-    //TODO: add other ways to change product quantity : added setquantity
-    public boolean removeQuantity(int removeQuantity) {
-        if (removeQuantity <= quantity) {
-            this.quantity -= removeQuantity;
+    //takes integer as input, removes that amount from the current quantity
+    public boolean removeQuantity(int amount) {
+        if (amount <= quantity) {
+            this.quantity -= amount;
             return true;
         } else {
             return false;
@@ -172,9 +173,8 @@ public class Book {
     }
       
     public boolean equals(Book book) {
-        if (this.getName().equals(book.getName())
-                && this.getPrice() == book.getPrice()
-                && this.getDescription().equals(book.getDescription())) {
+        if (this.getName().equals(book.getName()) && this.getAuthor().equals(book.getAuthor())
+                && (this.getStore().equals(this.getStore()))) {
             return true;
         } else {
             return false;
@@ -183,11 +183,14 @@ public class Book {
       
     public String toCSVFormat() {
         String name = this.getName();
-        String storeName = this.getStore();
+        String author = this.getAuthor();
+        String genre = this.getGenre().name();
         String description = this.getDescription();
+        String storeName = this.getStore();
         String quantity = Integer.toString(this.getQuantity());
         String price = Double.toString(this.getPrice());
-        String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
+        String csv = name + "," +  author + "," + genre + "," + description + "," +
+                storeName + "," + quantity + "," + price;
         return csv;
     }
 
