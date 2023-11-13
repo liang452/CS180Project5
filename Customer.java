@@ -136,7 +136,7 @@ public class Customer extends User {
         for (Book pastItem : pastPurchases) {
             details += pastItem.toCSVFormat();
         }
-        bw.write(details);
+        bw.write(details + "\n");
         bw.close();
         //write in past purchases
         bw = new BufferedWriter((new FileWriter(f, true))); //appends into file
