@@ -1,9 +1,11 @@
 # cs180project4
 ## How to Run:
-Run Main.
+Main.java is where the marketplace is actually implemented.
 ### Notes on Formatting:
 - Don't use commas in descriptions.
 - When selecting an item from the market list, make sure to match case.
+- The seller files list out all of the products they've created
+- The customer class first lists out all past purchases in one line, then all cart items in one line
   
 ## Who Submitted What
 Ashish - Submitted Report on Brightspace.
