@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 /*
@@ -13,104 +12,71 @@ public class Main {
         if (!f.exists()) {
             f.createNewFile();
         }
-
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Welcome!");
-        String existing;
+        String email = "";
+        String username = "";
+        String password = "";
+        boolean existingAccount = false;
+
+        boolean loop;
         do {
-            System.out.println("Are you an existing user?");
-            existing = scan.nextLine();
-            if (!existing.equalsIgnoreCase("no") && !existing.equalsIgnoreCase("yes")) {
+            //initial page
+            System.out.println("1 - Login");
+            System.out.println("2 - Create Account");
+            System.out.println("3 - Exit");
+            String init = scan.nextLine();
+            boolean incorrectInput;
+            loop = false;
+            if (init.equals("1")) {
+                do {
+                    incorrectInput = false;
+                    System.out.println("Input your email:");
+                    email = scan.nextLine();
+                    if (!User.isExistingEmail(email)) {
+                        System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
+                        incorrectInput = true;
+                    } else if (email.equals("CANCEL")) {
+                        return;
+                    }
+                } while (incorrectInput);
+                //password
+                do {
+                    incorrectInput = false;
+                    System.out.println("Input your password: ");
+                    password = scan.nextLine();
+
+                    //if wrong password
+                    if (!User.checkPassword(email, password)) {
+                        System.out.println("Wrong password. Try again, or type CANCEL to exit.");
+                        incorrectInput = true;
+                    } else if (password.equals("CANCEL")) {
+                        return;
+                    }
+                } while (incorrectInput);
+                System.out.println("Logged in successfully. Welcome back!");
+                existingAccount = true;
+            } else if (init.equals("2")) {
+                Market.userInitialization();
+                existingAccount = false;
+            } else if (init.equals("3")) {
+                System.out.println("Have a nice day!");
+                return;
+            } else {
                 System.out.println("Incorrect input. Try again, or type CANCEL to exit.");
                 String cancel = scan.nextLine();
                 if (cancel.equals("CANCEL")) {
                     return;
                 }
+                loop = true;
             }
-        } while (!existing.equalsIgnoreCase("no") && !existing.equalsIgnoreCase("yes"));
-
-        String username = "";
-        String email = "";
-        String password = "";
-
-        boolean incorrectInput;
-        if (!Util.yesNo(existing)) { //if not an existing user
-            do {
-                //username
-                incorrectInput = false;
-                System.out.println("Input your username: ");
-                String user = scan.nextLine();
-                if (User.isExistingUser(username)) {
-                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
-                    incorrectInput = true;
-                }
-                username = user;
-            } while (incorrectInput);
-            //email
-            do {
-                incorrectInput = false;
-                System.out.println("Input your email: ");
-                email = scan.nextLine();
-
-                //check if email is already take
-                if (User.isExistingEmail(email)) {
-                    System.out.println("That email is taken already. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
-                    incorrectInput = true;
-                }
-            } while (incorrectInput);
-
-            do {
-                incorrectInput = false;
-                System.out.println("Input your password:");
-                password = scan.nextLine();
-                //checks if password contains commas
-                if (password.contains(",")) {
-                    System.out.println("Please do not use commas.");
-                    incorrectInput = true;
-                }
-            } while (incorrectInput);
-        } else if (Util.yesNo(existing)) { //if user is an existing user
-            //email
-            do {
-                incorrectInput = false;
-                System.out.println("Input your email:");
-                email = scan.nextLine();
-                if (!User.isExistingEmail(email)) {
-                    System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
-                    incorrectInput = true;
-                } else if (email.equals("CANCEL")) {
-                    return;
-                }
-            } while(incorrectInput);
-            //password
-            do {
-                incorrectInput = false;
-                System.out.println("Input your password: ");
-                password = scan.nextLine();
-
-                //if wrong password
-                if (!User.checkPassword(email, password)) {
-                    System.out.println("Wrong password. Try again, or type CANCEL to exit.");
-                    incorrectInput = true;
-                } else if (password.equals("CANCEL")) {
-                        return;
-                }
-            } while(incorrectInput);
-            System.out.println("Logged in successfully. Welcome back!");
-        }
+        } while(loop);
 
         //if not existing, instantiates
         String accountType = "";
-        if (existing.equalsIgnoreCase("no")) {
+        boolean incorrectInput;
+        if (!existingAccount) {
             do {
                 incorrectInput = false;
                 System.out.println("Are you a seller or customer?");
@@ -135,19 +101,19 @@ public class Main {
         }
 
         //seller specific part; if not a previously existing seller
-        if (user instanceof Seller && (!Util.yesNo(existing) && !new File (username + "csv").exists())) {
+        if (user instanceof Seller && (!existingAccount) && !new File (username + "csv").exists()) {
             do {
                 incorrectInput = false;
                 System.out.println("Would you like to set up your store manually?");
                 String input = scan.nextLine();
                 System.out.println("What would you like your store name to be?");
                 String storeName = scan.nextLine();
-                ArrayList<Product> products = new ArrayList<>();
+                ArrayList<Book> products = new ArrayList<>();
                 Store store;
                 if (Util.yesNo(input)) {
                     boolean repeat;
                     do {
-                        products.add(Product.createProductFromUserInput(storeName));
+                        products.add(Book.createBookFromUserInput());
                         System.out.println("Would you like to create another product?");
                         repeat = Util.yesNo(scan.nextLine());
                     } while(repeat);
@@ -192,8 +158,8 @@ public class Main {
             do {
                 System.out.println("1 - View Marketplace");
                 System.out.println("2 - View Your Cart");
-                System.out.println("3 - View Statistics");
-                System.out.println("4 - View Your Past Purchases");
+                System.out.println("3 - View Your Past Purchases");
+                System.out.println("4 - View Statistics");
                 System.out.println("5 - Edit Account");
                 System.out.println("6 - Log Out");
 
@@ -215,9 +181,12 @@ public class Main {
                     market.viewCartMenu((Customer) user);
                     input = "0";
                 } else if (input.equals("3")) {
-                    //display statistics menu
-                } else if (input.equals("4")) {
                     //view past purchases
+                    ((Customer) user).viewPastPurchases();
+                    market.pastPurchasesMenu(user);
+                } else if (input.equals("4")) {
+                    //view statistics
+
                 } else if (input.equals("5")) {
                     //print out account details
                     boolean deleted = Market.editAccountMenu(username, email, password);

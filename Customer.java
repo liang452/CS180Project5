@@ -5,15 +5,13 @@ import java.util.HashMap;
 import java.util.Comparator;
 
 public class Customer extends User {
-
-    public ArrayList<Product> cart;
-    private ArrayList<Product> pastPurchases;
+  
+    private ArrayList<Book> cart;
+    private ArrayList<Book> pastPurchases;
 //    private List<Order> pastOrders;
 
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
-        this.cart = new ArrayList<>();
-        this.pastPurchases = new ArrayList<>();
 
         //FORMAT OF FILE:
         /*
@@ -27,47 +25,41 @@ public class Customer extends User {
             bfr.readLine();
             String line = bfr.readLine(); // cart line
             if (line != null && !line.isEmpty()) {
-                String[] cartArray = line.split(";"); //splits into separate items
-                for (int i = 0; i < cartArray.length; i++) {
-                    String[] productArray = cartArray[i].split(",");
-                    this.cart.add(new Product(productArray[0], productArray[1],
-                            productArray[2], Integer.parseInt(productArray[3]),
-                            Double.parseDouble(productArray[4])));
-                }
+                this.cart = Util.readCSV(line);
             }
             line = bfr.readLine(); //third line - pastPurchases
             if (line != null && !line.equals("")) {
-                String[] cartArray = line.split(";"); //splits into separate items
-                for (int i = 0; i < cartArray.length; i++) {
-                    String[] productArray = cartArray[i].split(",");
-                    this.pastPurchases.add(new Product(productArray[0], productArray[1], Integer.parseInt(productArray[2]),
-                            Double.parseDouble(productArray[3])));
-                }
+                this.pastPurchases = Util.readCSV(line);
             }
+        } else {
+            this.cart = new ArrayList<>();
+            this.pastPurchases = new ArrayList<>();
         }
 
     }
 
-    public boolean purchase(Product product, int quantity) {
-        //TODO
-        return true;
+    public void addToPastPurchases(Book product, int quantity) {
+        product.setQuantity(quantity);
+        this.pastPurchases.add(product);
     }
 
-    public void addToCart(Product product, int quantity) {
+    public void addToCart(Book product, int quantity) {
         product.setQuantity(quantity); //sets quantity of
         this.cart.add(product);
+        //if already exists in cart, just add quantity onto it?
+        //TODO
     }
 
     public boolean removeFromCart(String productName, int quantity) {
         //find product in cart list
-        for (Product product : cart) {
+        for (Book product : cart) {
             if (productName.equals(product.getName())) {
                 if (quantity == product.getQuantity()) {
                     cart.remove(product);
                     return true;
                 } else if (quantity < product.getQuantity()) {
                     //saves product
-                    Product cartProduct = product;
+                    Book cartProduct = product;
                     cart.remove(product);
                     cartProduct.removeQuantity(quantity);
                     cart.add(cartProduct);
@@ -78,7 +70,7 @@ public class Customer extends User {
                 }
             }
         }
-        System.out.println("Product not found in shopping cart.");
+        System.out.println("Book not found in shopping cart.");
         return false;
     }
 
@@ -86,7 +78,7 @@ public class Customer extends User {
         //TODO
     }
 
-    public void getPastPurchases() {
+    public void viewPastPurchases() {
         if (pastPurchases.isEmpty()) {
             System.out.println("You have made no purchases before.");
             return;
@@ -105,15 +97,16 @@ public class Customer extends User {
     public void viewCart() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty.");
-            return;
         }
-        System.out.println("Your Shopping Cart: ");
-        for (Product product : cart) {
-            System.out.println("Product: " + product.getName());
-            System.out.println("Store: " + product.getStore());
-            System.out.println("Description: " + product.getDescription());
-            System.out.println("Quantity: " + product.getQuantity());
-            System.out.println("Price: $" + product.getPrice() + "\n");
+        else {
+            System.out.println("Your Shopping Cart: ");
+            for (Book product : cart) {
+                System.out.println("Product: " + product.getName());
+                System.out.println("Store: " + product.getStore());
+                System.out.println("Description: " + product.getDescription());
+                System.out.println("Quantity: " + product.getQuantity());
+                System.out.println("Price: $" + product.getPrice() + "\n");
+            }
         }
     }
     public void exportToFile() throws IOException {
@@ -131,12 +124,13 @@ public class Customer extends User {
         BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
         //write in cart data
         String line = "";
-        for (Product cartItem : cart) {
+        for (Book cartItem : cart) {
             line += cartItem.toCSVFormat();
         }
         bw.write(line);
+        //write in past purchases
         line = "";
-        for (Product pastItem : pastPurchases) {
+        for (Book pastItem : pastPurchases) {
             line += pastItem.toCSVFormat();
         }
         bw.write(line);
@@ -218,7 +212,7 @@ public class Customer extends User {
         this.pastOrders = new ArrayList<>();
     }
     
-    public void removeFromShoppingCart(Seller seller, Product product) {
+    public void removeFromShoppingCart(Seller seller, Book product) {
         ShoppingCartEntry entryToRemove = null;
         for (ShoppingCartEntry entry : shoppingCart) {
             if (entry.getSeller().equals(seller) && entry.getProduct().equals(product)) {
@@ -228,9 +222,9 @@ public class Customer extends User {
         }
         if (entryToRemove != null) {
             shoppingCart.remove(entryToRemove);
-            System.out.println("Product removed from the shopping cart!");
+            System.out.println("Book removed from the shopping cart!");
         } else {
-            System.out.println("Product not found in the shopping cart.");
+            System.out.println("Book not found in the shopping cart.");
         }
     }
 
@@ -241,9 +235,9 @@ public class Customer extends User {
         System.out.println("Purchase completed!");
     }
 
-    public void addToShoppingCart(Seller seller, Product product) {
+    public void addToShoppingCart(Seller seller, Book product) {
         shoppingCart.add(new ShoppingCartEntry(seller, product));
-        System.out.println("Product added to the shopping cart!");
+        System.out.println("Book added to the shopping cart!");
     }
 
     public void pastPurchases() {
