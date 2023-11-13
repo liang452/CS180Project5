@@ -40,7 +40,8 @@ public class Market {
         for (String name : sellerNames) {
             File f = new File(name + ".csv");
             if (f.exists()) {
-                ArrayList<Book> bookList = Util.readCSV(user.getUsername() + ".csv");
+                ArrayList<Book> bookList = Util.readCSV(name + ".csv"); //reads all products from
+                // seller class
                 this.listedProducts.addAll(bookList);
             }
         }
@@ -50,8 +51,10 @@ public class Market {
             if (f.exists()) {
                 bfr = new BufferedReader(new FileReader(f));
                 line = bfr.readLine();
-                ArrayList<Book> purchases = Util.readCSV(line); //one long line. assume no repeats of products.
-                this.boughtProducts.addAll(purchases);
+                if (line != null && !line.isEmpty()) {
+                    ArrayList<Book> purchases = Util.readCSV(line); //one long line. assume no repeats of products.
+                    this.boughtProducts.addAll(purchases);
+                }
             }
         }
     }
@@ -126,16 +129,12 @@ public class Market {
         }
 
 
-    public void listProducts() {
+    public ArrayList<Book> displayMarket() {
         //iterate through listedProducts
-        for (int i = 0; i < this.listedProducts.size(); i++) {
-            Book product = this.listedProducts.get(i);
-            String name = product.getName();
-            ;
-            String storeName = product.getStore();
-            double price = product.getPrice();
-            System.out.println(name + " - " + storeName + " - $" + price);
+        for (Book book : this.listedProducts) {
+            book.displayProduct();
         }
+        return this.listedProducts;
     }
 
     public boolean displayProductsMenu() {
@@ -391,8 +390,9 @@ public class Market {
                 System.out.println("What store would you like to add to?");
                 String storeName = scan.nextLine();
                 Book product = Book.createBookFromUserInput();
-
-                System.out.println("Sorry! This function isn't currently implemented.");
+                user.addToStore(storeName, product);
+                //does this get added to file?
+                System.out.println("You have added " + product.getName() + " to " + product.getStore());
                 loop = true;
             } else if (input.equals("2")) {
                 System.out.println("What product would you like to edit?");
@@ -437,5 +437,6 @@ public class Market {
 
     public void viewSalesByStore() {
         //use boughtproducts list.
+
     }
 }

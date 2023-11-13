@@ -12,7 +12,8 @@ public class Customer extends User {
 
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
-
+        this.cart = new ArrayList<>();
+        this.pastPurchases = new ArrayList<>();
         //FORMAT OF FILE:
         /*
          * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
@@ -117,23 +118,24 @@ public class Customer extends User {
             bw.write("\n");
             bw.close();
         }
+
         File f = new File(this.getUsername() + ".csv");
         if (!f.exists()) {
             f.createNewFile();
         }
         BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
         //write in cart data
-        String line = "";
+        String details = "";
         for (Book cartItem : pastPurchases) {
-            line += cartItem.toCSVFormat();
+            details += cartItem.toCSVFormat();
         }
-        bw.write(line);
+        bw.write(details);
         //write in past purchases
-        line = "";
+        String bought = "";
         for (Book pastItem : cart) {
-            line += pastItem.toCSVFormat();
+            bought += pastItem.toCSVFormat();
         }
-        bw.write(line);
+        bw.write(bought);
         bw.close();
     }
 

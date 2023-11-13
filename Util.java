@@ -87,19 +87,21 @@ public abstract class Util {
                 line = bfr.readLine();
             }
         } else { //if it's not a filename
-            String[] productDetails = input.split(",");
-            if (productDetails.length != 5) {
-                System.out.println("Please input a properly formatted file.");
-            } else {
-                for (int i = 0; i < productDetails.length; i += 6) {
-                    String name = productDetails[i];
-                    String author = productDetails[i + 1];
-                    String genre = productDetails[i + 2];
-                    String description = productDetails[i + 3];
-                    String storeName = productDetails[i + 4];
-                    int quantity = Integer.parseInt(productDetails[i + 5]);
-                    double price = Double.parseDouble(productDetails[i + 6]);
-                    books.add(new Book(name, author, genre, storeName, description, quantity, price));
+            if (!input.isEmpty()) {
+                String[] productDetails = input.split(",");
+                if (productDetails.length != 7) {
+                    System.out.println("Please input a properly formatted file.");
+                } else {
+                    for (int i = 0; i < productDetails.length; i += 7) {
+                        String name = productDetails[i];
+                        String author = productDetails[i + 1];
+                        String genre = productDetails[i + 2];
+                        String description = productDetails[i + 3];
+                        String storeName = productDetails[i + 4];
+                        int quantity = Integer.parseInt(productDetails[i + 5]);
+                        double price = Double.parseDouble(productDetails[i + 6]);
+                        books.add(new Book(name, author, genre, storeName, description, quantity, price));
+                    }
                 }
             }
         }

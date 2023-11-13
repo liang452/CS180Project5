@@ -3,9 +3,9 @@ import java.util.Scanner;
 public class Book {
     private String name;
     private String author;
-    private String store;
     private static Genre genre;
     private String description;
+    private String store;
     private int quantity;
     private double price;
 
@@ -69,7 +69,7 @@ public class Book {
         if (genreString.equalsIgnoreCase("FANTASY")) {
             readGenre = Genre.FANTASY;
         } else if (genreString.equalsIgnoreCase("SCIENCE FICTION") ||
-        genreString.equalsIgnoreCase("scifi")) {
+        genreString.equalsIgnoreCase("SCIENCE_FICTION")) {
             readGenre = Genre.SCIENCE_FICTION;
         } else if (genreString.equalsIgnoreCase("HORROR")) {
             readGenre = Genre.HORROR;
@@ -81,7 +81,8 @@ public class Book {
             readGenre = Genre.NONFICTION;
         } else if (genreString.equalsIgnoreCase("ROMANCE")) {
             readGenre = Genre.ROMANCE;
-        } else if (genreString.equalsIgnoreCase("YOUNG ADULT")) {
+        } else if (genreString.equalsIgnoreCase("YOUNG ADULT") ||
+                genreString.equalsIgnoreCase("YOUNG_ADULT")) {
             readGenre = Genre.YOUNG_ADULT;
         } else {
             readGenre = Genre.INVALID_GENRE;
@@ -183,11 +184,14 @@ public class Book {
       
     public String toCSVFormat() {
         String name = this.getName();
-        String storeName = this.getStore();
+        String author = this.getAuthor();
+        String genre = this.getGenre().name();
         String description = this.getDescription();
+        String storeName = this.getStore();
         String quantity = Integer.toString(this.getQuantity());
         String price = Double.toString(this.getPrice());
-        String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
+        String csv = name + "," +  author + "," + genre + "," + description + "," +
+                storeName + "," + quantity + "," + price;
         return csv;
     }
 

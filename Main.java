@@ -165,12 +165,12 @@ public class Main {
 
                 input = scan.nextLine();
                 if (!Util.isNumeric(input)) {
-                    System.out.println("Please input a valid option.");
+                    System.out.println("Please select a valid option.");
                 }
                 else if (input.equals("1")) {
                     boolean looping;
                     do {
-                        market.listProducts();
+                        market.displayMarket();
                         looping = market.displayProductsMenu();
                         if (!looping) {
                             input = "0"; //returns to main menu if displayProductsMenu returns false
@@ -184,6 +184,7 @@ public class Main {
                     //view past purchases
                     ((Customer) user).viewPastPurchases();
                     market.pastPurchasesMenu(user);
+                    input = "0";
                 } else if (input.equals("4")) {
                     //view statistics
 
