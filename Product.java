@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Product {
@@ -138,6 +142,28 @@ public class Product {
         String price = Double.toString(this.getPrice());
         String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
         return csv;
+    }
+    public ArrayList<Product> readCSVFormat(String filename) throws IOException {
+        BufferedReader bfr = new BufferedReader(new FileReader(filename));
+        String line = bfr.readLine();
+        ArrayList<Product> products = new ArrayList<>();
+        while (line != null && !line.isEmpty()) {
+            String[] productDetails =  line.split(",");
+            if (productDetails.length != 5) {
+                System.out.println("Please input a properly formatted file.");
+            } else {
+                for (int i = 0; i < productDetails.length; i += 5) {
+                    String name = productDetails[i];
+                    String storeName = productDetails[i + 1];
+                    String description = productDetails[i + 2];
+                    int quantity = Integer.parseInt(productDetails[i + 3]);
+                    double price = Double.parseDouble(productDetails[i + 4]);
+                    products.add(new Product(name, storeName, description, quantity, price));
+                }
+            }
+            line = bfr.readLine();
+        }
+        return products;
     }
 }
 
