@@ -63,6 +63,10 @@ public class Store {
         System.out.println("Product '" + book.getName() + "' added to the store.");
     }
 
+    public void setProducts(ArrayList<Book> books) {
+        this.books = books;
+    }
+
     public void displayStore() {
         System.out.println("Store Name: " + this.name);
         if (books.isEmpty()) {

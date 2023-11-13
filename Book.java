@@ -109,6 +109,22 @@ public class Book {
         }
     }
 
+    public boolean removeQuantity(int amount) {
+        if (amount <= quantity) {
+            this.quantity -= amount;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public boolean addQuantity(int amountToAdd) {
+        if (amountToAdd <= 0) {
+            return false;
+        }
+        this.quantity += amountToAdd;
+        return true;
+    }
+
     public double getPrice() {
         return price;
     }
@@ -129,21 +145,6 @@ public class Book {
     }
   
     //takes integer as input, removes that amount from the current quantity
-    public boolean removeQuantity(int amount) {
-        if (amount <= quantity) {
-            this.quantity -= amount;
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public boolean addQuantity(int amountToAdd) {
-        if (amountToAdd <= 0) {
-            return false;
-        }
-        this.quantity += amountToAdd;
-        return true;
-    }
 
     public static Book createBookFromUserInput() {
         Scanner scan = new Scanner(System.in);

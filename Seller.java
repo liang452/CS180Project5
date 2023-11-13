@@ -15,7 +15,11 @@ public class Seller extends User {
 
         File f = new File(username + ".csv");
         if (f.exists()) {
-            this.products = Util.readCSV(username + ".csv");
+            this.products = Util.readCSV(username + ".csv"); //products is instantiated
+        }
+        ArrayList<Book> iterator = this.products;
+        for (Book book : iterator) {
+            this.addToStore(book.getStore(), book);
         }
     }
     public Seller getSeller() {
@@ -28,19 +32,25 @@ public class Seller extends User {
         return this.stores;
     }
     public void addToStore(String storeName, Book book) {
-        this.products.add(book);
-        ArrayList<Store> placeholder = new ArrayList<>();
-        Store newStore = null;
-        for (Store store : stores) {
-            if (!store.getName().equals(storeName)) {
-                placeholder.add(store);
+        ArrayList<Store> placeholder = new ArrayList<>(); //placeholder array
+        Store addedStore = null; //new store to be added
+        boolean existing = false;
+        for (Store store : this.stores) { //for every store in this seller already
+            if (!store.getName().equals(storeName)) { //if stores do not equal each other
+                placeholder.add(store); //add into placeholder
+                existing = true;
             } else {
-                newStore = store;
-                newStore.addProduct(book);
+                addedStore = store; //if stores do equal each other
+                addedStore.addProduct(book);
+                existing = true;
             }
         }
-        if (newStore != null) {
-            placeholder.add(newStore);
+        if (!existing) { //if no such store name was found
+            addedStore = new Store(storeName);
+            addedStore.addProduct(book);
+        }
+        if (addedStore != null) {
+            placeholder.add(addedStore);
         }
         this.stores = placeholder;
     }
@@ -52,6 +62,9 @@ public class Seller extends User {
     }
     public void addProducts(ArrayList<Book> newBooks) {
         this.products.addAll(newBooks);
+        for (Book book : newBooks) {
+            this.addToStore(book.getStore(), book);
+        }
     }
     public void addProduct(Book book) {
         this.products.add(book);
@@ -84,29 +97,9 @@ public class Seller extends User {
             //file with username should have been created when account was created
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.getUsername() + ".csv"));
             //overwrites file every time
-            String storeString = "";
-            ArrayList<String> allStoreDetails = new ArrayList<>();
-            //lists products
-            //TODO: a way to read this in. add way to read multiple stores into importFile method.
-            for (Store store : this.stores) { //loops through entire list of stores
-                ArrayList<Book> looper = store.getProducts();
-                for (Book product : looper) {
-                    storeString += product.getName();
-                    storeString += ",";
-                    storeString += store.getName();
-                    storeString += ",";
-                    storeString += product.getDescription();
-                    storeString += ",";
-                    storeString += product.getQuantity();
-                    storeString += ",";
-                    storeString += product.getPrice();
-                    System.out.println("Store: " + storeString);
-                    allStoreDetails.add(storeString);
-                    storeString = "";
-                }
-            }
-            for (String string : allStoreDetails) {
-                bw.write(string + "\n");
+
+            for (Book book : this.products) { //loops through entire list of products
+                bw.write(book.toCSVFormat());
             }
             bw.close();
             return true;
