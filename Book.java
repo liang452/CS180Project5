@@ -102,10 +102,9 @@ public class Book {
         return quantity;
     }
 
-
     public void setQuantity(int newQuantity) {
         if (newQuantity >= 0) {
-            this.quantity -= newQuantity; // updates quantity from previous quantity
+            this.quantity = newQuantity; //
         }
     }
 
