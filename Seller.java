@@ -50,6 +50,12 @@ public class Seller extends User {
     public void setProducts(ArrayList<Book> newBooks) {
         this.products = newBooks;
     }
+    public void addProducts(ArrayList<Book> newBooks) {
+        this.products.addAll(newBooks);
+    }
+    public void addProduct(Book book) {
+        this.products.add(book);
+    }
     public boolean exportProducts(String fileName) throws IOException {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));

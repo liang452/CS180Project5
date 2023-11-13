@@ -236,6 +236,7 @@ public class Main {
                         String edit = scan.nextLine();
                         if (edit.equals("1")) {
                             market.editProductsMenu((Seller) user);
+                            ((Seller) user).exportToFile();
                             repeat = true;
                         } else if (edit.equals("2")) {
                             System.out.println("Input a filename: ");
@@ -257,9 +258,9 @@ public class Main {
                     //view sales by store
                     market.viewSalesByStore();
                 } else if (input.equals("3")) {
-
+                    //statistics
                 } else if (input.equals("4")) {
-
+                    //view customer shopping carts
                 } else if (input.equals("5")) {
                     boolean deleted;
                     do {

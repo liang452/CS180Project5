@@ -74,14 +74,21 @@ public class Market {
     public void exportToFiles() throws IOException { //update seller's list of products
         for (Book book : this.listedProducts) {
             for (String seller : sellerNames) { //for every seller
-                ArrayList<Book> sellerBooks = Util.readCSV(seller + ".csv"); //arraylist of all books in one seller
-                for (Book bk : sellerBooks) { //if book matches title and author. this is mostly for customer's
+                String file = seller + ".csv";
+                ArrayList<Book> sellerBooks = new ArrayList<>(); //arraylist of all books in one seller
+                for (Book bk : Util.readCSV(file)) { //if book matches title and author. this is mostly for customer's
                     // benefit; if a seller chooses to alter a product, it should directly save to their file and
                     // also be in listedProducts.
-                    //
+                    // the only thing that should be changing here is quantity.
                     if (bk.equals(book)) {
-
+                        //if it's the same book, add in the one from listedProducts
+                        sellerBooks.add(book);
                     }
+                }
+                //write in to seller file here
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+                for (Book b : sellerBooks) {
+                    bw.write(b.toCSVFormat());
                 }
             }
         }
@@ -446,13 +453,14 @@ public class Market {
             System.out.println("3 - Delete a Product");
             System.out.println("4 - Return");
             String input = scan.nextLine();
-
+            Book newBook;
             //NOTE: updates every time
             if (input.equals("1")) {
                 Book product = Book.createBookFromUserInput();
                 user.addToStore(product.getStore(), product);
                 this.listedProducts.add(product);
                 System.out.println("You have added " + product.getName() + " to " + product.getStore());
+                user.addProduct(product);
                 user.exportToFile();
                 loop = true;
             } else if (input.equals("2")) {
@@ -462,15 +470,23 @@ public class Market {
                     System.out.println("What product would you like to edit?");
                     boolean exist = false;
                     String productName = scan.nextLine();
+                    ArrayList<Book> placeholder = user.getProducts();
                     for (Book product : user.getProducts()) {
                         if (product.getName().equals(productName)) {
                             //mini edit menu
-                            exist = updateProductMenu(product);
+                             newBook = this.updateProductMenu(product);
+                             placeholder.remove(product);
+                             placeholder.add(newBook); //adds to placeholder list.
+                             user.addToStore(newBook.getStore(), newBook);
+                             updateListedProducts(product, newBook);
+                             exist = true;
                         }
                     }
                     if (!exist) {
                         System.out.println("Book not found. Try again?");
                         repeat = Util.yesNo();
+                    } else {
+                        user.addProducts(placeholder);
                     }
                 } while(repeat);
                 user.exportToFile();
@@ -499,51 +515,46 @@ public class Market {
     }
 
     // the menu for changing an existing product
-    private boolean updateProductMenu(Book book) {
+    private Book updateProductMenu(Book book) {
         Scanner scan = new Scanner(System.in);
         System.out.println("1 - Proceed");
         System.out.println("2 - CANCEL and Exit");
         String input = scan.nextLine();
-        Book placeholder = book;
-        boolean invalidInput;
         do {
             if (input.equals("1")) {
-                invalidInput = false;
                 System.out.println("Input the old parameters if you would like something to be unchanged.");
 
                 System.out.println("Current name is \"" + book.getName() + "\". What would you like the new name to be?");
-                placeholder.setName(scan.nextLine());
+                book.setName(scan.nextLine());
 
                 System.out.println("Current author is \"" + book.getAuthor() + "\". What would you like the new author to be?");
-                placeholder.setAuthor(scan.nextLine());
+                book.setAuthor(scan.nextLine());
 
                 System.out.println("Current genre is \"" + book.getGenre() + "\". What would you like the new genre to " +
                         "be?");
-                placeholder.setGenre(scan.nextLine());
+                book.setGenre(scan.nextLine());
                 System.out.println("Current description is \"" + book.getDescription() + "\". What would you like the new" +
                         " " +
                         "description to be?");
-                placeholder.setDescription(scan.nextLine());
+                book.setDescription(scan.nextLine());
 
                 System.out.println("Current store is \"" + book.getStore() + "\". What would you like the new store to be?");
-                placeholder.setStore(scan.nextLine());
+                book.setStore(scan.nextLine());
 
                 System.out.println("Current quantity is \"" + book.getQuantity() + "\". What would you like the new " +
                         "quantity to be?");
-                placeholder.setQuantity(scan.nextInt());
+                book.setQuantity(scan.nextInt());
                 scan.nextLine();
                 System.out.println("Current price is \"" + book.getPrice() + "\". What would you like the new price to " +
                         "be?");
-                placeholder.setPrice(scan.nextDouble());
-                return true;
+                book.setPrice(scan.nextDouble());
+                return book;
             } else if (input.equals("2")) {
-                return false;
+                return book;
             } else {
                 System.out.println("Please select a valid option.");
-                invalidInput = true;
             }
-        } while (invalidInput);
-        return false;
+        } while (true);
     }
 
     public void pastPurchasesMenu(User user) throws IOException {
@@ -569,7 +580,7 @@ public class Market {
     public void viewSalesByStore() {
         //use boughtProducts list.
         ArrayList<Store> stores = ((Seller) user).getStore();
-        ArrayList<Book> sold = new ArrayList<Book>();
+        ArrayList<Book> sold = new ArrayList<>();
         boolean unique = true;
         for (Store store: stores) {
             for (Book book : boughtProducts) {
@@ -577,9 +588,8 @@ public class Market {
                     for (Book check : sold) { //iterates through sold; checks if it's an already existing item
                         if (check.equals(book)) {
                             unique = false; //book is not unique
-                            Book placeholder = check;
-                            placeholder.addQuantity(book.getQuantity());
-                            sold.add(placeholder);
+                            check.addQuantity(book.getQuantity());
+                            sold.add(check);
                         }
                     }
                     if (unique) {
