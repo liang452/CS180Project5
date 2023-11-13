@@ -3,18 +3,18 @@ import java.sql.Array;
 import java.util.ArrayList;
 public class Store {
     private String name;
-    private ArrayList<Product> products;
+    private ArrayList<Book> books;
     private String seller;
 
     public Store(String name) {
         this.name = name;
-        this.products = new ArrayList<>();
+        this.books = new ArrayList<>();
     }
 
-    public Store(String name, ArrayList<Product> products) {
-        //declares without file; manually adds products later
+    public Store(String name, ArrayList<Book> books) {
+        //declares without file; manually adds books later
         this.name = name;
-        this.products = products;
+        this.books = books;
     }
 
     public Store(String name, String filename) throws IOException {
@@ -31,44 +31,37 @@ public class Store {
         this.name = name;
     }
 
-    public ArrayList<Product> getProducts() {
-        return products;
+    public ArrayList<Book> getProducts() {
+        return books;
     }
 
-    public boolean importProducts(String fileName) {
+    public boolean importProducts(String fileName) throws IOException {
         //reads file
-        try (BufferedReader bfr = new BufferedReader(new FileReader(fileName))) {
-            String line = bfr.readLine();
-            while (line != null && !line.equals("")) {
-                String[] productDetails = line.split(",");
-                if (productDetails.length != 5) {
-                    System.out.println("Please input a properly formatted file.");
-                    return false;
-                }
-                String name = productDetails[0];
-                String storeName = productDetails[1];
-                this.name = storeName;
-                String desc = productDetails[2];
-                int quantity = Integer.parseInt(productDetails[3]);
-                double price = Double.parseDouble(productDetails[4]);
-                this.products.add(new Product(name, storeName, desc, quantity, price));
-                line = bfr.readLine();
-            }
+        if (fileName.contains(".csv")) {
+            this.books = Util.readCSV(fileName);
             return true;
-        } catch (IOException e) {
+        } else {
             System.out.println("Please input a valid file.");
             return false;
         }
     }
 
-    public void exportProductsAsCSV() {
-
+    public boolean exportProducts(String fileName) throws IOException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
+            for (Book book : books) {
+                bw.write(book.toCSVFormat());
+            }
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public void removeProduct(String productName) {
-        for (int i = 0; i < products.size(); i++) {
-            if (products.get(i).getName().equalsIgnoreCase(productName)) {
-                products.remove(i);
+        for (int i = 0; i < books.size(); i++) {
+            if (books.get(i).getName().equalsIgnoreCase(productName)) {
+                books.remove(i);
                 System.out.println("Product '" + productName + "' removed successfully.");
                 return;
             }
@@ -76,20 +69,20 @@ public class Store {
         System.out.println("Product '" + productName + "' not found in the store.");
     }
 
-    public void addProduct(Product product) {
-        products.add(product);
-        System.out.println("Product '" + product.getName() + "' added to the store.");
+    public void addProduct(Book book) {
+        books.add(book);
+        System.out.println("Product '" + book.getName() + "' added to the store.");
     }
 
     public void displayStore() {
         System.out.println("Store Name: " + this.name);
-        if (products.isEmpty()) {
-            System.out.println("You have no products.");
+        if (books.isEmpty()) {
+            System.out.println("You have no books.");
         } else {
             System.out.println("Products: ");
-            for (int i = 0; i < products.size(); i++) {
+            for (int i = 0; i < books.size(); i++) {
                 //name, price
-                System.out.println(products.get(i).getName() + " - $" + products.get(i).getPrice());
+                System.out.println(books.get(i).getName() + " - $" + books.get(i).getPrice());
             }
         }
     }

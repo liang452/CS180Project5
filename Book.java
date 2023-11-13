@@ -1,28 +1,33 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Product {
+public class Book {
     private String name;
+    private String author;
     private String store;
+    private static Genre genre;
     private String description;
     private int quantity;
     private double price;
 
-
-    public Product(String name, String description, int quantity, double price) {
-        this.name = name;
-        this.description = description;
-        this.quantity = quantity;
-        this.price = price;
+    enum Genre {
+        FANTASY,
+        SCIENCE_FICTION,
+        HORROR,
+        THRILLER,
+        HISTORICAL,
+        NONFICTION,
+        ROMANCE,
+        YOUNG_ADULT,
+        INVALID_GENRE
     }
   
-    public Product(String name, String store, String description, int quantity, double price) {
+    public Book(String name, String author, String genre, String description, String store, int quantity,
+                double price) {
         this.name = name;
-        this.store = store;
+        this.author = author;
+        this.genre = Book.readGenre(genre);
         this.description = description;
+        this.store = store;
         this.quantity = quantity;
         this.price = price;
     }
@@ -35,6 +40,13 @@ public class Product {
         this.name = name;
     }
 
+    public String getAuthor() {
+        return this.author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
     public String getStore() {
         return this.store;
@@ -42,6 +54,39 @@ public class Product {
 
     public void setStore(String store) {
         this.store = store;
+    }
+
+    public Genre getGenre() {
+        return this.genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public static Genre readGenre(String genreString) {
+        Genre readGenre = null;
+        if (genreString.equalsIgnoreCase("FANTASY")) {
+            readGenre = Genre.FANTASY;
+        } else if (genreString.equalsIgnoreCase("SCIENCE FICTION") ||
+        genreString.equalsIgnoreCase("scifi")) {
+            readGenre = Genre.SCIENCE_FICTION;
+        } else if (genreString.equalsIgnoreCase("HORROR")) {
+            readGenre = Genre.HORROR;
+        } else if (genreString.equalsIgnoreCase("THRILLER")) {
+            readGenre = Genre.THRILLER;
+        } else if (genreString.equalsIgnoreCase("HISTORICAL")) {
+            readGenre = Genre.HISTORICAL;
+        } else if (genreString.equalsIgnoreCase("NONFICTION")) {
+            readGenre = Genre.NONFICTION;
+        } else if (genreString.equalsIgnoreCase("ROMANCE")) {
+            readGenre = Genre.ROMANCE;
+        } else if (genreString.equalsIgnoreCase("YOUNG ADULT")) {
+            readGenre = Genre.YOUNG_ADULT;
+        } else {
+            readGenre = Genre.INVALID_GENRE;
+        }
+        return readGenre;
     }
 
     public String getDescription() {
@@ -99,17 +144,22 @@ public class Product {
         return true;
     }
 
-    public static Product createProductFromUserInput(String storeName) {
+    public static Book createBookFromUserInput() {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Enter product name:");
+        System.out.println("Enter book name:");
         String name = scan.nextLine();
+
+        System.out.println("Enter author: ");
+        String author = scan.nextLine();
+
+        System.out.println("Enter the genre: ");
+        String genre = scan.nextLine();
+
+        System.out.println("Enter book description:");
+        String description = scan.nextLine();
 
         System.out.println("Enter store name:");
         String store = scan.nextLine();
-
-        System.out.println("Enter product description:");
-
-        String description = scan.nextLine();
 
         System.out.println("Enter quantity available:");
         int quantity = scan.nextInt();
@@ -118,13 +168,13 @@ public class Product {
         System.out.println("Enter price:");
         double price = scan.nextDouble();
 
-        return new Product(name, store, description, quantity, price);
+        return new Book(name, author, genre, description, store, quantity, price);
     }
       
-    public boolean equals(Product product) {
-        if (this.getName().equals(product.getName())
-                && this.getPrice() == product.getPrice()
-                && this.getDescription().equals(product.getDescription())) {
+    public boolean equals(Book book) {
+        if (this.getName().equals(book.getName())
+                && this.getPrice() == book.getPrice()
+                && this.getDescription().equals(book.getDescription())) {
             return true;
         } else {
             return false;

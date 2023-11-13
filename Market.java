@@ -10,7 +10,8 @@ import java.util.Scanner;
  * Useful functions for displaying the marketplace.
  */
 public class Market {
-    private ArrayList<Product> listedProducts;
+    private ArrayList<Book> listedProducts;
+    private ArrayList<Book> boughtProducts;
     private ArrayList<String> sellerNames;
     private User user;
 
@@ -34,34 +35,21 @@ public class Market {
         for (String name : sellerNames) {
             File f = new File(name + ".csv");
             if (f.exists()) {
-                //read from user file, display as it iterates through
-                bfr = new BufferedReader(new FileReader(f));
-                line = bfr.readLine();
-                while (line != null) {
-                    String[] productDetails = line.split(",");
-                    for (int i = 0;  i < productDetails.length; i += 5) {
-                        String prodName = productDetails[i];
-                        String storeName = productDetails[i + 1];
-                        String description = productDetails[i + 2];
-                        int quantity = Integer.parseInt(productDetails[i + 3]);
-                        double price = Double.parseDouble(productDetails[i + 4]);
-                        this.listedProducts.add(new Product(prodName, storeName, description, quantity, price));
-                    }
-                    line = bfr.readLine();
-                }
+                ArrayList<Book> bookList = Util.readCSV(user.getUsername() + ".csv");
+                this.listedProducts.addAll(bookList);
             }
         }
     }
 
-    public ArrayList<Product> getListedProducts() {
+    public ArrayList<Book> getListedProducts() {
         return this.listedProducts;
     }
 
-    public void updateListedProducts(Product oldProduct, Product updatedProduct) {
-        ArrayList<Product> iterator = new ArrayList<>();
-        for (Product product : this.listedProducts) {
-            if (!product.equals(oldProduct)) {
-                iterator.add(product);
+    public void updateListedProducts(Book oldProduct, Book updatedProduct) {
+        ArrayList<Book> iterator = new ArrayList<>();
+        for (Book book : this.listedProducts) {
+            if (!book.equals(oldProduct)) {
+                iterator.add(book);
             }
         }
         iterator.add(updatedProduct); //adds updated product
@@ -72,10 +60,61 @@ public class Market {
 
     }
 
-    public ArrayList<Product> listProducts() {
+    public static void userInitialization() throws IOException {
+        Scanner scan = new Scanner(System.in);
+        String username = "";
+        String email = "";
+        String password = "";
+
+        boolean incorrectInput;
+        do {
+                //username
+                incorrectInput = false;
+                System.out.println("Input your username: ");
+                String user = scan.nextLine();
+                if (User.isExistingUser(username)) {
+                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
+                    incorrectInput = true;
+                }
+                username = user;
+            } while (incorrectInput);
+            //email
+            do {
+                incorrectInput = false;
+                System.out.println("Input your email: ");
+                email = scan.nextLine();
+
+                //check if email is already take
+                if (User.isExistingEmail(email)) {
+                    System.out.println("That email is taken already. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
+                    incorrectInput = true;
+                }
+            } while (incorrectInput);
+            do {
+                incorrectInput = false;
+                System.out.println("Input your password:");
+                password = scan.nextLine();
+                //checks if password contains commas
+                if (password.contains(",")) {
+                    System.out.println("Please do not use commas.");
+                    incorrectInput = true;
+                }
+            } while (incorrectInput);
+        }
+
+
+    public ArrayList<Book> listProducts() {
         //iterate through listedProducts
         for (int i = 0; i < this.listedProducts.size(); i++) {
-            Product product = this.listedProducts.get(i);
+            Book product = this.listedProducts.get(i);
             String name = product.getName();
             ;
             String storeName = product.getStore();
@@ -90,16 +129,16 @@ public class Market {
         boolean repeat;
         do {
             repeat = false;
-            System.out.println("1 - Select a Product You are Interested in");
-            System.out.println("2 - Search for a Product by Keyword");
+            System.out.println("1 - Select a Book You are Interested in");
+            System.out.println("2 - Search for a Book by Keyword");
             System.out.println("3 - Return to the Main Menu");
             String option = scan.nextLine();
             if (option.equals("1")) {
                 System.out.println("Input the product name:");
                 String selection = scan.nextLine();
-                for (Product product : this.listedProducts) {
+                for (Book product : this.listedProducts) {
                     if (product.getName().equals(selection)) {
-                        Product viewing = product;
+                        Book viewing = product;
                         System.out.println(viewing.getName());
                         System.out.println("Store: " + viewing.getStore());
                         System.out.println("Description: " + viewing.getDescription());
@@ -165,17 +204,17 @@ public class Market {
                         } while (looping);
                     }
                 }
-                System.out.println("No matching products found.");
+                System.out.println("No matching books found.");
             } else if (option.equals("2")) {
                 System.out.println("What would you like to search for?");
                 String search = scan.nextLine();
-                ArrayList<Product> results = this.searchProducts(search);
+                ArrayList<Book> results = this.searchProducts(search);
                 if (results.isEmpty()) {
                     System.out.println("No matching products found.");
                 } else {
                     System.out.println("Your Search Results: ");
-                    for (Product product : results) {
-                        product.displayProduct();
+                    for (Book book : results) {
+                        book.displayProduct();
                     }
                 }
                 repeat = true;
@@ -187,20 +226,26 @@ public class Market {
         return true;
     }
 
-    public ArrayList<Product> searchProducts(String input) {
-        ArrayList<Product> matches = new ArrayList<>();
+    public ArrayList<Book> searchProducts(String input) {
+        ArrayList<Book> matches = new ArrayList<>();
         input = input.toUpperCase();
         //loop through listedProducts
-        for (int i = 0; i < listedProducts.size(); i++) {
-            String name = listedProducts.get(i).getName().toUpperCase();
-            String storeName = listedProducts.get(i).getStore().toUpperCase();
-            String description = listedProducts.get(i).getDescription().toUpperCase();
+        for (Book book : this.listedProducts) {
+            String name = book.getName().toUpperCase();
+            String author = book.getAuthor().toUpperCase();
+            String genre = book.getGenre().name().toUpperCase();
+            String storeName = book.getStore().toUpperCase();
+            String description = book.getDescription().toUpperCase();
             if (name.contains(input)) {
-                matches.add(listedProducts.get(i));
+                matches.add(book);
+            } else if (author.contains(input)) {
+                matches.add(book);
+            } else if (genre.contains(input)) {
+                matches.add(book);
             } else if (storeName.contains(input)) {
-                matches.add(listedProducts.get(i));
+                matches.add(book);
             } else if (description.contains(input)) {
-                matches.add(listedProducts.get(i));
+                matches.add(book);
             }
         }
         return matches;
@@ -323,7 +368,7 @@ public class Market {
         Scanner scan = new Scanner(System.in);
         do {
             loop = false;
-            System.out.println("1 - Create a New Product");
+            System.out.println("1 - Add a New Product");
             System.out.println("2 - Edit an Existing Product");
             System.out.println("3 - Delete a Product");
             System.out.println("4 - Return");
@@ -332,7 +377,8 @@ public class Market {
             if (input.equals("1")) {
                 System.out.println("What store would you like to add to?");
                 String storeName = scan.nextLine();
-                Product product = Product.createProductFromUserInput(storeName);
+                Book product = Book.createBookFromUserInput();
+
                 System.out.println("Sorry! This function isn't currently implemented.");
                 loop = true;
             } else if (input.equals("2")) {
