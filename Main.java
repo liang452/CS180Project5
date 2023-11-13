@@ -184,8 +184,8 @@ public class Main {
             }
 
 
-        Market market = new Market();
-        System.out.println(user instanceof Customer);
+        Market market = new Market(user);
+
         if (user instanceof Customer) {
             //print out options:
             String input = "";
@@ -204,14 +204,16 @@ public class Main {
                 else if (input.equals("1")) {
                     boolean looping;
                     do {
-                        ArrayList<Product> listedProducts = market.listProducts();
-                        looping = market.displayProductsMenu(listedProducts);
+                        market.listProducts();
+                        looping = market.displayProductsMenu();
                         if (!looping) {
                             input = "0"; //returns to main menu if displayProductsMenu returns false
                         }
                     } while(looping);
                 } else if (input.equals("2")) {
                     //display cart
+                    market.viewCartMenu((Customer) user);
+                    input = "0";
                 } else if (input.equals("3")) {
                     //display statistics menu
                 } else if (input.equals("4")) {
@@ -221,10 +223,10 @@ public class Main {
                     boolean deleted = Market.editAccountMenu(username, email, password);
                     if (deleted) {
                         input = "0";
-                        break;
+                    } else {
+                        System.out.println("1 - Continue Editing Account");
+                        System.out.println("2 - Return to Main Menu");
                     }
-                    System.out.println("1 - Continue Editing Account");
-                    System.out.println("2 - Return to Main Menu");
                     //TODO
                 } else if (input.equals("6")) {
                     System.out.println("Are you sure you want to log out?");
@@ -232,6 +234,7 @@ public class Main {
                     if (Util.yesNo(logout)) {
                         //call save data method
                         System.out.println("Have a nice day!");
+                        ((Customer) user).exportToFile();
                         return;
                     } else if (!Util.yesNo(logout)) {
                         System.out.println("Returning to the main menu...");
@@ -263,7 +266,7 @@ public class Main {
                         market.editProductsMenu((Seller) user);
                     }
                 } else if (input.equals("2")) {
-
+                    //view sales by store
                 } else if (input.equals("3")) {
 
                 } else if (input.equals("4")) {
@@ -284,6 +287,7 @@ public class Main {
                     String logout = scan.nextLine();
                     if (Util.yesNo(logout)) {
                         System.out.println("Have a nice day!");
+                        ((Seller) user).exportToFile();
                         break;
                     } else {
                         System.out.println("Returning to main menu...");

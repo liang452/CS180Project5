@@ -26,7 +26,7 @@ public class Customer extends User {
             BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
             bfr.readLine();
             String line = bfr.readLine(); // cart line
-            if (line != null && !line.equals("")) {
+            if (line != null && !line.isEmpty()) {
                 String[] cartArray = line.split(";"); //splits into separate items
                 for (int i = 0; i < cartArray.length; i++) {
                     String[] productArray = cartArray[i].split(",");
@@ -35,7 +35,6 @@ public class Customer extends User {
                             Double.parseDouble(productArray[4])));
                 }
             }
-
             line = bfr.readLine(); //third line - pastPurchases
             if (line != null && !line.equals("")) {
                 String[] cartArray = line.split(";"); //splits into separate items
@@ -55,27 +54,27 @@ public class Customer extends User {
     }
 
     public void addToCart(Product product, int quantity) {
-        Product cartProduct = product;
-        cartProduct.setQuantity(quantity);
-        cart.add(cartProduct);
+        product.setQuantity(quantity); //sets quantity of
+        this.cart.add(product);
     }
 
-    public boolean removeFromCart(Product product, int quantity) {
-        for (int i = 0; i < cart.size(); i++) {
-            if (product.equals(cart.get(i))) {//fix
-                //if quantity is equal to the amount in cart, remove item entirely
+    public boolean removeFromCart(String productName, int quantity) {
+        //find product in cart list
+        for (Product product : cart) {
+            if (productName.equals(product.getName())) {
                 if (quantity == product.getQuantity()) {
-                    cart.remove(i);
+                    cart.remove(product);
                     return true;
-                } else if (quantity < cart.get(i).getQuantity()) {
+                } else if (quantity < product.getQuantity()) {
                     //saves product
-                    Product cartProduct = cart.get(i);
-                    cart.remove(i);
+                    Product cartProduct = product;
+                    cart.remove(product);
                     cartProduct.removeQuantity(quantity);
                     cart.add(cartProduct);
                     return true;
-                } else if (quantity > cart.get(i).getQuantity() || quantity <= 0) {
-                    throw new InvalidQuantityError();
+                } else if (quantity > product.getQuantity() || quantity <= 0) {
+                    System.out.println("Please input a valid quantity.");
+                    return false;
                 }
             }
         }
@@ -109,19 +108,16 @@ public class Customer extends User {
             return;
         }
         System.out.println("Your Shopping Cart: ");
-        for (int i = 0; i < cart.size(); i++) {
-            System.out.println("Product: " + this.cart.get(i).getName());
-            System.out.println("Store: " + this.cart.get(i).getStore());
-            System.out.println("Description: " + this.cart.get(i).getDescription());
-            System.out.println("Quantity: " + this.cart.get(i).getQuantity());
-            System.out.println("Price: $" + this.cart.get(i).getPrice());
-            System.out.println("-------\n");
+        for (Product product : cart) {
+            System.out.println("Product: " + product.getName());
+            System.out.println("Store: " + product.getStore());
+            System.out.println("Description: " + product.getDescription());
+            System.out.println("Quantity: " + product.getQuantity());
+            System.out.println("Price: $" + product.getPrice() + "\n");
         }
     }
     public void exportToFile() throws IOException {
         //TODO
-        //export cart
-        //export pastpurchases
         if (!User.isExistingUser(this.getUsername())) {
             BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
             bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "CUSTOMER");
@@ -134,6 +130,17 @@ public class Customer extends User {
         }
         BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
         //write in cart data
+        String line = "";
+        for (Product cartItem : cart) {
+            line += cartItem.toCSVFormat();
+        }
+        bw.write(line);
+        line = "";
+        for (Product pastItem : pastPurchases) {
+            line += pastItem.toCSVFormat();
+        }
+        bw.write(line);
+        bw.close();
     }
 
     public boolean exportPastPurchases(String filename) throws IOException {

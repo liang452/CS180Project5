@@ -113,7 +113,7 @@ public class User {
             while (line != null && !line.isEmpty()) {
                 String[] loginDetails = line.split(",");
                 if (!loginDetails[0].equals(oldUsername)) { //if not equal to the old username, just add
-                    loginsList.add(Util.toCSV(loginDetails));
+                    loginsList.add(toCSV(loginDetails));
                 } else if (loginDetails[0].equals(oldUsername)) { //if this is the old username, alter the login a
                     // little
                     newLogin = newUsername + "," + loginDetails[1] + "," +
@@ -147,7 +147,7 @@ public class User {
             while (line != null && !line.isEmpty()) {
                 String[] loginDetails = line.split(",");
                 if (!loginDetails[1].equals(email)) {
-                    loginsList.add(Util.toCSV(loginDetails));
+                    loginsList.add(toCSV(loginDetails));
                 } else if (loginDetails[1].equals(email)) {
                     newLogin = loginDetails[0] + "," + loginDetails[1] + "," +
                             newPassword + "," + loginDetails[3];
@@ -173,7 +173,7 @@ public class User {
             while (line != null && !line.isEmpty()) {
                 String[] loginDetails = line.split(",");
                 if (!loginDetails[1].equals(oldEmail)) {
-                    loginsList.add(Util.toCSV(loginDetails));
+                    loginsList.add(toCSV(loginDetails));
                 } else if (loginDetails[1].equals(oldEmail)) {
                     newLogin = loginDetails[0] + "," + newEmail + "," +
                             loginDetails[2] + "," + loginDetails[3];
@@ -226,6 +226,13 @@ public class User {
         }
         bfr.close();
         return "";
+    }
+    private static String toCSV(String[] loginDetails) {
+        String combined = "";
+        for (String string : loginDetails) {
+            combined += string + ",";
+        }
+        return combined;
     }
 
 

@@ -60,10 +60,7 @@ public class Product {
     public void setQuantity(int newQuantity) {
         if (newQuantity >= 0) {
             this.quantity = newQuantity;
-        } else {
-            throw new InvalidQuantityError();
         }
-
     }
 
     public double getPrice() {
@@ -86,20 +83,20 @@ public class Product {
     }
   
     //TODO: add other ways to change product quantity : added setquantity
-    public int removeQuantity(int purchasedQuantity) {
+    public boolean removeQuantity(int purchasedQuantity) {
         if (purchasedQuantity <= quantity) {
             this.quantity -= purchasedQuantity;
-            return this.quantity;
+            return true;
         } else {
-            throw new InvalidQuantityError();
+            return false;
         }
     }
-    public int addQuantity(int amountToAdd) {
+    public boolean addQuantity(int amountToAdd) {
         if (amountToAdd <= 0) {
-            throw new InvalidQuantityError();
+            return false;
         }
         this.quantity += amountToAdd;
-        return this.quantity;
+        return true;
     }
 
     public static Product createProductFromUserInput(String storeName) {
@@ -134,7 +131,7 @@ public class Product {
         }
     }
       
-    public String toCSVFormat(Product product) {
+    public String toCSVFormat() {
         String name = this.getName();
         String storeName = this.getStore();
         String description = this.getDescription();
@@ -143,27 +140,6 @@ public class Product {
         String csv = name + "," + storeName + "," + description + "," + quantity + "," + price;
         return csv;
     }
-    public ArrayList<Product> readCSVFormat(String filename) throws IOException {
-        BufferedReader bfr = new BufferedReader(new FileReader(filename));
-        String line = bfr.readLine();
-        ArrayList<Product> products = new ArrayList<>();
-        while (line != null && !line.isEmpty()) {
-            String[] productDetails =  line.split(",");
-            if (productDetails.length != 5) {
-                System.out.println("Please input a properly formatted file.");
-            } else {
-                for (int i = 0; i < productDetails.length; i += 5) {
-                    String name = productDetails[i];
-                    String storeName = productDetails[i + 1];
-                    String description = productDetails[i + 2];
-                    int quantity = Integer.parseInt(productDetails[i + 3]);
-                    double price = Double.parseDouble(productDetails[i + 4]);
-                    products.add(new Product(name, storeName, description, quantity, price));
-                }
-            }
-            line = bfr.readLine();
-        }
-        return products;
-    }
+
 }
 
