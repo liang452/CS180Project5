@@ -47,6 +47,9 @@ public class Seller extends User {
     public ArrayList<Book> getProducts() {
         return this.products;
     }
+    public void setProducts(ArrayList<Book> newBooks) {
+        this.products = newBooks;
+    }
     public boolean exportProducts(String fileName) throws IOException {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));

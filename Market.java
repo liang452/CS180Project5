@@ -426,8 +426,14 @@ public class Market {
             } else if (input.equals("3")) {
                 System.out.println("What product would you like to delete?");
                 String productName = scan.nextLine();
-                //search for product with matching name
-                System.out.println("Sorry! This function isn't currently implemented.");
+                ArrayList<Book> placeholder = user.getProducts();
+                for (Book product : user.getProducts()) {
+                    if (product.getName().equals(productName)) {
+                        placeholder.remove(product);
+                    }
+                }
+                user.setProducts(placeholder);
+                user.exportToFile();
                 loop = true;
             } else if (input.equals("4")) {
                 System.out.println("Returning to main menu...");
