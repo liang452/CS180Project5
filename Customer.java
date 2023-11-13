@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Comparator;
 
 public class Customer extends User {
-
+  
     private ArrayList<Book> cart;
     private ArrayList<Book> pastPurchases;
 //    private List<Order> pastOrders;

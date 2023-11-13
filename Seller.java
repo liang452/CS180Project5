@@ -102,6 +102,6 @@ public class Seller extends User {
             System.out.println("$" + product.getPrice() + "\n");
         }
     }
-}
 
+}
 
