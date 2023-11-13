@@ -61,7 +61,7 @@ public class Store {
         }
     }
 
-    public void exportProducts() {
+    public void exportProductsAsCSV() {
 
     }
 
