@@ -1,6 +1,6 @@
 # cs180project4
 ## How to Run:
-Run Main.
+Main.java is where the marketplace is actually implemented.
 ### Notes on Formatting:
 - Don't use commas in descriptions.
 - When selecting an item from the market list, make sure to match case.
