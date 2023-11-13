@@ -108,26 +108,6 @@ public class Book {
         }
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    public void displayProduct() {
-        System.out.println(this.name + " - " + this.getStore() + " - $" + this.getPrice());
-    }
-
-    public void displayProductInfo() {
-        System.out.println("Product: " + this.name);
-        System.out.println("Store: " + this.store);
-        System.out.println("Description: " + this.description);
-        System.out.println("Quantity: " + this.quantity);
-        System.out.println("Price: $" + this.price);
-    }
-  
-    //takes integer as input, removes that amount from the current quantity
     public boolean removeQuantity(int amount) {
         if (amount <= quantity) {
             this.quantity -= amount;
@@ -143,6 +123,29 @@ public class Book {
         this.quantity += amountToAdd;
         return true;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+    public void displayProduct() {
+        System.out.println(this.name + " - " + this.getStore() + " - $" + this.getPrice());
+    }
+
+    public void displayProductInfo() {
+        System.out.println("Title: " + this.name);
+        System.out.println("Author: " + this.author);
+        System.out.println(("Genre: "+ this.getGenre()));
+        System.out.println("Description: " + this.description);
+        System.out.println("Store: " + this.store);
+        System.out.println("Quantity: " + this.quantity);
+        System.out.println("Price: $" + this.price);
+    }
+  
+    //takes integer as input, removes that amount from the current quantity
 
     public static Book createBookFromUserInput() {
         Scanner scan = new Scanner(System.in);

@@ -19,6 +19,7 @@ public class Store {
 
     public Store(String name, String filename) throws IOException {
         //read name from file
+        this.name = name;
         this.importProducts(filename);
 
     }
@@ -61,6 +62,10 @@ public class Store {
     public void addProduct(Book book) {
         books.add(book);
         System.out.println("Product '" + book.getName() + "' added to the store.");
+    }
+
+    public void setProducts(ArrayList<Book> books) {
+        this.books = books;
     }
 
     public void displayStore() {

@@ -345,10 +345,10 @@ public class Market {
                     return false;
                 }
             } else if (input.equals("5")) {
-                repeat = false;
+                System.out.println("Exiting...");
             }
         } while (repeat);
-        return true;
+        return false;
     }
 
     public void viewCartMenu(Customer user) throws IOException {
@@ -459,10 +459,10 @@ public class Market {
             //NOTE: updates every time
             if (input.equals("1")) {
                 Book product = Book.createBookFromUserInput();
+                user.addProduct(product);
                 user.addToStore(product.getStore(), product);
                 this.listedProducts.add(product);
                 System.out.println("You have added " + product.getName() + " to " + product.getStore());
-                user.addProduct(product);
                 user.exportToFile();
                 loop = true;
             } else if (input.equals("2")) {
@@ -471,16 +471,15 @@ public class Market {
                     repeat = false;
                     System.out.println("What product would you like to edit?");
                     boolean exist = false;
-                    String productName = scan.nextLine();
+                    String inputProduct = scan.nextLine();
                     ArrayList<Book> placeholder = user.getProducts();
-                    for (Book product : user.getProducts()) {
-                        if (product.getName().equals(productName)) {
+                    for (Book product : user.getProducts()) { //list of all products
+                        Book saver = product;
+                        if (product.getName().equals(inputProduct)) { //if matches the input
                             //mini edit menu
-                             newBook = this.updateProductMenu(product);
-                             placeholder.remove(product);
+                             newBook = this.updateProductMenu(saver); //updateProductMenu returns a new book object
+                             placeholder.remove(saver); //remove old product
                              placeholder.add(newBook); //adds to placeholder list.
-                             user.addToStore(newBook.getStore(), newBook);
-                             updateListedProducts(product, newBook);
                              exist = true;
                         }
                     }
@@ -489,6 +488,7 @@ public class Market {
                         repeat = Util.yesNo();
                     } else {
                         user.addProducts(placeholder);
+                        user.exportToFile();
                     }
                 } while(repeat);
                 user.exportToFile();
@@ -585,9 +585,9 @@ public class Market {
         ArrayList<Book> sold = new ArrayList<>();
         boolean unique = true;
         for (Store store: stores) {
-            for (Book book : boughtProducts) {
-                if (book.getStore().equals(store.getName())) {
-                    for (Book check : sold) { //iterates through sold; checks if it's an already existing item
+            for (Book book : boughtProducts) { //iterates through all bought products
+                if (book.getStore().equals(store.getName())) { //if the store name of the book matches the display store
+                    for (Book check : sold) { //iterates through sold; checks if it's an already existing item added in
                         if (check.equals(book)) {
                             unique = false; //book is not unique
                             check.addQuantity(book.getQuantity());
@@ -598,11 +598,10 @@ public class Market {
                         sold.add(book);
                     }
                 }
+
             }
-            //display store, customer data, and revenues
-            for (Store iterator : stores) {
-                iterator.displayData();
-            }
+            store.setProducts(sold);
+            store.displayData();
         }
     }
 }
