@@ -567,7 +567,30 @@ public class Market {
     }
 
     public void viewSalesByStore() {
-        //use boughtproducts list.
-
+        //use boughtProducts list.
+        ArrayList<Store> stores = ((Seller) user).getStore();
+        ArrayList<Book> sold = new ArrayList<Book>();
+        boolean unique = true;
+        for (Store store: stores) {
+            for (Book book : boughtProducts) {
+                if (book.getStore().equals(store.getName())) {
+                    for (Book check : sold) { //iterates through sold; checks if it's an already existing item
+                        if (check.equals(book)) {
+                            unique = false; //book is not unique
+                            Book placeholder = check;
+                            placeholder.addQuantity(book.getQuantity());
+                            sold.add(placeholder);
+                        }
+                    }
+                    if (unique) {
+                        sold.add(book);
+                    }
+                }
+            }
+            //display store, customer data, and revenues
+            for (Store iterator : stores) {
+                iterator.displayData();
+            }
+        }
     }
 }

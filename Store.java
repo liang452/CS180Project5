@@ -75,4 +75,18 @@ public class Store {
             }
         }
     }
+
+    public void displayData() {
+        System.out.println("Store Name: " + this.getName());
+        ArrayList<Book> purchases = this.getProducts();
+        double revenue = 0;
+        for (Book book : purchases) {
+            revenue += book.getQuantity() * book.getPrice();
+        }
+        System.out.println("Total Revenue: " + revenue);
+        System.out.println("Products Sold: ");
+        for (Book book : this.getProducts()) {
+            System.out.println(book.getName() + " - " + book.getQuantity() + " - $" + book.getPrice());
+        }
+    }
 }
