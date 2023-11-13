@@ -28,6 +28,7 @@ public class Seller extends User {
         return this.stores;
     }
     public void addToStore(String storeName, Book book) {
+        this.products.add(book);
         ArrayList<Store> placeholder = new ArrayList<>();
         Store newStore = null;
         for (Store store : stores) {
@@ -42,6 +43,9 @@ public class Seller extends User {
             placeholder.add(newStore);
         }
         this.stores = placeholder;
+    }
+    public ArrayList<Book> getProducts() {
+        return this.products;
     }
     public boolean exportProducts(String fileName) throws IOException {
         try {

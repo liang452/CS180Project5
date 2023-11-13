@@ -110,12 +110,12 @@ public class Main {
                 String storeName = scan.nextLine();
                 ArrayList<Book> products = new ArrayList<>();
                 Store store;
-                if (Util.yesNo(input)) {
+                if (Util.yesNo()) {
                     boolean repeat;
                     do {
                         products.add(Book.createBookFromUserInput());
                         System.out.println("Would you like to create another product?");
-                        repeat = Util.yesNo(scan.nextLine());
+                        repeat = Util.yesNo();
                     } while(repeat);
                     store = new Store(storeName, products);
                 } else {
@@ -133,12 +133,11 @@ public class Main {
                     }
                     store.displayStore();
                     System.out.println("Is this what you want?");
-                    String ans = scan.nextLine();
+                    boolean ans = Util.yesNo();
 
-                    if (Util.yesNo(ans)) {
+                    if (ans) {
                         System.out.println("OK! Saving data...");
-                        //TODO: write out to file
-                        //and done with initial creation of store!
+                        //initial creation of store
                         ((Seller) user).addStore(store);
                         ((Seller) user).exportToFile(); //TODO: fix this
                         System.out.println("Successfully saved!");
@@ -200,13 +199,13 @@ public class Main {
                     //TODO
                 } else if (input.equals("6")) {
                     System.out.println("Are you sure you want to log out?");
-                    String logout = scan.nextLine();
-                    if (Util.yesNo(logout)) {
+                    boolean logout = Util.yesNo();
+                    if (logout) {
                         //call save data method
                         System.out.println("Have a nice day!");
                         ((Customer) user).exportToFile();
                         return;
-                    } else if (!Util.yesNo(logout)) {
+                    } else if (logout) {
                         System.out.println("Returning to the main menu...");
                         input = "0";
                     }
@@ -274,8 +273,8 @@ public class Main {
                 } else if (input.equals("6")) {
                     //logout
                     System.out.println("Are you sure you want to log out?");
-                    String logout = scan.nextLine();
-                    if (Util.yesNo(logout)) {
+                    boolean logout = Util.yesNo();
+                    if (logout) {
                         System.out.println("Have a nice day!");
                         ((Seller) user).exportToFile();
                         break;

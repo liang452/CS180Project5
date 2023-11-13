@@ -126,16 +126,18 @@ public class Customer extends User {
         BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
         //write in cart data
         String details = "";
-        for (Book cartItem : pastPurchases) {
-            details += cartItem.toCSVFormat();
+        for (Book pastItem : pastPurchases) {
+            details += pastItem.toCSVFormat();
         }
         bw.write(details);
+        bw.close();
         //write in past purchases
-        String bought = "";
-        for (Book pastItem : cart) {
-            bought += pastItem.toCSVFormat();
+        bw = new BufferedWriter((new FileWriter(f, true))); //appends into file
+        String cartItems = "";
+        for (Book cartProd : cart) {
+            cartItems += cartProd.toCSVFormat();
         }
-        bw.write(bought);
+        bw.write(cartItems);
         bw.close();
     }
 

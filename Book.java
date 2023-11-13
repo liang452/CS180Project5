@@ -60,8 +60,8 @@ public class Book {
         return this.genre;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setGenre(String genre) {
+        this.genre = readGenre(genre);
     }
 
     public static Genre readGenre(String genreString) {
@@ -128,10 +128,10 @@ public class Book {
         System.out.println("Price: $" + this.price);
     }
   
-    //TODO: add other ways to change product quantity : added setquantity
-    public boolean removeQuantity(int removeQuantity) {
-        if (removeQuantity <= quantity) {
-            this.quantity -= removeQuantity;
+    //takes integer as input, removes that amount from the current quantity
+    public boolean removeQuantity(int amount) {
+        if (amount <= quantity) {
+            this.quantity -= amount;
             return true;
         } else {
             return false;
@@ -173,9 +173,7 @@ public class Book {
     }
       
     public boolean equals(Book book) {
-        if (this.getName().equals(book.getName())
-                && this.getPrice() == book.getPrice()
-                && this.getDescription().equals(book.getDescription())) {
+        if (this.getName().equals(book.getName())) {
             return true;
         } else {
             return false;

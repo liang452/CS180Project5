@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -67,15 +64,27 @@ public class Market {
         ArrayList<Book> iterator = new ArrayList<>();
         for (Book book : this.listedProducts) {
             if (!book.equals(oldProduct)) {
-                iterator.add(book);
+                iterator.add(book); //adds everything not the original product
             }
         }
-        iterator.add(updatedProduct); //adds updated product
-        this.listedProducts = iterator;
+        iterator.add(updatedProduct); //adds updated product to list
+        this.listedProducts = iterator; //sets listedProducts to list with new item
     }
 
-    public void exportToFiles() {
+    public void exportToFiles() throws IOException { //update seller's list of products
+        for (Book book : this.listedProducts) {
+            for (String seller : sellerNames) { //for every seller
+                ArrayList<Book> sellerBooks = Util.readCSV(seller + ".csv"); //arraylist of all books in one seller
+                for (Book bk : sellerBooks) { //if book matches title and author. this is mostly for customer's
+                    // benefit; if a seller chooses to alter a product, it should directly save to their file and
+                    // also be in listedProducts.
+                    //
+                    if (bk.equals(book)) {
 
+                    }
+                }
+            }
+        }
     }
 
     public static void userInitialization() throws IOException {
@@ -132,9 +141,9 @@ public class Market {
     public ArrayList<Book> displayMarket() {
         //iterate through listedProducts
         for (Book book : this.listedProducts) {
-            book.displayProduct();
+            book.displayProduct(); //is it an issue with this
         }
-        return this.listedProducts;
+    return this.listedProducts;
     }
 
     public boolean displayProductsMenu() {
@@ -147,10 +156,10 @@ public class Market {
             System.out.println("3 - Return to the Main Menu");
             String option = scan.nextLine();
             if (option.equals("1")) {
-                System.out.println("Input the product name:");
+                System.out.println("Input the product name: ");
                 String selection = scan.nextLine();
                 for (Book product : this.listedProducts) {
-                    if (product.getName().equals(selection)) {
+                    if (product.getName().equals(selection)) { //if the name of the product matches
                         Book viewing = product;
                         System.out.println(viewing.getName());
                         System.out.println("Store: " + viewing.getStore());
@@ -170,8 +179,7 @@ public class Market {
                             if (buy.equals("1")) {
                                 do {
                                     incorrectInput = false;
-                                    System.out.println("How much would you like to purchase? Type CANCEL at any " +
-                                            "point to exit.");
+                                    System.out.println("How much would you like to purchase? Type CANCEL to exit.");
                                     String amt = scan.nextLine();
                                     if (amt.equals("CANCEL")) {
                                         return true;
@@ -184,7 +192,8 @@ public class Market {
                                     } else {
                                         System.out.println("Purchasing...");
                                         viewing.removeQuantity(Integer.parseInt(amt));
-                                        this.updateListedProducts(product, viewing); //old, new
+                                        //removes inputted amount from the product
+                                        this.updateListedProducts(product, viewing); //updates the list
                                         ((Customer) user).addToPastPurchases(product, Integer.parseInt(amt));
                                         System.out.println("You have bought " + amt + " " + viewing.getName());
                                         //add to purchase history as well
@@ -196,7 +205,7 @@ public class Market {
                                     String amt = scan.nextLine();
                                     if (!Util.isNumeric(amt)) {
                                         System.out.println("Please input a number.");
-                                    } else if (Integer.parseInt(amt) > viewing.getQuantity()) {
+                                    } else if (Integer.parseInt(amt) > viewing.getQuantity() || Integer.parseInt(amt) <= 0) {
                                         System.out.println("Please input a valid quantity to add to cart.");
                                     } else {
                                         System.out.println(Integer.parseInt(amt));
@@ -315,8 +324,8 @@ public class Market {
                 repeat = true;
             } else if (input.equals("4")) {
                 System.out.println("Are you sure?");
-                String sure = scan.nextLine();
-                if (!Util.yesNo(sure)) {
+                boolean delete = Util.yesNo();
+                if (!delete) {
                     System.out.println("OK! Returning to menu...");
                     repeat = false;
                 } else {
@@ -375,7 +384,7 @@ public class Market {
         }
     }
 
-    public void editProductsMenu(Seller user) {
+    public void editProductsMenu(Seller user) throws IOException {
         boolean loop;
         Scanner scan = new Scanner(System.in);
         do {
@@ -386,33 +395,96 @@ public class Market {
             System.out.println("4 - Return");
             String input = scan.nextLine();
 
+            //NOTE: updates every time
             if (input.equals("1")) {
-                System.out.println("What store would you like to add to?");
-                String storeName = scan.nextLine();
                 Book product = Book.createBookFromUserInput();
-                user.addToStore(storeName, product);
-                //does this get added to file?
+                user.addToStore(product.getStore(), product);
+                this.listedProducts.add(product);
                 System.out.println("You have added " + product.getName() + " to " + product.getStore());
+                user.exportToFile();
                 loop = true;
             } else if (input.equals("2")) {
-                System.out.println("What product would you like to edit?");
-                String productName = scan.nextLine();
-                System.out.println("Sorry! This function isn't currently implemented.");
+                boolean repeat;
+                do {
+                    repeat = false;
+                    System.out.println("What product would you like to edit?");
+                    boolean exist = false;
+                    String productName = scan.nextLine();
+                    for (Book product : user.getProducts()) {
+                        if (product.getName().equals(productName)) {
+                            //mini edit menu
+                            exist = updateProductMenu(product);
+                        }
+                    }
+                    if (!exist) {
+                        System.out.println("Book not found. Try again?");
+                        repeat = Util.yesNo();
+                    }
+                } while(repeat);
+                user.exportToFile();
                 loop = true;
             } else if (input.equals("3")) {
-                System.out.println("What product would you like to edit?");
+                System.out.println("What product would you like to delete?");
                 String productName = scan.nextLine();
                 //search for product with matching name
                 System.out.println("Sorry! This function isn't currently implemented.");
                 loop = true;
             } else if (input.equals("4")) {
                 System.out.println("Returning to main menu...");
+                user.exportToFile();
                 break;
             } else {
                 System.out.println("Please select a valid option.");
                 loop = true;
             }
         } while (loop);
+    }
+
+    private boolean updateProductMenu(Book book) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("1 - Proceed");
+        System.out.println("2 - CANCEL and Exit");
+        String input = scan.nextLine();
+        Book placeholder = book;
+        boolean invalidInput;
+        do {
+            if (input.equals("1")) {
+                invalidInput = false;
+                System.out.println("Input the old parameters if you would like something to be unchanged.");
+
+                System.out.println("Current name is \"" + book.getName() + "\". What would you like the new name to be?");
+                placeholder.setName(scan.nextLine());
+
+                System.out.println("Current author is \"" + book.getAuthor() + "\". What would you like the new author to be?");
+                placeholder.setAuthor(scan.nextLine());
+
+                System.out.println("Current genre is \"" + book.getGenre() + "\". What would you like the new genre to " +
+                        "be?");
+                placeholder.setGenre(scan.nextLine());
+                System.out.println("Current description is \"" + book.getDescription() + "\". What would you like the new" +
+                        " " +
+                        "description to be?");
+                placeholder.setDescription(scan.nextLine());
+
+                System.out.println("Current store is \"" + book.getStore() + "\". What would you like the new store to be?");
+                placeholder.setStore(scan.nextLine());
+
+                System.out.println("Current quantity is \"" + book.getQuantity() + "\". What would you like the new " +
+                        "quantity to be?");
+                placeholder.setQuantity(scan.nextInt());
+                scan.nextLine();
+                System.out.println("Current price is \"" + book.getPrice() + "\". What would you like the new price to " +
+                        "be?");
+                placeholder.setPrice(scan.nextDouble());
+                return true;
+            } else if (input.equals("2")) {
+                return false;
+            } else {
+                System.out.println("Please select a valid option.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+        return false;
     }
 
     public void pastPurchasesMenu(User user) throws IOException {
