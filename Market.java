@@ -86,7 +86,7 @@ public class Market {
                 //username
                 incorrectInput = false;
                 System.out.println("Input your username: ");
-                String user = scan.nextLine();
+                username = scan.nextLine();
                 if (User.isExistingUser(username)) {
                     System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
                     String cancel = scan.nextLine();
@@ -95,7 +95,6 @@ public class Market {
                     }
                     incorrectInput = true;
                 }
-                username = user;
             } while (incorrectInput);
             //email
             do {
