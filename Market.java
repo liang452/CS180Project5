@@ -95,25 +95,24 @@ public class Market {
 
         boolean incorrectInput;
         do {
-            //username
-            incorrectInput = false;
-            System.out.println("Input your username: ");
-            String user = scan.nextLine();
-            if (User.isExistingUser(username)) {
-                System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
-                String cancel = scan.nextLine();
-                if (cancel.equals("CANCEL")) {
-                    return;
+                //username
+                incorrectInput = false;
+                System.out.println("Input your username: ");
+                username = scan.nextLine();
+                if (User.isExistingUser(username)) {
+                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
+                    String cancel = scan.nextLine();
+                    if (cancel.equals("CANCEL")) {
+                        return;
+                    }
+                    incorrectInput = true;
                 }
-                incorrectInput = true;
-            }
-            username = user;
-        } while (incorrectInput);
-        //email
-        do {
-            incorrectInput = false;
-            System.out.println("Input your email: ");
-            email = scan.nextLine();
+            } while (incorrectInput);
+            //email
+            do {
+                incorrectInput = false;
+                System.out.println("Input your email: ");
+                email = scan.nextLine();
 
             //check if email is already take
             if (User.isExistingEmail(email)) {
