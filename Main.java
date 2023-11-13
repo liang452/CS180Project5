@@ -216,6 +216,7 @@ public class Main {
 
         if (user instanceof Seller) {
             String input;
+            boolean repeat;
             do {
                 System.out.println("1 - View Your Products");
                 System.out.println("2 - View Your Sales By Store");
@@ -226,16 +227,35 @@ public class Main {
                 input = scan.nextLine();
 
                 if (input.equals("1")) {
-                    ((Seller) user).displayProducts();
-                    System.out.println("Would you like to edit your products?");
-                    //TODO
-                    String edit = scan.nextLine();
-                    if (Util.yesNo(edit)) {
-                        String storeToEdit = ((Seller) user).getStore().get(0).getName();
-                        market.editProductsMenu((Seller) user);
-                    }
+                    do {
+                        ((Seller) user).displayProducts();
+
+                        System.out.println("1 - Edit Products");
+                        System.out.println("2 - Export as File");
+                        System.out.println("3 - Return to Main Menu");
+                        String edit = scan.nextLine();
+                        if (edit.equals("1")) {
+                            market.editProductsMenu((Seller) user);
+                            repeat = true;
+                        } else if (edit.equals("2")) {
+                            System.out.println("Input a filename: ");
+                            String filename = scan.nextLine();
+                            ((Seller) user).exportProducts(filename);
+                            System.out.println("Successfully exported!");
+                            System.out.println("Returning to main menu...");
+                            repeat = false;
+                        } else if (edit.equals("3")) {
+                            System.out.println("Returning to main menu...");
+                            repeat = false;
+                        } else {
+                            System.out.println("Please select a valid option.");
+                            repeat = true;
+                        }
+                    } while(repeat);
+
                 } else if (input.equals("2")) {
                     //view sales by store
+
                 } else if (input.equals("3")) {
 
                 } else if (input.equals("4")) {
