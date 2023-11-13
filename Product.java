@@ -83,9 +83,9 @@ public class Product {
     }
   
     //TODO: add other ways to change product quantity : added setquantity
-    public boolean removeQuantity(int purchasedQuantity) {
-        if (purchasedQuantity <= quantity) {
-            this.quantity -= purchasedQuantity;
+    public boolean removeQuantity(int removeQuantity) {
+        if (removeQuantity <= quantity) {
+            this.quantity -= removeQuantity;
             return true;
         } else {
             return false;

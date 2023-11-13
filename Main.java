@@ -67,7 +67,6 @@ public class Main {
                     incorrectInput = true;
                 }
             } while (incorrectInput);
-
             do {
                 incorrectInput = false;
                 System.out.println("Input your password:");
@@ -192,8 +191,8 @@ public class Main {
             do {
                 System.out.println("1 - View Marketplace");
                 System.out.println("2 - View Your Cart");
-                System.out.println("3 - View Statistics");
-                System.out.println("4 - View Your Past Purchases");
+                System.out.println("3 - View Your Past Purchases");
+                System.out.println("4 - View Statistics");
                 System.out.println("5 - Edit Account");
                 System.out.println("6 - Log Out");
 
@@ -215,9 +214,12 @@ public class Main {
                     market.viewCartMenu((Customer) user);
                     input = "0";
                 } else if (input.equals("3")) {
-                    //display statistics menu
-                } else if (input.equals("4")) {
                     //view past purchases
+                    ((Customer) user).viewPastPurchases();
+                    market.pastPurchasesMenu(user);
+                } else if (input.equals("4")) {
+                    //view statistics
+
                 } else if (input.equals("5")) {
                     //print out account details
                     boolean deleted = Market.editAccountMenu(username, email, password);

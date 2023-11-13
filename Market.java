@@ -64,7 +64,7 @@ public class Market {
                 iterator.add(product);
             }
         }
-        iterator.add(updatedProduct);
+        iterator.add(updatedProduct); //adds updated product
         this.listedProducts = iterator;
     }
 
@@ -132,7 +132,8 @@ public class Market {
                                     } else {
                                         System.out.println("Purchasing...");
                                         viewing.removeQuantity(Integer.parseInt(amt));
-                                        this.updateListedProducts(product, viewing);
+                                        this.updateListedProducts(product, viewing); //old, new
+                                        ((Customer) user).addToPastPurchases(product, Integer.parseInt(amt));
                                         System.out.println("You have bought " + amt + " " + viewing.getName());
                                         //add to purchase history as well
                                         return true;
@@ -146,11 +147,10 @@ public class Market {
                                     } else if (Integer.parseInt(amt) > viewing.getQuantity()) {
                                         System.out.println("Please input a valid quantity to add to cart.");
                                     } else {
+                                        System.out.println(Integer.parseInt(amt));
                                         ((Customer) user).addToCart(product, Integer.parseInt(amt));
                                         //add this quantity to cart
                                         //added to customer cart
-                                        product.removeQuantity(Integer.parseInt(amt));
-                                        this.updateListedProducts(viewing, product);
                                         System.out.println("Successfully added to cart!");
                                         System.out.println("Returning to market...");
                                     }
@@ -284,7 +284,7 @@ public class Market {
         System.out.println("4 - Return to Main Menu");
         String input = scan.nextLine();
 
-        if (input.equals("1")) {
+        if (input.equals("1")) { //purchase item
             System.out.println("Which item would you like to purchase?");
             String item = scan.nextLine();
             boolean incorrectInput;
@@ -354,5 +354,25 @@ public class Market {
                 loop = true;
             }
         } while (loop);
+    }
+
+    public void pastPurchasesMenu(User user) throws IOException {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("1 - Export as File");
+        System.out.println("2 - Return to Main Menu");
+        String input = scan.nextLine();
+        if (input.equals("1")) {
+            System.out.println("Input the filename: ");
+            String filename = scan.nextLine();
+            if (!filename.contains(".csv")) {
+                filename += ".csv";
+            }
+            ((Customer) user).exportPastPurchases(filename);
+            System.out.println("Exported successfully to " + filename + "!");
+        } else if (input.equals("2")) {
+            System.out.println("Exiting...");
+        } else {
+            System.out.println("Please select a valid option.");
+        }
     }
 }

@@ -48,14 +48,16 @@ public class Customer extends User {
 
     }
 
-    public boolean purchase(Product product, int quantity) {
-        //TODO
-        return true;
+    public void addToPastPurchases(Product product, int quantity) {
+        product.setQuantity(quantity);
+        this.pastPurchases.add(product);
     }
 
     public void addToCart(Product product, int quantity) {
         product.setQuantity(quantity); //sets quantity of
         this.cart.add(product);
+        //if already exists in cart, just add quantity onto it?
+        //TODO
     }
 
     public boolean removeFromCart(String productName, int quantity) {
@@ -86,7 +88,7 @@ public class Customer extends User {
         //TODO
     }
 
-    public void getPastPurchases() {
+    public void viewPastPurchases() {
         if (pastPurchases.isEmpty()) {
             System.out.println("You have made no purchases before.");
             return;
@@ -105,15 +107,16 @@ public class Customer extends User {
     public void viewCart() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty.");
-            return;
         }
-        System.out.println("Your Shopping Cart: ");
-        for (Product product : cart) {
-            System.out.println("Product: " + product.getName());
-            System.out.println("Store: " + product.getStore());
-            System.out.println("Description: " + product.getDescription());
-            System.out.println("Quantity: " + product.getQuantity());
-            System.out.println("Price: $" + product.getPrice() + "\n");
+        else {
+            System.out.println("Your Shopping Cart: ");
+            for (Product product : cart) {
+                System.out.println("Product: " + product.getName());
+                System.out.println("Store: " + product.getStore());
+                System.out.println("Description: " + product.getDescription());
+                System.out.println("Quantity: " + product.getQuantity());
+                System.out.println("Price: $" + product.getPrice() + "\n");
+            }
         }
     }
     public void exportToFile() throws IOException {
@@ -135,6 +138,7 @@ public class Customer extends User {
             line += cartItem.toCSVFormat();
         }
         bw.write(line);
+        //write in past purchases
         line = "";
         for (Product pastItem : pastPurchases) {
             line += pastItem.toCSVFormat();
