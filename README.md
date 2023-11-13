@@ -4,7 +4,7 @@ Run Main.
 ### Notes on Formatting:
 Don't use commas in descriptions.
 ## Who Submitted What
-Ruiwen Liang - 
+
 ## Documentation
 ### Book
 The Book class is the product in our marketplace. 
