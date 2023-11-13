@@ -255,7 +255,7 @@ public class Main {
 
                 } else if (input.equals("2")) {
                     //view sales by store
-
+                    market.viewSalesByStore();
                 } else if (input.equals("3")) {
 
                 } else if (input.equals("4")) {

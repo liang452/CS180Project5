@@ -145,7 +145,7 @@ public class Market {
         return this.listedProducts;
     }
 
-    public boolean displayProductsMenu() {
+    public boolean displayProductsMenu() throws IOException {
         Scanner scan = new Scanner(System.in);
         boolean repeat;
         do {
@@ -194,6 +194,7 @@ public class Market {
                                         //removes inputted amount from the product
                                         this.updateListedProducts(product, viewing); //updates the list
                                         ((Customer) user).addToPastPurchases(product, Integer.parseInt(amt));
+                                        ((Customer) user).exportToFile();
                                         System.out.println("You have bought " + amt + " " + viewing.getName());
                                         //add to purchase history as well
                                         return true;
@@ -209,6 +210,7 @@ public class Market {
                                 } else {
                                     System.out.println(Integer.parseInt(amt));
                                     ((Customer) user).addToCart(product, Integer.parseInt(amt));
+                                    ((Customer) user).exportToFile();
                                     //add this quantity to cart
                                     //added to customer cart
                                     System.out.println("Successfully added to cart!");
@@ -410,16 +412,19 @@ public class Market {
                     System.out.println("You bought: ");
                     for (Book bought : succeeded) {
                         bought.displayProductInfo();
+                        user.addToPastPurchases(bought, bought.getQuantity());
                     }
                     if (!failed.isEmpty()) {
                         System.out.println("Failed to purchase: ");
                         for (Book fail : failed) {
                             fail.displayProductInfo();
                         }
+                        user.setCart(failed);
                     }
-                    System.out.println("Exiting...");
-                    loop = false;
                 }
+                user.exportToFile();
+                System.out.println("Exiting...");
+                loop = false;
             } else if (input.equals("4")) {
                 System.out.println("Exiting cart...");
                 loop = false;
@@ -562,7 +567,30 @@ public class Market {
     }
 
     public void viewSalesByStore() {
-        //use boughtproducts list.
-
+        //use boughtProducts list.
+        ArrayList<Store> stores = ((Seller) user).getStore();
+        ArrayList<Book> sold = new ArrayList<Book>();
+        boolean unique = true;
+        for (Store store: stores) {
+            for (Book book : boughtProducts) {
+                if (book.getStore().equals(store.getName())) {
+                    for (Book check : sold) { //iterates through sold; checks if it's an already existing item
+                        if (check.equals(book)) {
+                            unique = false; //book is not unique
+                            Book placeholder = check;
+                            placeholder.addQuantity(book.getQuantity());
+                            sold.add(placeholder);
+                        }
+                    }
+                    if (unique) {
+                        sold.add(book);
+                    }
+                }
+            }
+            //display store, customer data, and revenues
+            for (Store iterator : stores) {
+                iterator.displayData();
+            }
+        }
     }
 }
