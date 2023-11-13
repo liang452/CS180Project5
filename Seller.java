@@ -16,10 +16,12 @@ public class Seller extends User {
         File f = new File(username + ".csv");
         if (f.exists()) {
             this.products = Util.readCSV(username + ".csv"); //products is instantiated
-        }
-        ArrayList<Book> iterator = this.products;
-        for (Book book : iterator) {
-            this.addToStore(book.getStore(), book);
+            ArrayList<Book> iterator = this.products;
+            for (Book book : iterator) {
+                this.addToStore(book.getStore(), book);
+            }
+        } else {
+            this.products = new ArrayList<>();
         }
     }
     public Seller getSeller() {

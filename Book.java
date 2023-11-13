@@ -137,9 +137,11 @@ public class Book {
     }
 
     public void displayProductInfo() {
-        System.out.println("Product: " + this.name);
-        System.out.println("Store: " + this.store);
+        System.out.println("Title: " + this.name);
+        System.out.println("Author: " + this.author);
+        System.out.println(("Genre: "+ this.getGenre()));
         System.out.println("Description: " + this.description);
+        System.out.println("Store: " + this.store);
         System.out.println("Quantity: " + this.quantity);
         System.out.println("Price: $" + this.price);
     }

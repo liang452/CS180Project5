@@ -19,6 +19,7 @@ public class Store {
 
     public Store(String name, String filename) throws IOException {
         //read name from file
+        this.name = name;
         this.importProducts(filename);
 
     }
