@@ -43,6 +43,17 @@ public class Seller extends User {
         }
         this.stores = placeholder;
     }
+    public boolean exportProducts(String fileName) throws IOException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
+            for (Book book : products) {
+                bw.write(book.toCSVFormat());
+            }
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
     public boolean exportToFile() throws IOException {
         //logins.csv:
         if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) {

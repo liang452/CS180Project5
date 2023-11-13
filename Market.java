@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
 
 /*
@@ -13,6 +12,7 @@ public class Market {
     private ArrayList<Book> listedProducts;
     private ArrayList<Book> boughtProducts;
     private ArrayList<String> sellerNames;
+    private ArrayList<String> customerNames;
     private User user;
 
     public Market(User user) throws IOException {
@@ -20,23 +20,38 @@ public class Market {
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
         this.sellerNames = new ArrayList<>();
-        this.listedProducts = new ArrayList<>();
+        this.customerNames = new ArrayList<>();
+
         this.user = user;
         while (line != null) {
             String[] loginDetails = line.split(",");
             if (User.accountType(loginDetails[0]).equals("SELLER")) {
                 this.sellerNames.add(loginDetails[0]); //adds username
+            } else {
+                this.customerNames.add(loginDetails[0]);
             }
             line = bfr.readLine();
         }
         bfr.close();
 
         this.listedProducts = new ArrayList<>();
+        this.boughtProducts = new ArrayList<>();
+
         for (String name : sellerNames) {
             File f = new File(name + ".csv");
             if (f.exists()) {
                 ArrayList<Book> bookList = Util.readCSV(user.getUsername() + ".csv");
                 this.listedProducts.addAll(bookList);
+            }
+        }
+
+        for (String name : customerNames) {
+            File f = new File(name + ".csv");
+            if (f.exists()) {
+                bfr = new BufferedReader(new FileReader(f));
+                line = bfr.readLine();
+                ArrayList<Book> purchases = Util.readCSV(line); //one long line. assume no repeats of products.
+                this.boughtProducts.addAll(purchases);
             }
         }
     }
@@ -111,7 +126,7 @@ public class Market {
         }
 
 
-    public ArrayList<Book> listProducts() {
+    public void listProducts() {
         //iterate through listedProducts
         for (int i = 0; i < this.listedProducts.size(); i++) {
             Book product = this.listedProducts.get(i);
@@ -121,7 +136,6 @@ public class Market {
             double price = product.getPrice();
             System.out.println(name + " - " + storeName + " - $" + price);
         }
-        return this.listedProducts;
     }
 
     public boolean displayProductsMenu() {
@@ -196,7 +210,6 @@ public class Market {
                                     return true;
                                 } else if (buy.equals("3")) {
                                     looping = false;
-                                    break;
                                 } else {
                                     System.out.println("Please select a valid option.");
                                     looping = true;
@@ -420,5 +433,9 @@ public class Market {
         } else {
             System.out.println("Please select a valid option.");
         }
+    }
+
+    public void viewSalesByStore() {
+        //use boughtproducts list.
     }
 }

@@ -15,8 +15,8 @@ public class Customer extends User {
 
         //FORMAT OF FILE:
         /*
-         * CART - separate items separated by semicolons, separate item details separated by commas
          * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
+         * CART - separated by commas
          */
 
         //if existing customer:
@@ -25,11 +25,11 @@ public class Customer extends User {
             bfr.readLine();
             String line = bfr.readLine(); // cart line
             if (line != null && !line.isEmpty()) {
-                this.cart = Util.readCSV(line);
+                this.pastPurchases = Util.readCSV(line);
             }
             line = bfr.readLine(); //third line - pastPurchases
             if (line != null && !line.equals("")) {
-                this.pastPurchases = Util.readCSV(line);
+                this.cart = Util.readCSV(line);
             }
         } else {
             this.cart = new ArrayList<>();
@@ -124,13 +124,13 @@ public class Customer extends User {
         BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
         //write in cart data
         String line = "";
-        for (Book cartItem : cart) {
+        for (Book cartItem : pastPurchases) {
             line += cartItem.toCSVFormat();
         }
         bw.write(line);
         //write in past purchases
         line = "";
-        for (Book pastItem : pastPurchases) {
+        for (Book pastItem : cart) {
             line += pastItem.toCSVFormat();
         }
         bw.write(line);

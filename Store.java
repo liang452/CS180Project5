@@ -46,17 +46,6 @@ public class Store {
         }
     }
 
-    public boolean exportProducts(String fileName) throws IOException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
-            for (Book book : books) {
-                bw.write(book.toCSVFormat());
-            }
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
 
     public void removeProduct(String productName) {
         for (int i = 0; i < books.size(); i++) {
