@@ -23,20 +23,16 @@ public class Customer extends User {
         //if existing customer:
         if (User.isExistingUser(username) && User.isExistingEmail(email)) {
             BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
-            bfr.readLine();
-            String line = bfr.readLine(); // cart line
+            String line = bfr.readLine(); // past purchases line
             if (line != null && !line.isEmpty()) {
                 this.pastPurchases = Util.readCSV(line);
             }
-            line = bfr.readLine(); //third line - pastPurchases
-            if (line != null && !line.equals("")) {
+            line = bfr.readLine(); //cart line
+            if (line != null && !line.isEmpty()) {
                 this.cart = Util.readCSV(line);
             }
-        } else {
-            this.cart = new ArrayList<>();
-            this.pastPurchases = new ArrayList<>();
+            bfr.close();
         }
-
     }
 
     public void addToPastPurchases(Book product, int quantity) {
@@ -49,6 +45,14 @@ public class Customer extends User {
         this.cart.add(product);
         //if already exists in cart, just add quantity onto it?
         //TODO
+    }
+
+    public ArrayList<Book> getCart() {
+        return this.cart;
+    }
+
+    public void setCart(ArrayList<Book> newCart) {
+        this.cart = newCart;
     }
 
     public boolean removeFromCart(String productName, int quantity) {
@@ -75,8 +79,11 @@ public class Customer extends User {
         return false;
     }
 
-    public void purchaseShoppingCart() {
-        //TODO
+    public ArrayList<Book> purchaseShoppingCart() {
+        //TODO - purchase all of cart (aka clears it out) returns the cart.
+        ArrayList<Book> placeholder = this.cart;
+        this.cart = new ArrayList<>();
+        return placeholder;
     }
 
     public void viewPastPurchases() {

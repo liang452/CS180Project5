@@ -95,47 +95,47 @@ public class Market {
 
         boolean incorrectInput;
         do {
-                //username
-                incorrectInput = false;
-                System.out.println("Input your username: ");
-                String user = scan.nextLine();
-                if (User.isExistingUser(username)) {
-                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
-                    incorrectInput = true;
+            //username
+            incorrectInput = false;
+            System.out.println("Input your username: ");
+            String user = scan.nextLine();
+            if (User.isExistingUser(username)) {
+                System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
+                String cancel = scan.nextLine();
+                if (cancel.equals("CANCEL")) {
+                    return;
                 }
-                username = user;
-            } while (incorrectInput);
-            //email
-            do {
-                incorrectInput = false;
-                System.out.println("Input your email: ");
-                email = scan.nextLine();
+                incorrectInput = true;
+            }
+            username = user;
+        } while (incorrectInput);
+        //email
+        do {
+            incorrectInput = false;
+            System.out.println("Input your email: ");
+            email = scan.nextLine();
 
-                //check if email is already take
-                if (User.isExistingEmail(email)) {
-                    System.out.println("That email is taken already. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
-                    incorrectInput = true;
+            //check if email is already take
+            if (User.isExistingEmail(email)) {
+                System.out.println("That email is taken already. Try again, or type CANCEL to exit.");
+                String cancel = scan.nextLine();
+                if (cancel.equals("CANCEL")) {
+                    return;
                 }
-            } while (incorrectInput);
-            do {
-                incorrectInput = false;
-                System.out.println("Input your password:");
-                password = scan.nextLine();
-                //checks if password contains commas
-                if (password.contains(",")) {
-                    System.out.println("Please do not use commas.");
-                    incorrectInput = true;
-                }
-            } while (incorrectInput);
-        }
+                incorrectInput = true;
+            }
+        } while (incorrectInput);
+        do {
+            incorrectInput = false;
+            System.out.println("Input your password:");
+            password = scan.nextLine();
+            //checks if password contains commas
+            if (password.contains(",")) {
+                System.out.println("Please do not use commas.");
+                incorrectInput = true;
+            }
+        } while (incorrectInput);
+    }
 
 
     public ArrayList<Book> displayMarket() {
@@ -143,7 +143,7 @@ public class Market {
         for (Book book : this.listedProducts) {
             book.displayProduct(); //is it an issue with this
         }
-    return this.listedProducts;
+        return this.listedProducts;
     }
 
     public boolean displayProductsMenu() {
@@ -199,29 +199,29 @@ public class Market {
                                         //add to purchase history as well
                                         return true;
                                     }
-                                } while(incorrectInput);
+                                } while (incorrectInput);
                             } else if (buy.equals("2")) {
-                                    System.out.println("How much of this item would you like to add to your cart?");
-                                    String amt = scan.nextLine();
-                                    if (!Util.isNumeric(amt)) {
-                                        System.out.println("Please input a number.");
-                                    } else if (Integer.parseInt(amt) > viewing.getQuantity() || Integer.parseInt(amt) <= 0) {
-                                        System.out.println("Please input a valid quantity to add to cart.");
-                                    } else {
-                                        System.out.println(Integer.parseInt(amt));
-                                        ((Customer) user).addToCart(product, Integer.parseInt(amt));
-                                        //add this quantity to cart
-                                        //added to customer cart
-                                        System.out.println("Successfully added to cart!");
-                                        System.out.println("Returning to market...");
-                                    }
-                                    return true;
-                                } else if (buy.equals("3")) {
-                                    looping = false;
+                                System.out.println("How much of this item would you like to add to your cart?");
+                                String amt = scan.nextLine();
+                                if (!Util.isNumeric(amt)) {
+                                    System.out.println("Please input a number.");
+                                } else if (Integer.parseInt(amt) > viewing.getQuantity() || Integer.parseInt(amt) <= 0) {
+                                    System.out.println("Please input a valid quantity to add to cart.");
                                 } else {
-                                    System.out.println("Please select a valid option.");
-                                    looping = true;
+                                    System.out.println(Integer.parseInt(amt));
+                                    ((Customer) user).addToCart(product, Integer.parseInt(amt));
+                                    //add this quantity to cart
+                                    //added to customer cart
+                                    System.out.println("Successfully added to cart!");
+                                    System.out.println("Returning to market...");
                                 }
+                                return true;
+                            } else if (buy.equals("3")) {
+                                looping = false;
+                            } else {
+                                System.out.println("Please select a valid option.");
+                                looping = true;
+                            }
                         } while (looping);
                     }
                 }
@@ -243,7 +243,7 @@ public class Market {
                 System.out.println("Exiting market...");
                 return false;
             }
-        } while(repeat);
+        } while (repeat);
         return true;
     }
 
@@ -340,7 +340,8 @@ public class Market {
         } while (repeat);
         return true;
     }
-    public void viewCartMenu(Customer user) {
+
+    public void viewCartMenu(Customer user) throws IOException {
         //read cart of this user - method in Customer?
         Scanner scan = new Scanner(System.in);
         user.viewCart();
@@ -349,41 +350,88 @@ public class Market {
         System.out.println("3 - Purchase All Items in Cart");
         System.out.println("4 - Return to Main Menu");
         String input = scan.nextLine();
-
-        if (input.equals("1")) { //purchase item
-            System.out.println("Which item would you like to purchase?");
-            String item = scan.nextLine();
-            boolean incorrectInput;
-            do {
-                incorrectInput = false;
-                System.out.println("How much of this item would you like to buy?");
-                String quantity = scan.nextLine();
-                if (!Util.isNumeric(quantity)) {
-                    System.out.println("Please input a valid quantity.");
-                    incorrectInput = true;
-                } else if (Integer.parseInt(quantity) <= 0) {
-                    System.out.println("Please input a valid quantity.");
-                    incorrectInput = true;
-                } else {
-                    //actually buy thing. add to past purchases, remove from cart.
-                    //loop through cart?
-                    incorrectInput = user.removeFromCart(item, Integer.parseInt(quantity));
-                    if (incorrectInput) {
-                        System.out.println("Successfully purchased!");
+        boolean loop;
+        do {
+            loop = false;
+            if (input.equals("1")) { //purchase item
+                System.out.println("Which item would you like to purchase?");
+                String item = scan.nextLine();
+                boolean incorrectInput;
+                do {
+                    incorrectInput = false;
+                    System.out.println("How much of this item would you like to buy?");
+                    String quantity = scan.nextLine();
+                    if (!Util.isNumeric(quantity)) {
+                        System.out.println("Please input a valid quantity.");
+                        incorrectInput = true;
+                    } else if (Integer.parseInt(quantity) <= 0) {
+                        System.out.println("Please input a valid quantity.");
+                        incorrectInput = true;
+                    } else {
+                        //actually buy thing. add to past purchases, remove from cart.
+                        //loop through cart?
+                        incorrectInput = user.removeFromCart(item, Integer.parseInt(quantity));
+                        if (incorrectInput) {
+                            System.out.println("Successfully purchased!");
+                        }
+                    }
+                    loop = true;
+                } while (incorrectInput);
+            } else if (input.equals("2")) {
+                System.out.println("Which book would you like to remove?"); //multiple items having same name will have
+                // problems
+                String item = scan.nextLine();
+                ArrayList placeholder = new ArrayList<>();
+                for (Book book : user.getCart()) {
+                    if (!book.getName().equals(item)) {
+                        placeholder.add(book);
                     }
                 }
-            } while(incorrectInput);
-        } else if (input.equals("2")) {
+                user.setCart(placeholder);
+                user.exportToFile();
+                System.out.println("Removed " + item + " from cart.");
+                loop = true;
+            } else if (input.equals("3")) {
+                ArrayList<Book> purchasedCart = user.purchaseShoppingCart();
+                ArrayList<Book> placeholder = this.listedProducts;
+                ArrayList<Book> failed = new ArrayList<Book>();
+                ArrayList<Book> succeeded = new ArrayList<Book>();
+                for (Book book : placeholder) {
+                    for (Book bk : purchasedCart) {
+                        if (book.equals(bk)) {
+                            if (bk.getQuantity() > book.getQuantity()) {
+                                //if the amount you're trying to buy is greater than the amount that exists
+                                failed.add(bk);
+                            } else {
+                                this.updateListedProducts(book, bk);
+                                succeeded.add(bk);
+                            }
+                        }
+                    }
+                    System.out.println("You bought: ");
+                    for (Book bought : succeeded) {
+                        bought.displayProductInfo();
+                    }
+                    if (!failed.isEmpty()) {
+                        System.out.println("Failed to purchase: ");
+                        for (Book fail : failed) {
+                            fail.displayProductInfo();
+                        }
+                    }
+                    System.out.println("Exiting...");
+                    loop = false;
+                }
+            } else if (input.equals("4")) {
+                System.out.println("Exiting cart...");
+                loop = false;
+            } else {
+                System.out.println("Please input a valid option.");
+                loop = true;
+            }
+        } while(loop);
+}
 
-        } else if (input.equals("3")) {
-
-        } else if (input.equals("4")) {
-            System.out.println("Exiting cart...");
-        } else {
-            System.out.println("Please input a valid option.");
-        }
-    }
-
+    //menu to give seller options to add, edit, or delete their books
     public void editProductsMenu(Seller user) throws IOException {
         boolean loop;
         Scanner scan = new Scanner(System.in);
@@ -446,6 +494,7 @@ public class Market {
         } while (loop);
     }
 
+    // the menu for changing an existing product
     private boolean updateProductMenu(Book book) {
         Scanner scan = new Scanner(System.in);
         System.out.println("1 - Proceed");

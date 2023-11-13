@@ -25,10 +25,10 @@ public abstract class Util {
     public static boolean yesNo() {
         boolean repeat;
         boolean checker = false;
-        System.out.println("Y/N: ");
-        Scanner scan = new Scanner(System.in);
-        String input = scan.nextLine();
         do {
+            System.out.println("Y/N: ");
+            Scanner scan = new Scanner(System.in);
+            String input = scan.nextLine();
             repeat = false;
             if (input.equalsIgnoreCase("YES") || input.equalsIgnoreCase("Y")) {
                 checker = true;
@@ -98,7 +98,7 @@ public abstract class Util {
         } else { //if it's not a filename
             if (!input.isEmpty()) {
                 String[] productDetails = input.split(",");
-                if (productDetails.length != 7) {
+                if (productDetails.length < 7) {
                     System.out.println("Please input a properly formatted file.");
                 } else {
                     for (int i = 0; i < productDetails.length; i += 7) {

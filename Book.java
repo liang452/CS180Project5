@@ -173,7 +173,8 @@ public class Book {
     }
       
     public boolean equals(Book book) {
-        if (this.getName().equals(book.getName())) {
+        if (this.getName().equals(book.getName()) && this.getAuthor().equals(book.getAuthor())
+                && (this.getStore().equals(this.getStore()))) {
             return true;
         } else {
             return false;
