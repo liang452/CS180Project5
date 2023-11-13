@@ -343,10 +343,10 @@ public class Market {
                     return false;
                 }
             } else if (input.equals("5")) {
-                repeat = false;
+                System.out.println("Exiting...");
             }
         } while (repeat);
-        return true;
+        return false;
     }
 
     public void viewCartMenu(Customer user) throws IOException {

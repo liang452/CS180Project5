@@ -34,11 +34,11 @@ public class Main {
                     incorrectInput = false;
                     System.out.println("Input your email:");
                     email = scan.nextLine();
-                    if (!User.isExistingEmail(email)) {
+                    if (email.equals("CANCEL")) {
+                        return;
+                    } else if (!User.isExistingEmail(email)) {
                         System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
                         incorrectInput = true;
-                    } else if (email.equals("CANCEL")) {
-                        return;
                     }
                 } while (incorrectInput);
                 //password
@@ -48,12 +48,12 @@ public class Main {
                     password = scan.nextLine();
 
                     //if wrong password
-                    if (!User.checkPassword(email, password)) {
-                        System.out.println("Wrong password. Try again, or type CANCEL to exit.");
-                        incorrectInput = true;
-                    } else if (password.equals("CANCEL")) {
+                     if (password.equals("CANCEL")) {
                         return;
-                    }
+                    } else if (!User.checkPassword(email, password)) {
+                         System.out.println("Wrong password. Try again, or type CANCEL to exit.");
+                         incorrectInput = true;
+                     }
                 } while (incorrectInput);
                 System.out.println("Logged in successfully. Welcome back!");
                 existingAccount = true;
