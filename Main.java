@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class Main {
         }
         Scanner scan = new Scanner(System.in);
 
-        System.out.println("Welcome!");
+        JOptionPane.showMessageDialog(null, "Welcome to Vellichor!", "Vellichor", JOptionPane.PLAIN_MESSAGE);
+
         String email = "";
         String username = "";
         String password = "";
@@ -23,18 +25,25 @@ public class Main {
         boolean loop;
         do {
             //initial page
-            System.out.println("1 - Login");
-            System.out.println("2 - Create Account");
-            System.out.println("3 - Exit");
-            String init = scan.nextLine();
+            String[] options = {"Login", "Create Account", "Exit"};
+            String init = String.valueOf(JOptionPane.showOptionDialog(null, "Select one:", "Vellichor",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[1]));
+
             boolean incorrectInput;
             loop = false;
             if (init.equals("1")) {
+                //if "Create Account" is selected
+                Market.userInitialization();
+                existingAccount = false;
+            }
+            else if (init.equals("0")) {
+                //if login is selected
                 do {
+                    email = JOptionPane.showInputDialog(null, "Input your email: ", "Login",
+                            JOptionPane.OK_CANCEL_OPTION);
                     incorrectInput = false;
-                    System.out.println("Input your email:");
-                    email = scan.nextLine();
-                    if (email.equals("CANCEL")) {
+
+                    if (email.equals("CANCEL")) { //if cancel gets hit.
                         return;
                     } else if (!User.isExistingEmail(email)) {
                         System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
@@ -44,7 +53,7 @@ public class Main {
                 //password
                 do {
                     incorrectInput = false;
-                    System.out.println("Input your password: ");
+                    JOptionPane.showInputDialog(null, "Input your password: ", "Login", JOptionPane.OK_CANCEL_OPTION);
                     password = scan.nextLine();
 
                     //if wrong password
@@ -55,13 +64,11 @@ public class Main {
                          incorrectInput = true;
                      }
                 } while (incorrectInput);
-                System.out.println("Logged in successfully. Welcome back!");
+                JOptionPane.showMessageDialog(null, "Logged in successfully. Welcome back!");
                 existingAccount = true;
             } else if (init.equals("2")) {
-                Market.userInitialization();
-                existingAccount = false;
-            } else if (init.equals("3")) {
-                System.out.println("Have a nice day!");
+                //if EXIT is selected
+                JOptionPane.showMessageDialog(null, "Thank you for using Vellichor, and have a nice day!");
                 return;
             } else {
                 System.out.println("Incorrect input. Try again, or type CANCEL to exit.");

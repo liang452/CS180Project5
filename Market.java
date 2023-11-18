@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -104,10 +105,9 @@ public class Market {
         do {
                 //username
                 incorrectInput = false;
-                System.out.println("Input your username: ");
-                username = scan.nextLine();
+                username = JOptionPane.showInputDialog(null, "Input your username: ");
                 if (User.isExistingUser(username)) {
-                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
+                    JOptionPane.showMessageDialog(null, "That username is taken already!", "Error", JOptionPane.OK_CANCEL_OPTION);
                     String cancel = scan.nextLine();
                     if (cancel.equals("CANCEL")) {
                         return;
