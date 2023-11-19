@@ -27,6 +27,9 @@ public class Customer extends User {
                 this.cart = Util.readCSV(line);
             }
             bfr.close();
+        } else {
+            File f = new File(username + ".csv");
+            f.createNewFile();
         }
     }
 

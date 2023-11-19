@@ -213,6 +213,13 @@ public class User {
         File f = new File(username + ".csv");
         f.delete();
     }
+
+    /**
+     *
+     * @param input
+     * @return Checks if the String input matches either email or username, and returns the account type as a String.
+     * @throws IOException
+     */
     public static String accountType(String input) throws IOException {
         //returns 0 if customer, 1 if seller
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
