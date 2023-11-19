@@ -57,6 +57,11 @@ public class Market {
         }
     }
 
+    /**
+     * Logs in an existing user.
+     * @return
+     * @throws IOException
+     */
     public static String[] userLogin() throws IOException {
         String email = "";
         String username = "";
@@ -95,6 +100,11 @@ public class Market {
         return loginDetails;
     }
 
+    /**
+     * Creates a new account.
+     * @return
+     * @throws IOException
+     */
     public static String[] userInitialization() throws IOException {
         String username = "";
         String email = "";
@@ -204,6 +214,11 @@ public class Market {
         return books;
     }
 
+    /**
+     * Main menu for customers.
+     * @return
+     * @throws IOException
+     */
     public boolean displayProductsMenu() throws IOException {
         Scanner scan = new Scanner(System.in);
         boolean repeat;
@@ -311,6 +326,11 @@ public class Market {
         return true;
     }
 
+    /**
+     * Searches for all books that match a given input, and returns a list.
+     * @param input
+     * @return
+     */
     public ArrayList<Book> searchProducts(String input) {
         ArrayList<Book> matches = new ArrayList<>();
         input = input.toUpperCase();
@@ -336,6 +356,14 @@ public class Market {
         return matches;
     }
 
+    /**
+     * Displays menu for users editing their accounts.
+     * @param username
+     * @param email
+     * @param password
+     * @return
+     * @throws IOException
+     */
     public static boolean editAccountMenu(String username, String email, String password) throws IOException {
         //TODO
         Scanner scan = new Scanner(System.in);
@@ -405,6 +433,11 @@ public class Market {
         return false;
     }
 
+    /**
+     * Displays menu for customers viewing their shopping carts.
+     * @param user
+     * @throws IOException
+     */
     public void viewCartMenu(Customer user) throws IOException {
         //read cart of this user - method in Customer?
         Scanner scan = new Scanner(System.in);
@@ -498,7 +531,11 @@ public class Market {
         } while(loop);
 }
 
-    //menu to give seller options to add, edit, or delete their books
+    /**
+     * Displays menu to give seller options to add, edit, or delete their books
+     * @param user
+     * @throws IOException
+     */
     public void editProductsMenu(Seller user) throws IOException {
         boolean loop;
         Scanner scan = new Scanner(System.in);
@@ -570,7 +607,11 @@ public class Market {
         } while (loop);
     }
 
-    // the menu for changing an existing product
+    /**
+     * Displays menu for sellers updating an existing book.
+     * @param book
+     * @return
+     */
     private Book updateProductMenu(Book book) {
         Scanner scan = new Scanner(System.in);
         System.out.println("1 - Proceed");
@@ -613,6 +654,11 @@ public class Market {
         } while (true);
     }
 
+    /**
+     * Customer - displays past purchases, and gives an option to export as a file.
+     * @param user
+     * @throws IOException
+     */
     public void pastPurchasesMenu(User user) throws IOException {
         Scanner scan = new Scanner(System.in);
         System.out.println("1 - Export as File");
@@ -633,6 +679,9 @@ public class Market {
         }
     }
 
+    /**
+     * Seller - displays sales by store.
+     */
     public void viewSalesByStore() {
         //use boughtProducts list.
         ArrayList<Store> stores = ((Seller) user).getStore();

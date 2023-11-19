@@ -117,8 +117,13 @@ public class Customer extends User {
             }
         }
     }
+
+    /**
+     * Exports customer information to their information on file.
+     * @throws IOException
+     */
     public void exportToFile() throws IOException {
-        //TODO: make synchronized
+        //TODO: make synchronized? does this need to be only one at a time?
         if (!User.isExistingUser(this.getUsername())) {
             BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
             bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "CUSTOMER");
