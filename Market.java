@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -56,6 +57,100 @@ public class Market {
         }
     }
 
+    public static String[] userLogin() throws IOException {
+        String email = "";
+        String username = "";
+        String password = "";
+        String account = "";
+        boolean invalidInput = false;
+        do {
+            email = JOptionPane.showInputDialog(null, "Input your email: ", "Login",
+                    JOptionPane.OK_CANCEL_OPTION);
+            if (email == null) {
+                return new String[]{"CANCEL"};
+            } else if (!User.isExistingEmail(email)) { //if not an existing email
+                JOptionPane.showMessageDialog(null, "Not an existing email.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+        //password
+        do {
+            invalidInput = false;
+            password = JOptionPane.showInputDialog(null, "Input your password: ", "Login",
+                    JOptionPane.OK_CANCEL_OPTION);
+
+            //if hit cancel
+            if (password == null) {
+                return new String[]{"CANCEL"};
+            } else if (!User.checkPassword(email, password)) {
+                JOptionPane.showMessageDialog(null, "Wrong password.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+
+        JOptionPane.showMessageDialog(null, "Logged in successfully. Welcome back!");
+        username = Util.getUserFromEmail(email);
+        account = User.accountType(username);
+        String[] loginDetails = {username, email, password, account};
+        return loginDetails;
+    }
+
+    public static String[] userInitialization() throws IOException {
+        String username = "";
+        String email = "";
+        String password = "";
+
+        boolean incorrectInput;
+        do {
+            //username
+            incorrectInput = false;
+            username = JOptionPane.showInputDialog(null, "Input your username: ");
+            if (username == null){
+                return new String[]{"CANCEL"};
+            } else if (User.isExistingUser(username)) {
+                JOptionPane.showMessageDialog(null, "That username is taken already!", "Error", JOptionPane.OK_CANCEL_OPTION);
+                incorrectInput = true;
+            }
+        } while (incorrectInput);
+        //email
+        do {
+            incorrectInput = false;
+            email = JOptionPane.showInputDialog("Input your email: ");
+
+            //check if email is already take
+            if (email == null) {
+                return new String[]{"CANCEL"};
+            } else if (User.isExistingEmail(email)) {
+                JOptionPane.showMessageDialog(null, "That email is taken already.");
+                incorrectInput = true;
+            } else if (email.contains(",")) {
+                JOptionPane.showMessageDialog(null, "Please do not use commas.");
+            } else if (!email.contains("@")) {
+                JOptionPane.showMessageDialog(null, "Please input a valid email.");
+            }
+        } while (incorrectInput);
+        do {
+            incorrectInput = false;
+            password = JOptionPane.showInputDialog(null, "Input your password:");
+
+            //checks if password contains commas
+            if (password == null) {
+                return new String[]{"CANCEL"};
+            } else if (password.contains(",")) {
+                JOptionPane.showMessageDialog(null, "Please do not use commas.");
+                incorrectInput = true;
+            }
+        } while (incorrectInput);
+
+        String[] accountOptions = {"CUSTOMER", "SELLER"};
+        Object account = JOptionPane.showInputDialog(null, "What type of account would you like to create?",
+                    "Account Type", JOptionPane.OK_CANCEL_OPTION, null, accountOptions, accountOptions[0]);
+        if (account == null) {
+            return new String[]{"CANCEL"};
+        }
+        return new String[]{username, email, password, (String) account};
+    }
+
     public ArrayList<Book> getListedProducts() {
         return this.listedProducts;
     }
@@ -71,7 +166,7 @@ public class Market {
         this.listedProducts = iterator; //sets listedProducts to list with new item
     }
 
-    public void exportToFiles() throws IOException { //update seller's list of products
+    public synchronized void exportToFiles() throws IOException { //update seller's list of products
         for (Book book : this.listedProducts) {
             for (String seller : sellerNames) { //for every seller
                 String file = seller + ".csv";
@@ -94,78 +189,36 @@ public class Market {
         }
     }
 
-    public static void userInitialization() throws IOException {
-        Scanner scan = new Scanner(System.in);
-        String username = "";
-        String email = "";
-        String password = "";
 
-        boolean incorrectInput;
-        do {
-                //username
-                incorrectInput = false;
-                System.out.println("Input your username: ");
-                username = scan.nextLine();
-                if (User.isExistingUser(username)) {
-                    System.out.println("That username is taken already. Try again, or type CANCEL to exit.");
-                    String cancel = scan.nextLine();
-                    if (cancel.equals("CANCEL")) {
-                        return;
-                    }
-                    incorrectInput = true;
-                }
-            } while (incorrectInput);
-            //email
-            do {
-                incorrectInput = false;
-                System.out.println("Input your email: ");
-                email = scan.nextLine();
-
-            //check if email is already take
-            if (User.isExistingEmail(email)) {
-                System.out.println("That email is taken already. Try again, or type CANCEL to exit.");
-                String cancel = scan.nextLine();
-                if (cancel.equals("CANCEL")) {
-                    return;
-                }
-                incorrectInput = true;
-            }
-        } while (incorrectInput);
-        do {
-            incorrectInput = false;
-            System.out.println("Input your password:");
-            password = scan.nextLine();
-            //checks if password contains commas
-            if (password.contains(",")) {
-                System.out.println("Please do not use commas.");
-                incorrectInput = true;
-            }
-        } while (incorrectInput);
-    }
-
-
-    public ArrayList<Book> displayMarket() {
+    /**
+     *
+     * @return Returns a list of the book and author names.
+     */
+    public ArrayList<String> displayMarket() {
         //iterate through listedProducts
+        ArrayList<String> books = new ArrayList<>();
         for (Book book : this.listedProducts) {
-            book.displayProduct(); //is it an issue with this
+            books.add(book.getName() + " - " + book.getAuthor() + " - " + book.getStore());
         }
-        return this.listedProducts;
+        return books;
     }
 
     public boolean displayProductsMenu() throws IOException {
         Scanner scan = new Scanner(System.in);
         boolean repeat;
+        String[] options = {"View All Books", "Search for a Book by Keyword", "Return"};
         do {
             repeat = false;
-            System.out.println("1 - Select a Book You are Interested in");
-            System.out.println("2 - Search for a Book by Keyword");
-            System.out.println("3 - Return to the Main Menu");
-            String option = scan.nextLine();
-            if (option.equals("1")) {
-                System.out.println("Input the product name: ");
-                String selection = scan.nextLine();
+            String option = (String) JOptionPane.showInputDialog(null, "", "Market", JOptionPane.OK_CANCEL_OPTION, null,
+                    options, options[0]);
+
+            if (option.equals(options[0])) {
+                String[] books = (String[]) this.displayMarket().toArray();
+                String selection = (String) JOptionPane.showInputDialog(null, "", "Market", JOptionPane.OK_CANCEL_OPTION,
+                       null, books, null);
                 for (Book product : this.listedProducts) {
-                    if (product.getName().equals(selection)) { //if the name of the product matches
+                    if (product.getName().equals(selection)) {
+                        //TODO: fix this. selection is no longer just the name of the book.
                         Book viewing = product;
                         System.out.println(viewing.getName());
                         System.out.println("Store: " + viewing.getStore());
@@ -236,7 +289,7 @@ public class Market {
                     }
                 }
                 System.out.println("No matching books found.");
-            } else if (option.equals("2")) {
+            } else if (option.equals(options[1])) {
                 System.out.println("What would you like to search for?");
                 String search = scan.nextLine();
                 ArrayList<Book> results = this.searchProducts(search);

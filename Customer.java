@@ -27,6 +27,9 @@ public class Customer extends User {
                 this.cart = Util.readCSV(line);
             }
             bfr.close();
+        } else {
+            File f = new File(username + ".csv");
+            f.createNewFile();
         }
     }
 
@@ -74,8 +77,10 @@ public class Customer extends User {
         return false;
     }
 
+    /**
+     * @return Purchases the entire shopping cart and returns what was purchased.
+     */
     public ArrayList<Book> purchaseShoppingCart() {
-        //TODO - purchase all of cart (aka clears it out) returns the cart.
         ArrayList<Book> placeholder = this.cart;
         this.cart = new ArrayList<>();
         return placeholder;

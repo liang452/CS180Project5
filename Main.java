@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,86 +16,61 @@ public class Main {
         }
         Scanner scan = new Scanner(System.in);
 
-        System.out.println("Welcome!");
+        JOptionPane.showMessageDialog(null, "Welcome to Vellichor!", "Vellichor",
+                JOptionPane.PLAIN_MESSAGE);
+
         String email = "";
         String username = "";
         String password = "";
+        String accountType = "";
+
+        String[] loginDetails;
         boolean existingAccount = false;
-
-        boolean loop;
+        boolean repeat = false;
+        //initial page
+        //loop if select cancel on login or create account page
         do {
-            //initial page
-            System.out.println("1 - Login");
-            System.out.println("2 - Create Account");
-            System.out.println("3 - Exit");
-            String init = scan.nextLine();
-            boolean incorrectInput;
-            loop = false;
-            if (init.equals("1")) {
-                do {
-                    incorrectInput = false;
-                    System.out.println("Input your email:");
-                    email = scan.nextLine();
-                    if (email.equals("CANCEL")) {
-                        return;
-                    } else if (!User.isExistingEmail(email)) {
-                        System.out.println("Not an existing email. Try again, or type CANCEL to exit.");
-                        incorrectInput = true;
-                    }
-                } while (incorrectInput);
-                //password
-                do {
-                    incorrectInput = false;
-                    System.out.println("Input your password: ");
-                    password = scan.nextLine();
+            String[] options = {"Login", "Create Account", "Exit"};
+            String init = String.valueOf(JOptionPane.showOptionDialog(null, "What would you like to do?", "Vellichor",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[1]));
 
-                    //if wrong password
-                     if (password.equals("CANCEL")) {
-                        return;
-                    } else if (!User.checkPassword(email, password)) {
-                         System.out.println("Wrong password. Try again, or type CANCEL to exit.");
-                         incorrectInput = true;
-                     }
-                } while (incorrectInput);
-                System.out.println("Logged in successfully. Welcome back!");
-                existingAccount = true;
-            } else if (init.equals("2")) {
-                Market.userInitialization();
-                existingAccount = false;
-            } else if (init.equals("3")) {
-                System.out.println("Have a nice day!");
-                return;
-            } else {
-                System.out.println("Incorrect input. Try again, or type CANCEL to exit.");
-                String cancel = scan.nextLine();
-                if (cancel.equals("CANCEL")) {
-                    return;
+            if (init.equals("1")) {
+                //if "Create Account" is selected
+                loginDetails = Market.userInitialization();
+                if (!loginDetails[0].equals("CANCEL")) {
+                    username = loginDetails[0];
+                    email = loginDetails[1];
+                    password = loginDetails[2];
+                    accountType = loginDetails[3];
+                    existingAccount = false;
+                    JOptionPane.showMessageDialog(null, "You have successfully created an account!");
+                } else {
+                    repeat = true;
                 }
-                loop = true;
+            } else if (init.equals("0")) {
+                //if login is selected
+                loginDetails = Market.userLogin();
+                if (!loginDetails[0].equals("CANCEL")) {
+                    username = loginDetails[0];
+                    email = loginDetails[1];
+                    password = loginDetails[2];
+                    accountType = loginDetails[3];
+                    existingAccount = true;
+                } else {
+                    repeat = true;
+                }
+            } else if (init.equals("2")) {
+                //if EXIT is selected
+                JOptionPane.showMessageDialog(null, "Thank you for using Vellichor, and have a nice day!");
+                return;
             }
-        } while(loop);
+        } while (repeat);
 
         //if not existing, instantiates
-        String accountType = "";
-        boolean incorrectInput;
-        if (!existingAccount) {
-            do {
-                incorrectInput = false;
-                System.out.println("Are you a seller or customer?");
-                accountType = scan.nextLine();
-                if (!accountType.equalsIgnoreCase("seller") && !accountType.equalsIgnoreCase("customer")) {
-                    System.out.println("Please input a valid option.");
-                    incorrectInput = true;
-                }
-            } while (incorrectInput);
-            System.out.println("Welcome! You have successfully made an account.");
-        } else {
-            //assign username if an existing user
-            username = Util.getUserFromEmail(email);
-        }
+
 
         User user;
-        if (User.accountType(email).equals("SELLER") || accountType.equalsIgnoreCase("seller")) {
+        if (accountType.equals("SELLER")) {
             user = new Seller(username, email, password);
         } else {
             user = new Customer(username, email, password);
@@ -102,8 +79,9 @@ public class Main {
 
         //seller specific part; if not a previously existing seller
         if (user instanceof Seller && (!existingAccount) && !new File (username + "csv").exists()) {
+            boolean invalidInput;
             do {
-                incorrectInput = false;
+                invalidInput = false;
                 System.out.println("Would you like to set up your store manually?");
                 String input = scan.nextLine();
                 System.out.println("What would you like your store name to be?");
@@ -111,42 +89,42 @@ public class Main {
                 ArrayList<Book> products = new ArrayList<>();
                 Store store;
                 if (Util.yesNo()) {
-                    boolean repeat;
+                    repeat = false;
                     do {
                         products.add(Book.createBookFromUserInput());
                         System.out.println("Would you like to create another product?");
                         repeat = Util.yesNo();
-                    } while(repeat);
+                    } while (repeat);
                     store = new Store(storeName, products);
                 } else {
-                        System.out.println("Please input a .csv file name to upload your products.");
-                        String filename = scan.nextLine();
-                        boolean checker;
-                        do {
-                            store = new Store(filename);
-                            checker = true;
-                            if (!store.getProducts().isEmpty()) {
-                                checker = false;
-                            }
-                        } while(checker);
-                        System.out.println("Successfully imported!");
-                    }
-                    store.displayStore();
-                    System.out.println("Is this what you want?");
-                    boolean ans = Util.yesNo();
+                    System.out.println("Please input a .csv file name to upload your products.");
+                    String filename = scan.nextLine();
+                    boolean checker;
+                    do {
+                        store = new Store(filename);
+                        checker = true;
+                        if (!store.getProducts().isEmpty()) {
+                            checker = false;
+                        }
+                    } while (checker);
+                    System.out.println("Successfully imported!");
+                }
+                store.displayStore();
+                System.out.println("Is this what you want?");
+                boolean ans = Util.yesNo();
 
-                    if (ans) {
-                        System.out.println("OK! Saving data...");
-                        //initial creation of store
-                        ((Seller) user).addStore(store);
-                        ((Seller) user).exportToFile(); //TODO: fix this
-                        System.out.println("Successfully saved!");
-                    } else {
-                        System.out.println("Returning to editing stage...");
-                        incorrectInput = true;
-                    }
-                } while(incorrectInput);
-            }
+                if (ans) {
+                    System.out.println("OK! Saving data...");
+                    //initial creation of store
+                    ((Seller) user).addStore(store);
+                    ((Seller) user).exportToFile();
+                    System.out.println("Successfully saved!");
+                } else {
+                    System.out.println("Returning to editing stage...");
+                    invalidInput = true;
+                }
+            } while (invalidInput);
+        }
 
 
         Market market = new Market(user);
@@ -162,11 +140,13 @@ public class Main {
                 System.out.println("5 - Edit Account");
                 System.out.println("6 - Log Out");
 
-                input = scan.nextLine();
-                if (!Util.isNumeric(input)) {
-                    System.out.println("Please select a valid option.");
-                }
-                else if (input.equals("1")) {
+                String[] optionsText = {"View Marketplace","View Your Cart","View Your Past Purchases", "Edit " +
+                        "Account", "Log Out"};
+                String option = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
+                        JOptionPane.OK_OPTION, null, optionsText, optionsText[0]);
+
+
+                if (option.equals(optionsText[0])) {
                     boolean looping;
                     do {
                         market.displayMarket();
@@ -216,7 +196,7 @@ public class Main {
 
         if (user instanceof Seller) {
             String input;
-            boolean repeat;
+            repeat = false;
             do {
                 System.out.println("1 - View Your Products");
                 System.out.println("2 - View Your Sales By Store");
