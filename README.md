@@ -1,4 +1,4 @@
-# cs180project4
+# CS 180 Project 5
 ## How to Run:
 Main.java is where the marketplace is actually implemented.
 ### Notes on Formatting:
