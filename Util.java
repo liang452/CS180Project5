@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class Util {
-    /*
-     * Checks if a String is a number
+    /**
+     *
+     * @param input
+     * @return if input is a number or not
+     * @throws NumberFormatException
      */
     public static boolean isNumeric(String input) throws NumberFormatException {
         try {
@@ -19,8 +22,9 @@ public abstract class Util {
             return false;
         }
     }
-    /*
-     * Checks if input is yes or no, and returns a boolean based on that. Returns true if yes, returns false if no.
+    /**
+     * @return Checks if input is yes or no, and returns a boolean based on that. Returns true if yes, returns false if
+     * no.
      */
     public static boolean yesNo() {
         boolean repeat;
@@ -41,6 +45,11 @@ public abstract class Util {
         } while(repeat);
         return checker;
     }
+
+    /**
+     * @param email
+     * @return Checks if input is a valid email or not.
+     */
     public static boolean isValidEmail(String email) {
         if (!email.contains("@")) {
             return false;
@@ -51,6 +60,12 @@ public abstract class Util {
         return true;
     }
 
+    /**
+     *
+     * @param email
+     * @return Returns the username from an email.
+     * @throws IOException
+     */
     public static String getUserFromEmail(String email) throws IOException {
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
@@ -72,6 +87,13 @@ public abstract class Util {
         return false;
     }
 
+    /**
+     *
+     * @param input
+     * @return Takes an input String, and if that string is a filename, reads from the file. If not, reads the string
+     * into a book.
+     * @throws IOException
+     */
     public static ArrayList<Book> readCSV (String input) throws IOException {
         ArrayList<Book> books = new ArrayList<>();
         if (input.contains(".csv")) { //if it's a filename

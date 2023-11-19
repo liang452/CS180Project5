@@ -82,6 +82,7 @@ public class Seller extends User {
             return false;
         }
     }
+    //TODO: needs to be synchronized?
     public boolean exportToFile() throws IOException {
         //logins.csv:
         if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) {

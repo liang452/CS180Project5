@@ -156,6 +156,7 @@ public class Market {
     }
 
     public void updateListedProducts(Book oldProduct, Book updatedProduct) {
+        //TODO: this might need to combined with the method below? if multiple users are accessing at once.
         ArrayList<Book> iterator = new ArrayList<>();
         for (Book book : this.listedProducts) {
             if (!book.equals(oldProduct)) {
