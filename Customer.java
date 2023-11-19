@@ -118,7 +118,7 @@ public class Customer extends User {
         }
     }
     public void exportToFile() throws IOException {
-        //TODO
+        //TODO: make synchronized
         if (!User.isExistingUser(this.getUsername())) {
             BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
             bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "CUSTOMER");
@@ -166,11 +166,5 @@ public class Customer extends User {
         }
         bw.close();
         return true;
-    }
-
-    public void storesByProductsSold() {
-        //TODO
-        System.out.println("Stores sorted by number of products sold: ");
-
     }
 }

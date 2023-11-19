@@ -133,20 +133,12 @@ public class Main {
             //print out options:
             String input = "";
             do {
-                System.out.println("1 - View Marketplace");
-                System.out.println("2 - View Your Cart");
-                System.out.println("3 - View Your Past Purchases");
-                System.out.println("4 - View Statistics");
-                System.out.println("5 - Edit Account");
-                System.out.println("6 - Log Out");
-
-                String[] optionsText = {"View Marketplace","View Your Cart","View Your Past Purchases", "Edit " +
+                String[] options = {"View Marketplace","View Your Cart","View Your Past Purchases", "Edit " +
                         "Account", "Log Out"};
-                String option = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
-                        JOptionPane.OK_OPTION, null, optionsText, optionsText[0]);
+                input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
+                        JOptionPane.OK_OPTION, null, options, options[0]);
 
-
-                if (option.equals(optionsText[0])) {
+                if (input.equals(options[0])) {
                     boolean looping;
                     do {
                         market.displayMarket();
@@ -155,20 +147,16 @@ public class Main {
                             input = "0"; //returns to main menu if displayProductsMenu returns false
                         }
                     } while(looping);
-                } else if (input.equals("2")) {
+                } else if (input.equals(options[1])) {
                     //display cart
                     market.viewCartMenu((Customer) user);
                     input = "0";
-                } else if (input.equals("3")) {
+                } else if (input.equals(options[2])) {
                     //view past purchases
                     ((Customer) user).viewPastPurchases();
                     market.pastPurchasesMenu(user);
                     input = "0";
-                } else if (input.equals("4")) {
-                    //view statistics
-
-                } else if (input.equals("5")) {
-                    //print out account details
+                } else if (input.equals(options[3])) {
                     boolean deleted = Market.editAccountMenu(username, email, password);
                     if (deleted) {
                         input = "0";
@@ -177,7 +165,7 @@ public class Main {
                         System.out.println("2 - Return to Main Menu");
                     }
                     //TODO
-                } else if (input.equals("6")) {
+                } else if (input.equals(options[4])) {
                     System.out.println("Are you sure you want to log out?");
                     boolean logout = Util.yesNo();
                     if (logout) {
