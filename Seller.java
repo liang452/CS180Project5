@@ -15,7 +15,7 @@ public class Seller extends User {
 
         File f = new File(username + ".csv");
         if (f.exists()) {
-            this.products = Util.readCSV(username + ".csv"); //products is instantiated
+            this.products = Util.readCSVToBook(username + ".csv"); //products is instantiated
             ArrayList<Book> iterator = this.products;
             for (Book book : iterator) {
                 this.addToStore(book.getStore(), book);
@@ -82,7 +82,6 @@ public class Seller extends User {
             return false;
         }
     }
-    //TODO: needs to be synchronized?
     public boolean exportToFile() throws IOException {
         //logins.csv:
         if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) {
@@ -100,7 +99,6 @@ public class Seller extends User {
             //file with username should have been created when account was created
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.getUsername() + ".csv"));
             //overwrites file every time
-
             for (Book book : this.products) { //loops through entire list of products
                 bw.write(book.toCSVFormat());
             }

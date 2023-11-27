@@ -1,3 +1,6 @@
+import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.io.*;
 import java.sql.Array;
 import java.util.ArrayList;
@@ -39,7 +42,7 @@ public class Store {
     public boolean importProducts(String fileName) throws IOException {
         //reads file
         if (fileName.contains(".csv")) {
-            this.books = Util.readCSV(fileName);
+            this.books = Util.readCSVToBook(fileName);
             return true;
         } else {
             System.out.println("Please input a valid file.");
@@ -69,6 +72,20 @@ public class Store {
     }
 
     public void displayStore() {
+        if (this.books.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You have no books in this store.");
+        } else {
+            JPanel storePanel = new JPanel(); //panel for store
+            storePanel.setLayout(new BoxLayout(storePanel, BoxLayout.Y_AXIS));
+
+            JLabel storeName = new JLabel(this.name);
+            storePanel.add(storeName, BorderLayout.NORTH); //adds storeName to very top
+
+            JPanel productPanel = Util.bookPanel(this.getProducts()); //calls bookPanel
+            storePanel.add(productPanel);
+            storePanel.setVisible(true);
+        }
+
         System.out.println("Store Name: " + this.name);
         if (books.isEmpty()) {
             System.out.println("You have no books.");

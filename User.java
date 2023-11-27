@@ -242,5 +242,24 @@ public class User {
         return combined;
     }
 
+    /**
+     *
+     * @param email
+     * @return Returns the username from an email.
+     * @throws IOException
+     */
+    public static String getUserFromEmail(String email) throws IOException {
+        BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
+        String line = bfr.readLine();
+        while (line != null && !line.equals("")) {
+            String[] loginDetails = line.split(",");
+            if (email.equals(loginDetails[1])) {
+                return loginDetails[0];
+            }
+            line = bfr.readLine();
+        }
+        return "Username not found.";
+    }
+
 
 }

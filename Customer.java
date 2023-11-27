@@ -20,11 +20,11 @@ public class Customer extends User {
             BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
             String line = bfr.readLine(); // past purchases line
             if (line != null && !line.isEmpty()) {
-                this.pastPurchases = Util.readCSV(line);
+                this.pastPurchases = Util.readCSVToBook(line);
             }
             line = bfr.readLine(); //cart line
             if (line != null && !line.isEmpty()) {
-                this.cart = Util.readCSV(line);
+                this.cart = Util.readCSVToBook(line);
             }
             bfr.close();
         } else {

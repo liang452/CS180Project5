@@ -1,3 +1,9 @@
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Book {
@@ -19,6 +25,10 @@ public class Book {
         ROMANCE,
         YOUNG_ADULT,
         INVALID_GENRE
+    }
+    public Book() {
+        this.name = "";
+        this.author = "";
     }
   
     public Book(String name, String author, String genre, String description, String store, int quantity,
@@ -147,31 +157,47 @@ public class Book {
   
     //takes integer as input, removes that amount from the current quantity
 
-    public static Book createBookFromUserInput() {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Enter book name:");
-        String name = scan.nextLine();
+    public static Book createBookFromUserInput(String store) {
+        if (store.equals("")) {
+            store = JOptionPane.showInputDialog("Enter store name:");
+        }
+        if (store == null) {
+            return new Book();
+        }
+        String name = JOptionPane.showInputDialog("Enter book name:");
+        if (name == null) {
+            return new Book();
+        }
+        String author = JOptionPane.showInputDialog("Enter author:");
+        if (author == null) {
+            return new Book();
+        }
+        String genre = JOptionPane.showInputDialog("Enter the genre:");
+        if (genre == null) {
+            return new Book();
+        }
+        String description = JOptionPane.showInputDialog("Enter book description:");
+        if (description == null) {
+            return new Book();
+        }
+        String quantity;
+        do {
+            quantity = JOptionPane.showInputDialog("Enter quantity available:");
+            if (quantity == null) {
+                return new Book();
+            } else if (!Util.isNumeric(quantity)) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Try again.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            }
+        } while(!Util.isNumeric(quantity));
+         String price;
+        do {
+            price = JOptionPane.showInputDialog("Enter the price: ");
+            if (!Util.isNumeric(price)) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Try again.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            }
+        } while(!Util.isNumeric(price));
 
-        System.out.println("Enter author: ");
-        String author = scan.nextLine();
-
-        System.out.println("Enter the genre: ");
-        String genre = scan.nextLine();
-
-        System.out.println("Enter book description:");
-        String description = scan.nextLine();
-
-        System.out.println("Enter store name:");
-        String store = scan.nextLine();
-
-        System.out.println("Enter quantity available:");
-        int quantity = scan.nextInt();
-        scan.nextLine();
-
-        System.out.println("Enter price:");
-        double price = scan.nextDouble();
-
-        return new Book(name, author, genre, description, store, quantity, price);
+        return new Book(name, author, genre, description, store, Integer.parseInt(quantity), Double.parseDouble(price));
     }
       
     public boolean equals(Book book) {
