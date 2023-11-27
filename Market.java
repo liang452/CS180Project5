@@ -19,10 +19,7 @@ public class Market {
     private ArrayList<String> customerNames;
     private User user;
 
-    private Socket socket;
-
     public Market(User user) throws IOException {
-        this.socket = new Socket("localhost", 8484);
         //iterate through logins, find all sellers and their usernames
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
@@ -76,7 +73,7 @@ public class Market {
         Socket socket = new Socket("localhost", 8484);
         BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter pw = new PrintWriter(socket.getOutputStream());
-        pw.write("LOGIN");
+        pw.write("LOGIN\n");
         pw.flush();
         String email;
         String username;
@@ -88,10 +85,15 @@ public class Market {
                     JOptionPane.PLAIN_MESSAGE);
             if (email == null) {
                 pw.write("CANCEL");
+                pw.flush();
                 return new String[]{"CANCEL"};
             } else {
-                pw.write(email); //send to server
-                if (!bfr.readLine().equals("VALID")) { //read from server
+                pw.write(email + "\n"); //send to server
+                pw.flush();
+                System.out.println("Sent email!");
+                String output = bfr.readLine();
+                System.out.println(output);
+                if (output.equals("INVALID")) { //read from server
                     JOptionPane.showMessageDialog(null, "Not an existing email.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
                     invalidInput = true;
                 }
@@ -105,10 +107,14 @@ public class Market {
             //if hit cancel
             if (password == null) {
                 pw.write("CANCEL");
+                pw.flush();
                 return new String[]{"CANCEL"};
             } else {
-                pw.write(password); //send to server
-                if (!bfr.readLine().equals("VALID")) {
+                pw.write(password + "\n"); //send to server
+                pw.flush();
+                String output = bfr.readLine();
+                System.out.println(output);
+                if (!output.equals("VALID")) {
                     JOptionPane.showMessageDialog(null, "Wrong password.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
                     invalidInput = true;
                 }

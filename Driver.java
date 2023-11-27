@@ -53,14 +53,14 @@ public class Driver {
 //        startFrame.setSize(400, 100);
 //        startFrame.setVisible(true);
 
-        Socket socket = new Socket("localhost", 8484);
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+//        Socket socket = new Socket("localhost", 8484);
+//        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//        PrintWriter pw = new PrintWriter(socket.getOutputStream());
 
-        String email = "";
-        String username = "";
-        String password = "";
-        String accountType = "";
+        String email;
+        String username;
+        String password;
+        String accountType;
 
         String[] loginDetails = new String[4];
         boolean existingAccount = false;
@@ -71,8 +71,7 @@ public class Driver {
             repeat = false;
             String[] options = {"Login", "Create Account", "Exit"};
             String init = String.valueOf(JOptionPane.showOptionDialog(null, "Welcome to Vellichor! What would you" +
-                            " like to do?", "Vellichor",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null));
+                            " like to do?", "Vellichor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null));
 
             if (init.equals("1")) {
                 //if "Create Account" is selected
@@ -85,9 +84,8 @@ public class Driver {
             } else if (init.equals("0")) {
                 //if login is selected
                 loginDetails = Market.userLogin();
-                if (loginDetails[0] != null) {
+                if (loginDetails[0] != null) { //if it's not empty and doesn't equal cancel
                     if (!loginDetails[0].equals("CANCEL")) {
-                        pw.write(Util.toCSV(loginDetails)); //writes to the server.
                         existingAccount = true;
                     } else {
                         repeat = true;
