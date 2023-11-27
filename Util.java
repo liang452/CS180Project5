@@ -1,6 +1,10 @@
 /*
  */
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,28 +23,31 @@ public abstract class Util {
             Integer.parseInt(input);
             return true;
         } catch (NumberFormatException e) {
-            return false;
+            try {
+                Double.parseDouble(input);
+                return true;
+            } catch (NumberFormatException ex) {
+                return false;
+            }
         }
     }
     /**
      * @return Checks if input is yes or no, and returns a boolean based on that. Returns true if yes, returns false if
      * no.
      */
-    public static boolean yesNo() {
+    public static boolean yesNo(String message, String title) {
         boolean repeat;
         boolean checker = false;
         do {
-            System.out.println("Y/N: ");
-            Scanner scan = new Scanner(System.in);
-            String input = scan.nextLine();
+            int input = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION);
             repeat = false;
-            if (input.equalsIgnoreCase("YES") || input.equalsIgnoreCase("Y")) {
+            if (input == JOptionPane.YES_OPTION) {
                 checker = true;
-            } else if (input.equalsIgnoreCase("NO") || input.equalsIgnoreCase("N")) {
+            } else if (input == JOptionPane.NO_OPTION) {
                 checker = false;
             } else {
-                System.out.println("This is a yes or no question.");
-                repeat = true;
+                checker = false;
+                repeat = false;
             }
         } while(repeat);
         return checker;
@@ -60,24 +67,6 @@ public abstract class Util {
         return true;
     }
 
-    /**
-     *
-     * @param email
-     * @return Returns the username from an email.
-     * @throws IOException
-     */
-    public static String getUserFromEmail(String email) throws IOException {
-        BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
-        String line = bfr.readLine();
-        while (line != null && !line.equals("")) {
-            String[] loginDetails = line.split(",");
-            if (email.equals(loginDetails[1])) {
-                return loginDetails[0];
-            }
-            line = bfr.readLine();
-        }
-        return "Username not found.";
-    }
     public static boolean isExistingStore(String storeName, ArrayList<Store> stores) {
         for (Store store : stores) {
             if (storeName.equals(store.getName())) {
@@ -94,7 +83,7 @@ public abstract class Util {
      * into a book.
      * @throws IOException
      */
-    public static ArrayList<Book> readCSV (String input) throws IOException {
+    public static ArrayList<Book> readCSVToBook (String input) throws IOException {
         ArrayList<Book> books = new ArrayList<>();
         if (input.contains(".csv")) { //if it's a filename
             BufferedReader bfr = new BufferedReader(new FileReader(input));
@@ -137,5 +126,89 @@ public abstract class Util {
             }
         }
         return books;
+    }
+
+    public static String toCSV(String[] input) {
+        String csv = "";
+        for (String string : input) {
+            csv += (string + ",");
+        }
+        csv = csv.substring(0, csv.length() - 1); //removes comma at the very end
+        return csv;
+    }
+
+    //take list of books. convert to panel with scroller. return panel.
+    //TODO: test.
+    public static JPanel bookPanel(ArrayList<Book> booksList) {
+        Book[] books = new Book[booksList.size()];
+        for (int i = 0; i < booksList.size(); i++) {
+            books[i] = booksList.get(i);
+        }
+
+        JPanel bookPanel = new JPanel(); //entire panel
+        JPanel listPanel = new JPanel(); //panel for list and listScroller
+        JPanel infoPanel = new JPanel(); //panel for the information
+
+        //need list with only brief info; list used in bookList
+        Object[] bookShort = new Object[books.length];
+        for (int i = 0; i < booksList.size(); i++) {
+            bookShort[i] = (booksList.get(i).getName() + " - " + booksList.get(i).getAuthor());
+        }
+
+        JList bookList = new JList(bookShort);
+        bookList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+
+        bookList.setSize(new Dimension(200, 200));
+        bookList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        bookList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        bookList.setVisibleRowCount(-1);
+
+        JScrollPane listScroller = new JScrollPane(bookList); //scrollPane with productList
+        listScroller.setPreferredSize(new Dimension(200, 200));
+        listPanel.add(listScroller);
+
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setPreferredSize(new Dimension(200, 200));
+        JLabel name = new JLabel();
+        JLabel author = new JLabel();
+        JLabel genre = new JLabel();
+        JLabel desc = new JLabel();
+        JLabel quantity = new JLabel();
+        JLabel price = new JLabel();
+        JLabel store = new JLabel();
+
+        infoPanel.add(name);
+        infoPanel.add(author);
+        infoPanel.add(genre);
+        infoPanel.add(desc);
+        infoPanel.add(quantity);
+        infoPanel.add(price);
+        infoPanel.add(store);
+
+        ListSelectionListener listener = new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int index = bookList.getSelectedIndex();
+                    if (index != -1) {
+                        //selection, display extended information
+                        name.setText(books[index].getName());
+                        author.setText("Author: " + books[index].getAuthor());
+                        genre.setText("Genre: " + books[index].getGenre().name());
+                        desc.setText("Summary: " + books[index].getDescription());
+                        quantity.setText("Quantity Available: " + books[index].getQuantity());
+                        price.setText("$" + (books[index].getPrice()));
+                        store.setText("Sold by: " + (books[index].getStore()));
+                    }
+                }
+            }
+        };
+
+        bookList.addListSelectionListener(listener);
+
+        bookPanel.add(listPanel);
+        bookPanel.add(infoPanel);
+
+        return bookPanel;
     }
 }
