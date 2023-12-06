@@ -365,7 +365,6 @@ public class Driver {
         startFrame.setSize(400, 100);
         startFrame.setVisible(true);
 
-        // Continue with the rest of your code...
         String email = "";
         String username = "";
         String password = "";
