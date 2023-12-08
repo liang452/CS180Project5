@@ -110,6 +110,7 @@ public class Seller extends User {
     }
 
     public void displayProducts() {
+        BookPanel sellerProducts = new BookPanel(this.products);
         for (Book product : this.products) {
             System.out.println(product.getName());
             System.out.println(product.getAuthor());
