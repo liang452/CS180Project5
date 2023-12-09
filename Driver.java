@@ -112,6 +112,7 @@ public class Driver {
             } else if (init.equals("1")) {
                 //if "Create Account" is selected
                 pw.write("CREATE ACCOUNT\n");
+                pw.flush();
                 accountDetails = Market.userInitialization();
                 if (!accountDetails[0].equals("CANCEL")) {
                     JOptionPane.showMessageDialog(null, "You have successfully created an account!");
