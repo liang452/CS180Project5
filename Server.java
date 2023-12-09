@@ -1,6 +1,7 @@
 /*
  */
 
+import javax.swing.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,50 +12,74 @@ public class Server {
         Socket socket = serverSocket.accept();
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter outputWriter = new PrintWriter(socket.getOutputStream());
-        BufferedReader loginReader = new BufferedReader(new FileReader("logins.csv"));
         BufferedWriter fileWriter = new BufferedWriter(new FileWriter("logins.csv", true));
-        //receives account information
+        System.out.println("Server started!");
 
-        String line = inputReader.readLine();
-        while (line != null) {
+        while (true) {
+            //receives account information
+            String line = inputReader.readLine();
+            System.out.println("Received " + line);
             switch (line.toUpperCase()) {
                 case "LOGIN": {
-                    String email = inputReader.readLine(); //reads in email. checks logins.csv for email.
-                    if (email.equals("CANCEL")) {
+                    System.out.println("Logging in...");
+                    String email = inputReader.readLine();
+                    System.out.println("Received " + email);
+                    if (!User.isExistingEmail(email)) {
+                        outputWriter.write("INVALID\n");
+                        outputWriter.flush();
                         break;
+                    } else {
+                        outputWriter.write("VALID\n");
+                        outputWriter.flush();
+                        String password = inputReader.readLine();
+                        if (!User.checkPassword(email, password)) {
+                            outputWriter.write("INVALID\n");
+                            outputWriter.flush();
+                            break;
+                        } else {
+                            outputWriter.write("VALID\n");
+                            outputWriter.flush();
+                        }
                     }
-                    while (!User.isExistingEmail(email)) { //while this is false, loop
-                        outputWriter.write("");
-                    }
-                    outputWriter.write("VALID");
-
-                    String password = inputReader.readLine();
-                    if (password.equals("CANCEL")) {
-                        break;
-                    }
-                    while (!User.checkPassword(email, password)) {
-                        outputWriter.write("");
-                    }
-                    outputWriter.write("VALID");
-                    outputWriter.write(User.getUserFromEmail(email)); //writes out username
-                    outputWriter.write(User.accountType(email)); //writes out account type
-                    outputWriter.flush();
+                    break;
                 }
-                case "CREATE": {
-
+                case "CREATE ACCOUNT": {
+                    String username = inputReader.readLine();
+                    if (username.equals("CANCEL")) {
+                        break;
+                    } else if (User.isExistingUser(username)) {
+                        outputWriter.write("EXISTING\n");
+                        outputWriter.flush();
+                        System.out.println("Existing username.");
+                        break;
+                    } else {
+                        outputWriter.write("VALID\n");
+                        outputWriter.flush();
+                    }
+                    String email = inputReader.readLine();
+                    System.out.println("Email: " + email);
+                    if (User.isExistingEmail(email)) {
+                        outputWriter.write("EXISTING\n");
+                        outputWriter.flush();
+                        System.out.println("Existing email.");
+                        break;
+                    } else {
+                        outputWriter.write("VALID\n");
+                        outputWriter.flush();
+                    }
+                    String password = inputReader.readLine();
+                    String accountType = inputReader.readLine();
+                    fileWriter.write(User.toCSV(new String[]{email, username, password, accountType}));
+                    System.out.println("Account created successfully!");
                 }
                 case "MARKET": {
-
+                    System.out.println("Incomplete.");
                 }
+
             }
         }
 
-        //loops through logins?
-
-
-        } //writes it in if it doesn't exist/is a new account
-        //ideally this should also return if it's an already existing account, and that input should be taken in and
-        // used to check in the logins method. but that's a TODO.
+    }
 
 
 }

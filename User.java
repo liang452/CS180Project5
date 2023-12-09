@@ -234,7 +234,7 @@ public class User {
         bfr.close();
         return "";
     }
-    private static String toCSV(String[] loginDetails) {
+    public static String toCSV(String[] loginDetails) {
         String combined = "";
         for (String string : loginDetails) {
             combined += string + ",";

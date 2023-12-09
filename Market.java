@@ -19,10 +19,7 @@ public class Market {
     private ArrayList<String> customerNames;
     private User user;
 
-    private Socket socket;
-
     public Market(User user) throws IOException {
-        this.socket = new Socket("localhost", 8484);
         //iterate through logins, find all sellers and their usernames
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
@@ -73,123 +70,34 @@ public class Market {
      * @throws IOException
      */
     public static String[] userLogin() throws IOException {
-        Socket socket = new Socket("localhost", 8484);
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
-        pw.write("LOGIN");
-        pw.flush();
-        String email;
         String username;
-        String password;
         String account;
-        boolean invalidInput = false;
-        do {
-            email = JOptionPane.showInputDialog(null, "Input your email: ", "Login",
-                    JOptionPane.PLAIN_MESSAGE);
-            if (email == null) {
-                pw.write("CANCEL");
-                return new String[]{"CANCEL"};
-            } else {
-                pw.write(email); //send to server
-                if (!bfr.readLine().equals("VALID")) { //read from server
-                    JOptionPane.showMessageDialog(null, "Not an existing email.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                    invalidInput = true;
-                }
-            }
-        } while (invalidInput);
-        //password
+
+        JTextField emailField = new JTextField();
+        JTextField passwordField = new JPasswordField();
+        String email = "";
+        String password = "";
+        boolean invalidInput;
+        Object[] login = {"Email:", emailField,
+                "Password:", passwordField};
         do {
             invalidInput = false;
-            password = JOptionPane.showInputDialog(null, "Input your password: ", "Login",
-                    JOptionPane.PLAIN_MESSAGE);
-            //if hit cancel
-            if (password == null) {
-                pw.write("CANCEL");
+            int option = JOptionPane.showConfirmDialog(null, login, "Login",
+                    JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION ) {
                 return new String[]{"CANCEL"};
+            } else if (emailField.getText() == null || passwordField.getText() == null) {
+                JOptionPane.showMessageDialog(null, "Fields cannot be empty");
+                invalidInput = true;
             } else {
-                pw.write(password); //send to server
-                if (!bfr.readLine().equals("VALID")) {
-                    JOptionPane.showMessageDialog(null, "Wrong password.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                    invalidInput = true;
-                }
+                email = emailField.getText();
+                password = passwordField.getText();
             }
         } while (invalidInput);
+        username = User.getUserFromEmail(email);
+        account = User.accountType(email);
 
-        JOptionPane.showMessageDialog(null, "Logged in successfully. Welcome back!");
-        username = bfr.readLine();
-        account = bfr.readLine();
         return new String[]{username, email, password, account};
-//        JFrame loginFrame = new JFrame();
-//        JPanel mainPanel = new JPanel();
-//        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-//
-//        JTextField emailInput = new JTextField(10);
-//        emailInput.setText("");
-//        JLabel emailText = new JLabel("Email");
-//
-//        JTextField passwordInput = new JTextField(10);
-//        passwordInput.setText("");
-//        JLabel passwordText = new JLabel("Password");
-//
-//        JButton loginButton = new JButton("Login");
-//        JButton cancelButton = new JButton("Cancel");
-//
-//        JPanel emailPanel = new JPanel();
-//        emailPanel.add(emailText);
-//        emailPanel.add(emailInput);
-//
-//        JPanel passwordPanel = new JPanel();
-//        passwordPanel.add(passwordText);
-//        passwordPanel.add(passwordInput);
-//
-//        JPanel buttonPanel = new JPanel();
-//        buttonPanel.add(loginButton);
-//        buttonPanel.add(cancelButton);
-//
-//        mainPanel.add(emailPanel);
-//        mainPanel.add(passwordPanel);
-//        mainPanel.add(buttonPanel);
-//        loginFrame.add(mainPanel);
-//        final String[] accountDetails = new String[4];
-//        ActionListener al = new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                if (e.equals(loginButton)) {
-//                    String email = emailInput.getText();
-//                    String password = passwordInput.getText();
-//                    try {
-//                        if (!User.isExistingEmail(emailInput.getText())) { //if not an existing email
-//                            JOptionPane.showMessageDialog(null, "Not an existing email.");
-//                        }
-//                        if (!User.checkPassword(emailInput.getText(), passwordInput.getText())) {
-//                            JOptionPane.showMessageDialog(null, "Wrong password.");
-//                        }
-//                        if (User.isExistingEmail(emailInput.getText()) && User.checkPassword(emailInput.getText(),
-//                                passwordInput.getText())) {
-//                            JOptionPane.showMessageDialog(null,"Logged in successfully. Welcome back!");
-//
-//                            String username = Util.getUserFromEmail(email);
-//                            String account = User.accountType(username);
-//                            accountDetails[0] = email;
-//                            accountDetails[1] = username;
-//                            accountDetails[2] = password;
-//                            accountDetails[3] = account;
-//                            loginFrame.setVisible(false);
-//                        }
-//                    } catch (IOException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//                }
-//                if (e.equals(cancelButton)) {
-//                    loginFrame.setVisible(false);
-//                }
-//            }
-//        };
-//        loginFrame.setSize(400, 150);
-//        loginFrame.setVisible(true);
-//        loginButton.addActionListener(al);
-//        cancelButton.addActionListener(al);
-//        return accountDetails; //just going to have to check if this variable is null
     }
 
     /**
@@ -198,6 +106,12 @@ public class Market {
      * @throws IOException if logins file does not exist
      */
     public static String[] userInitialization() throws IOException {
+        Socket socket = new Socket("localhost", 8484);
+        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+        pw.write("CREATE ACCOUNT\n");
+        pw.flush();
+
         String username;
         String email;
         String password;
@@ -206,56 +120,76 @@ public class Market {
         do {
             //username
             incorrectInput = false;
-            username = JOptionPane.showInputDialog(null, "Input your username: ");
-            if (username == null){
+            username = JOptionPane.showInputDialog(null, "Input your username: ", "Account Creation", JOptionPane.PLAIN_MESSAGE);
+            if (username == null) {
+                pw.write("CANCEL\n");
+                pw.flush();
                 return new String[]{"CANCEL"};
-            } else if (User.isExistingUser(username)) {
-                JOptionPane.showMessageDialog(null, "That username is taken already!", "Invalid Input",
-                        JOptionPane.ERROR_MESSAGE);
-                incorrectInput = true;
             } else if (username.contains(",")) {
                 JOptionPane.showMessageDialog(null, "Do not use commas.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            } else {
+                pw.write(username + "\n");
+                pw.flush();
+                String output = bfr.readLine();
+                if (output.equals("EXISTING")) {
+                    JOptionPane.showMessageDialog(null, "That username is taken already!", "Invalid Input",
+                            JOptionPane.ERROR_MESSAGE);
+                    incorrectInput = true;
+                }
             }
         } while (incorrectInput);
         //email
         do {
             incorrectInput = false;
-            email = JOptionPane.showInputDialog("Input your email: ");
-
+            email = JOptionPane.showInputDialog(null, "Input your email: ", "Account Creation",
+                    JOptionPane.PLAIN_MESSAGE);
             //check if email is already taken
             if (email == null) {
+                socket.close();
                 return new String[]{"CANCEL"};
-            } else if (User.isExistingEmail(email)) {
-                JOptionPane.showMessageDialog(null, "That email is taken already.", "Existing Account",
-                        JOptionPane.ERROR_MESSAGE);
-                incorrectInput = true;
             } else if (email.contains(",")) {
                 JOptionPane.showMessageDialog(null, "Please do not use commas.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             } else if (!email.contains("@")) {
                 JOptionPane.showMessageDialog(null, "Please input a valid email.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            } else {
+                pw.write(email + "\n");
+                pw.flush();
+                String output = bfr.readLine();
+                if (output.equals("EXISTING")) {
+                    JOptionPane.showMessageDialog(null, "That email is taken already.", "Existing Account",
+                            JOptionPane.ERROR_MESSAGE);
+                    incorrectInput = true;
+                }
             }
-        } while (incorrectInput);
-        do {
-            incorrectInput = false;
-            password = JOptionPane.showInputDialog(null, "Input your password:");
+            } while (incorrectInput) ;
+            do {
+                incorrectInput = false;
+                password = JOptionPane.showInputDialog(null, "Input your password:");
 
-            //checks if password contains commas
-            if (password == null) {
-                return new String[]{"CANCEL"};
-            } else if (password.contains(",")) {
-                JOptionPane.showMessageDialog(null, "Please do not use commas.");
-                incorrectInput = true;
-            }
-        } while (incorrectInput);
+                //checks if password contains commas
+                if (password == null) {
+                    return new String[]{"CANCEL"};
+                } else if (password.contains(",")) {
+                    JOptionPane.showMessageDialog(null, "Please do not use commas.");
+                    incorrectInput = true;
+                } else {
+                    pw.write(password + "\n");
+                    pw.flush(); //don't really need any output for this; just put into file.
+                }
+            } while (incorrectInput);
 
-        String[] accountOptions = {"CUSTOMER", "SELLER"};
-        Object account = JOptionPane.showInputDialog(null, "What type of account would you like to create?",
+            String[] accountOptions = {"CUSTOMER", "SELLER"};
+            Object account = JOptionPane.showInputDialog(null, "What type of account would you like to create?",
                     "Account Type", JOptionPane.PLAIN_MESSAGE, null, accountOptions, accountOptions[0]);
-        if (account == null) {
-            return new String[]{"CANCEL"};
+            if (account == null) {
+                return new String[]{"CANCEL"};
+            } else {
+                pw.write(account + "\n");
+                pw.flush();
+            }
+            return new String[]{username, email, password, (String) account};
         }
-        return new String[]{username, email, password, (String) account};
-    }
+
 
     public ArrayList<Book> getListedProducts() {
         return this.listedProducts;
@@ -331,25 +265,51 @@ public class Market {
         topPanel.add(searchButton);
 
         productsMenuFrame.add(topPanel, BorderLayout.NORTH);
+        BookPanel bookDisplay = new BookPanel(this.getListedProducts());
+        JPanel bookPanel = bookDisplay.getBookPanel(); //calls method to set up panel for books
+        JButton cartButton = new JButton("Add to Cart");
+        JButton buyButton = new JButton("Buy");
 
-        //creates list
-        JPanel bookPanel = Util.bookPanel(this.getListedProducts());
-
+        bookPanel.add(cartButton);
+        bookPanel.add(buyButton);
         productsMenuFrame.add(bookPanel, BorderLayout.CENTER); //TODO: fix layout.
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == searchButton) {
-                        //getText from searchText
+                        //TODO: getText from searchText
+                    String searchText = searchField.getText();
                 }
                 if (e.getSource() == returnButton) {
                         productsMenuFrame.setVisible(false);
+                }
+                if (e.getSource() == buyButton) {
+                    boolean invalidInput = false;
+                    if (bookDisplay.selectedBook() != null) {
+                        do {
+                            String amount = JOptionPane.showInputDialog("How much would you like to buy?");
+                            if (amount == null) {
+                                break;
+                            } else if (!Util.isNumeric(amount)) {
+                                JOptionPane.showMessageDialog(null, "Please input a numeric value", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                                invalidInput = true;
+                            }
+                        } while (invalidInput);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Please select an item to purchase");
+                    }
+                }
+                if (e.getSource() == cartButton) {
+                    JOptionPane.showMessageDialog(null, "TODO");
                 }
             }
         };
 
         searchButton.addActionListener(al);
         returnButton.addActionListener(al);
+        buyButton.addActionListener(al);
+        cartButton.addActionListener(al);
 
         productsMenuFrame.setVisible(true);
 
@@ -465,7 +425,7 @@ public class Market {
 
     /**
      *
-     * @param input
+     * @param input to search for
      * @return Searches for all books that match a given input, and returns a list.
      */
     public ArrayList<Book> searchProducts(String input) {
@@ -495,11 +455,11 @@ public class Market {
 
     /**
      * Displays menu for users editing their accounts.
-     * @param username
-     * @param email
-     * @param password
-     * @return
-     * @throws IOException
+     * @param username username
+     * @param email email
+     * @param password password
+     * @return true/false
+     * @throws IOException if file not found
      */
     public static boolean editAccountMenu(String username, String email, String password) throws IOException {
         //TODO
@@ -572,11 +532,47 @@ public class Market {
 
     /**
      * Displays menu for customers viewing their shopping carts.
-     * @param user
+     * @param user user to search shopping cart for
      * @throws IOException
      */
     public void viewCartMenu(Customer user) throws IOException {
         //read cart of this user - method in Customer?
+        JButton checkoutButton = new JButton("Checkout");
+        JButton returnButton = new JButton("Return");
+        JFrame cartMenu = new JFrame();
+        JPanel buttonPane = new JPanel();
+
+        buttonPane.add(returnButton);
+        buttonPane.add(checkoutButton);
+        ActionListener al = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == checkoutButton) {
+                    //getText from searchText
+                }
+                if (e.getSource() == returnButton) {
+                    cartMenu.setVisible(false);
+                }
+            }
+        };
+        returnButton.addActionListener(al);
+        checkoutButton.addActionListener(al);
+
+        JPanel cartPane = new JPanel();
+        JScrollPane itemsPane = new JScrollPane();
+        ArrayList<Book> shoppingCart = new ArrayList<>(); //TODO: put in shopping cart info.
+        JList itemList = new JList((ListModel) shoppingCart);
+        itemsPane.add(itemList);
+
+        ListSelectionListener listener = new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                //TODO
+            }
+        };
+
+        cartPane.add(itemsPane);
+
         Scanner scan = new Scanner(System.in);
         user.viewCart();
         System.out.println("1 - Purchase an Item from Cart");
@@ -842,5 +838,65 @@ public class Market {
             store.setProducts(sold);
             store.displayData();
         }
+    }
+
+    public void viewSellerProducts() {
+            BookPanel sellerProducts = new BookPanel(this.getListedProducts());
+            JFrame productsFrame = new JFrame();
+            productsFrame.setLayout(new BorderLayout());
+            productsFrame.setSize(new Dimension(500, 300));
+            productsFrame.setLocationRelativeTo(null);
+            JPanel productsPanel = sellerProducts.getBookPanel();
+            productsFrame.add(productsPanel, BorderLayout.CENTER);
+
+            JPanel topPane = new JPanel();
+            JPanel bottomPane = new JPanel();
+
+            JButton returnButton = new JButton("Return");
+            JButton editButton = new JButton("Edit Selection");
+            JButton exportButton = new JButton("Export to File");
+            JButton addButton = new JButton("Add New Book");
+            JButton deleteButton = new JButton("Delete Selection");
+
+            topPane.add(returnButton);
+            topPane.add(exportButton);
+
+            bottomPane.add(addButton);
+            bottomPane.add(editButton);
+            bottomPane.add(deleteButton);
+            productsFrame.add(topPane, BorderLayout.NORTH);
+            productsFrame.add(bottomPane, BorderLayout.SOUTH);
+            final String[] input = new String[1];
+            ActionListener al = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (e.getSource() == returnButton) {
+                        productsFrame.setVisible(false);
+                    }
+                    if (e.getSource() == editButton) {
+                        String[] options = new String[]{"Title", "Author", "Genre", "Description", "Store", "Quantity",
+                                "Price"}; //return what was changed eventually
+                        String selection = (String) JOptionPane.showInputDialog(null, "What would you like to change?",
+                                "Edit " + sellerProducts.selectedBook().getName(),
+                                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                        String newInput = "";
+                        if (selection.equals(options[0])) {
+                            newInput = JOptionPane.showInputDialog("What would you like the new title to be?");
+                        } else if (selection.equals(options[1])) {
+                            newInput = JOptionPane.showInputDialog("What would you like the new author to be?");
+                        } else if (selection.equals(options[2])) {
+                            newInput = JOptionPane.showInputDialog("What would you like the new genre to be?");
+                        } else if (selection.equals(options[3])) {
+                            newInput = JOptionPane.showInputDialog("What would you like the new description to be?");
+                        }
+                    }
+                    if (e.getSource() == exportButton) {
+                        //write to server to export to file
+                    }
+                }
+            };
+            editButton.addActionListener(al);
+            returnButton.addActionListener(al);
+            productsFrame.setVisible(true);
     }
 }
