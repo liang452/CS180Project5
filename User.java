@@ -38,7 +38,7 @@ public class User {
     public String getPassword() {
         return password;
     }
-    public static boolean isExistingUser(String username) throws IOException {
+    public synchronized static boolean isExistingUser(String username) throws IOException {
         //check file for if username already exists
         try (BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"))) {
             String line = bfr.readLine();
@@ -60,7 +60,7 @@ public class User {
         return false;
     }
 
-    public static boolean isExistingEmail(String email) throws IOException {
+     public synchronized static boolean isExistingEmail(String email) throws IOException {
         //check file of emails and passwords for if email already exists
         try (BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"))) {
             String line = bfr.readLine();
@@ -81,7 +81,7 @@ public class User {
         //if not found, return false
         return false;
     }
-    public static boolean checkPassword(String email, String password) throws IOException {
+    public synchronized static boolean checkPassword(String email, String password) throws IOException {
         //check file of emails and passwords for if email already exists
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
@@ -103,7 +103,7 @@ public class User {
         //if not found, return false. if no email matches or password matches.
         return false;
     }
-    public static void editUsername(String oldUsername, String newUsername) throws IOException {
+    public synchronized static void editUsername(String oldUsername, String newUsername) throws IOException {
         if (!User.isExistingEmail(newUsername)) {
             BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
             ArrayList<String> loginsList = new ArrayList<>();
@@ -139,7 +139,7 @@ public class User {
             System.out.println("This username already exists.");
         }
     }
-    public static void editPassword(String email, String newPassword) throws IOException {
+    public synchronized static void editPassword(String email, String newPassword) throws IOException {
             BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
             ArrayList<String> loginsList = new ArrayList<>();
             String line = bfr.readLine();
@@ -164,7 +164,7 @@ public class User {
             }
             bw.close();
     }
-    public static void editEmail(String oldEmail, String newEmail) throws IOException {
+    public synchronized static void editEmail(String oldEmail, String newEmail) throws IOException {
         if (!User.isExistingEmail(newEmail)) {
             BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
             ArrayList<String> loginsList = new ArrayList<>();
@@ -194,7 +194,7 @@ public class User {
             System.out.println("This email already exists.");
         }
     }
-    public static void deleteAccount(String username, String email, String password) throws IOException {
+    public synchronized static void deleteAccount(String username, String email, String password) throws IOException {
         //delete the logins
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
@@ -220,7 +220,7 @@ public class User {
      * @return Checks if the String input matches either email or username, and returns the account type as a String.
      * @throws IOException
      */
-    public static String accountType(String input) throws IOException {
+    public synchronized static String accountType(String input) throws IOException {
         //returns 0 if customer, 1 if seller
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
@@ -248,7 +248,7 @@ public class User {
      * @return Returns the username from an email.
      * @throws IOException
      */
-    public static String getUserFromEmail(String email) throws IOException {
+    public synchronized static String getUserFromEmail(String email) throws IOException {
         BufferedReader bfr = new BufferedReader(new FileReader("logins.csv"));
         String line = bfr.readLine();
         while (line != null && !line.equals("")) {
@@ -260,6 +260,4 @@ public class User {
         }
         return "Username not found.";
     }
-
-
 }

@@ -10,53 +10,11 @@ import java.util.Scanner;
  */
 public class Driver {
 
-    public static void main(String[] args) throws IOException {
-        Scanner scan = new Scanner(System.in);
-//        JFrame startFrame = new JFrame("Vellichor");
-//        startFrame.setLocationRelativeTo(null);
-//
-//        JButton loginButton = new JButton("Login");
-//        JButton createButton = new JButton("Create New Account");
-//        JPanel buttonPane = new JPanel();
-//        buttonPane.add(loginButton);
-//        buttonPane.add(createButton);
-//
-//        JPanel textPane = new JPanel();
-//        textPane.add(new JLabel("Welcome to Vellichor!"));
-//        final String[] loginDetails = new String[4];
-//        ActionListener actionListener = new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                if (e.getSource() == loginButton) {
-//                    try {
-//                        startFrame.setVisible(false);
-//                        loginDetails = Market.userLogin();
-//                    } catch (IOException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//                }
-//                if (e.getSource() == createButton) {
-//                    try {
-//                        startFrame.setVisible(false);
-//                        Market.userInitialization();
-//                    } catch (IOException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//                }
-//            }
-//        };
-//        startFrame.add(textPane, BorderLayout.CENTER);
-//        startFrame.add(buttonPane, BorderLayout.SOUTH);
-//        loginButton.addActionListener(actionListener);
-//        createButton.addActionListener(actionListener);
-//
-//        startFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        startFrame.setSize(400, 100);
-//        startFrame.setVisible(true);
-
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Socket socket = new Socket("localhost", 8484);
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+        oos.flush();
 
         String email  = "";
         String username = "";
@@ -72,59 +30,75 @@ public class Driver {
             repeat = false;
             String[] options = {"Login", "Create Account", "Exit"};
             String init = String.valueOf(JOptionPane.showOptionDialog(null, "Welcome to Vellichor! What would you" +
-                            " like to do?", "Vellichor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null));
-
-             if (init.equals("0")) {
+                    " like to do?", "Vellichor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null));
+            if (init.equals("0")) {
                 //if login is selected
-                 existingAccount = true;
-                pw.write("LOGIN\n"); //sends to server
-                 pw.flush();
-                 boolean invalid = false;
-                 do {
-                     String[] loginDetails = Market.userLogin();
-                     if (!loginDetails[0].equals("CANCEL")) {
-                         pw.write(loginDetails[1] + "\n"); //email
-                         pw.flush();
-                         String confirm = bfr.readLine();
-                         if (confirm.equals("INVALID")) {
-                             JOptionPane.showMessageDialog(null, "Invalid Email");
-                             invalid = true;
-                         } else {
-                             pw.write(loginDetails[2] + "\n"); //password
-                             pw.flush();
-                             confirm = bfr.readLine();
-                             if (confirm.equals("CANCEL")) {
-                                 JOptionPane.showMessageDialog(null, "Incorrect Password");
-                                 invalid = true;
-                             } else {
-                                 username = loginDetails[0];
-                                 email = loginDetails[1];
-                                 password = loginDetails[2];
-                                 accountType = loginDetails[3];
-                                 JOptionPane.showMessageDialog(null, "Logged in successfully. Welcome back!");
-                             }
-                         }
-                     } else {
-                         repeat = true;
-                         break;
-                     }
-                 } while(invalid);
+                existingAccount = true;
+                oos.writeObject("LOGIN"); //sends to server
+                oos.flush();
+                boolean invalid = false;
+                do {
+                    String[] loginDetails = Market.userLogin();
+                    if (!loginDetails[0].equals("CANCEL")) {
+                        oos.writeObject(loginDetails[1] + "\n"); //email
+                        oos.flush();
+                        System.out.println(loginDetails[1] + " sent to server");
+                        String confirm = (String) ois.readObject();
+                        if (confirm.equals("INVALID")) {
+                            JOptionPane.showMessageDialog(null, "Invalid Email");
+                            invalid = true;
+                        } else {
+                            oos.writeObject(loginDetails[2] + "\n"); //password
+                            oos.flush();
+                            confirm = (String) ois.readObject();
+                            if (confirm.equals("CANCEL")) {
+                                JOptionPane.showMessageDialog(null, "Incorrect Password");
+                                invalid = true;
+                            } else {
+                                username = loginDetails[0];
+                                email = loginDetails[1];
+                                password = loginDetails[2];
+                                accountType = loginDetails[3];
+                                JOptionPane.showMessageDialog(null, "Logged in successfully. Welcome back!");
+                            }
+                        }
+                    } else {
+                        repeat = true;
+                        break;
+                    }
+                } while (invalid);
             } else if (init.equals("1")) {
                 //if "Create Account" is selected
-                pw.write("CREATE ACCOUNT\n");
-                pw.flush();
-                accountDetails = Market.userInitialization();
-                if (!accountDetails[0].equals("CANCEL")) {
-                    JOptionPane.showMessageDialog(null, "You have successfully created an account!");
-                    username = accountDetails[0];
-                    email = accountDetails[1];
-                    password = accountDetails[2];
-                    accountType = accountDetails[3];
-                } else {
-                    repeat = true;
-                }
+                oos.writeObject("CREATE ACCOUNT");
+                boolean free;
+                do {
+                    free = false;
+                    accountDetails = Market.userInitialization();
+                    if (!accountDetails[0].equals("CANCEL")) {
+                        username = accountDetails[0];
+                        email = accountDetails[1];
+                        password = accountDetails[2];
+                        accountType = accountDetails[3];
+
+                        oos.writeObject(accountDetails);
+                        oos.flush();
+                        free = ois.readBoolean();
+                        if (free) {
+                            System.out.println("Account valid!");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Try again! Username or email taken already.");
+                            free = false;
+                        }
+                    } else {
+                        free = true;
+                        repeat = true;
+                    }
+                } while (!free);
             } else if (init.equals("2")) {
                 //if EXIT is selected
+                JOptionPane.showMessageDialog(null, "Thank you for using Vellichor, and have a nice day!");
+                return;
+            } else {
                 JOptionPane.showMessageDialog(null, "Thank you for using Vellichor, and have a nice day!");
                 return;
             }
@@ -200,51 +174,36 @@ public class Driver {
 
         //what the customer will see
         if (user instanceof Customer) {
-            //print out options:
-            String input = "";
             do {
+                repeat = false;
                 String[] options = {"View Marketplace","View Your Cart","View Your Past Purchases", "Edit " +
                         "Account", "Log Out"};
-                input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
-                        JOptionPane.OK_OPTION, null, options, options[0]);
-
-                if (input.equals(options[0])) { //if "View Marketplace" is displayed
-                    boolean looping = market.displayProductsMenu();
-                    if (!looping) {
-                        input = "0"; //returns to main menu if displayProductsMenu returns false
-                    }
-                } else if (input.equals(options[1])) {
-                    //display cart
-                    market.viewCartMenu((Customer) user);
-                    input = "0";
-                } else if (input.equals(options[2])) {
-                    //view past purchases
-                    ((Customer) user).viewPastPurchases();
-                    market.pastPurchasesMenu(user);
-                    input = "0";
-                } else if (input.equals(options[3])) {
-                    boolean deleted = Market.editAccountMenu(username, email, password);
-                    if (deleted) {
-                        input = "0";
-                    } else {
-                        System.out.println("1 - Continue Editing Account");
-                        System.out.println("2 - Return to Main Menu");
-                    }
-                    //TODO
-                } else if (input.equals(options[4])) {
-                    boolean logout = Util.yesNo("Are you sure you want to log out?", "Logout");
-                    if (logout) {
-                        //call save data method
-                        System.out.println("Have a nice day!");
-                        ((Customer) user).exportToFile();
-                        return;
-                    } else if (!logout) {
-                        System.out.println("Returning to the main menu...");
-                        input = "0";
-                    }
+                String input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
+                        JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                if (input.equals(options[0])) {
+                    String output = market.displayCustomerMenu();
+                    if (output.equals("RETURN")) {
+                        repeat = true;
+                    } else if (output.equals("LOG OUT")) {
+                        JOptionPane.showMessageDialog(null, "Have a good day!");
+                        break;
+                    } else if (output.contains("BUY")) {
+                        String[] purchase = output.split(",", 3);
+                        int amount = Integer.parseInt(purchase[1]);
+                        System.out.println(purchase[2]);
+                        ArrayList<Book> boughtBooks = Util.readCSVToBook(purchase[2]);
+                        Book boughtBook = boughtBooks.get(0);
+                        oos.writeObject("BUY");
+                        oos.flush();
+                        oos.writeObject(amount);
+                        oos.flush();
+                        oos.writeObject(boughtBook);
+                        oos.flush();
+                        oos.writeObject(username);
+                        oos.flush();
+                    } else if (output.contains("ADD TO CART")) {}
                 }
-            } while(input.equals("0"));
-
+            } while (repeat);
         }
 
         if (user instanceof Seller) {
@@ -258,8 +217,8 @@ public class Driver {
                 if (input == null) {
                     break;
                 } else if (input.equals(options[0])) {
-                    pw.write("VIEWING PRODUCTS\n");
-                    pw.flush();
+                    oos.writeObject("VIEWING PRODUCTS\n");
+                    oos.flush();
                     market.viewSellerProducts();
                 } else if (input.equals("2")) {
                     //view sales by store
