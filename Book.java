@@ -3,10 +3,11 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Book {
+public class Book implements Serializable {
     private String name;
     private String author;
     private static Genre genre;

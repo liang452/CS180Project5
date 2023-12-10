@@ -97,7 +97,7 @@ public class Market {
         username = User.getUserFromEmail(email);
         account = User.accountType(email);
 
-        return new String[]{username, email, password, account};
+        return new String[]{username, email, password, account}; //TODO: move all file reading into serverthread
     }
 
     /**
@@ -106,89 +106,47 @@ public class Market {
      * @throws IOException if logins file does not exist
      */
     public static String[] userInitialization() throws IOException {
-        Socket socket = new Socket("localhost", 8484);
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
-        pw.write("CREATE ACCOUNT\n");
-        pw.flush();
 
+        JTextField usernameField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField passwordField = new JPasswordField();
         String username;
         String email;
         String password;
+        String account;
+        String[] accountOptions = {"CUSTOMER", "SELLER"};
+        JComboBox<String> accountTypes = new JComboBox<String>(accountOptions);
+        Object[] login = {"Username:", usernameField, "Email:", emailField,
+                "Password:", passwordField, "Account Type:", accountTypes};
 
         boolean incorrectInput;
         do {
             //username
             incorrectInput = false;
-            username = JOptionPane.showInputDialog(null, "Input your username: ", "Account Creation", JOptionPane.PLAIN_MESSAGE);
-            if (username == null) {
-                pw.write("CANCEL\n");
-                pw.flush();
+            int option = JOptionPane.showConfirmDialog(null, login, "Create Account",
+                    JOptionPane.OK_CANCEL_OPTION);
+            username = usernameField.getText();
+            email = emailField.getText();
+            password = passwordField.getText();
+            account = accountTypes.getSelectedItem().toString();
+            if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
                 return new String[]{"CANCEL"};
-            } else if (username.contains(",")) {
-                JOptionPane.showMessageDialog(null, "Do not use commas.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-            } else {
-                pw.write(username + "\n");
-                pw.flush();
-                String output = bfr.readLine();
-                if (output.equals("EXISTING")) {
-                    JOptionPane.showMessageDialog(null, "That username is taken already!", "Invalid Input",
-                            JOptionPane.ERROR_MESSAGE);
-                    incorrectInput = true;
-                }
+            } else if (username == null || email == null || password == null) {
+                JOptionPane.showMessageDialog(null, "Please do not leave any fields empty.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                incorrectInput = true;
+            } else if (username.contains(",") || (email.contains(",") || password.contains(","))) {
+                JOptionPane.showMessageDialog(null, "Do not use commas in any field.", "Invalid Input",
+                        JOptionPane.ERROR_MESSAGE);
+                incorrectInput = true;
+            } else if (!email.contains("@") || !email.contains(".")) {
+                JOptionPane.showMessageDialog(null, "Please input a valid email.");
+                incorrectInput = true;
             }
         } while (incorrectInput);
-        //email
-        do {
-            incorrectInput = false;
-            email = JOptionPane.showInputDialog(null, "Input your email: ", "Account Creation",
-                    JOptionPane.PLAIN_MESSAGE);
-            //check if email is already taken
-            if (email == null) {
-                socket.close();
-                return new String[]{"CANCEL"};
-            } else if (email.contains(",")) {
-                JOptionPane.showMessageDialog(null, "Please do not use commas.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-            } else if (!email.contains("@")) {
-                JOptionPane.showMessageDialog(null, "Please input a valid email.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-            } else {
-                pw.write(email + "\n");
-                pw.flush();
-                String output = bfr.readLine();
-                if (output.equals("EXISTING")) {
-                    JOptionPane.showMessageDialog(null, "That email is taken already.", "Existing Account",
-                            JOptionPane.ERROR_MESSAGE);
-                    incorrectInput = true;
-                }
-            }
-            } while (incorrectInput) ;
-            do {
-                incorrectInput = false;
-                password = JOptionPane.showInputDialog(null, "Input your password:");
+        return new String[]{username, email, password, account};
 
-                //checks if password contains commas
-                if (password == null) {
-                    return new String[]{"CANCEL"};
-                } else if (password.contains(",")) {
-                    JOptionPane.showMessageDialog(null, "Please do not use commas.");
-                    incorrectInput = true;
-                } else {
-                    pw.write(password + "\n");
-                    pw.flush(); //don't really need any output for this; just put into file.
-                }
-            } while (incorrectInput);
-
-            String[] accountOptions = {"CUSTOMER", "SELLER"};
-            Object account = JOptionPane.showInputDialog(null, "What type of account would you like to create?",
-                    "Account Type", JOptionPane.PLAIN_MESSAGE, null, accountOptions, accountOptions[0]);
-            if (account == null) {
-                return new String[]{"CANCEL"};
-            } else {
-                pw.write(account + "\n");
-                pw.flush();
-            }
-            return new String[]{username, email, password, (String) account};
-        }
+    }
 
 
     public ArrayList<Book> getListedProducts() {
@@ -250,21 +208,26 @@ public class Market {
      * @return
      * @throws IOException
      */
-    public boolean displayProductsMenu() throws IOException {
-        JFrame productsMenuFrame = new JFrame();
-        productsMenuFrame.setSize(500, 300);
-        productsMenuFrame.setLocation(GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint());
+    public String displayCustomerMenu() throws IOException, InterruptedException {
+        JFrame cMenuFrame = new JFrame();
+        cMenuFrame.setSize(500, 350);
+        cMenuFrame.setLocation(GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint());
 
         JButton searchButton = new JButton("Search");
-        JTextField searchField = new JTextField(15);
+        JTextField searchField = new JTextField(10);
+        JButton logoutButton = new JButton("Log Out");
+        JButton viewCartButton = new JButton("View Cart");
+        JButton pastButton = new JButton("Past Purchases");
         JButton returnButton = new JButton("Return");
 
         JPanel topPanel = new JPanel();
-        topPanel.add(returnButton);
+        topPanel.add(logoutButton);
         topPanel.add(searchField);
         topPanel.add(searchButton);
+        topPanel.add(returnButton);
 
-        productsMenuFrame.add(topPanel, BorderLayout.NORTH);
+
+        cMenuFrame.add(topPanel, BorderLayout.NORTH);
         BookPanel bookDisplay = new BookPanel(this.getListedProducts());
         JPanel bookPanel = bookDisplay.getBookPanel(); //calls method to set up panel for books
         JButton cartButton = new JButton("Add to Cart");
@@ -272,155 +235,98 @@ public class Market {
 
         bookPanel.add(cartButton);
         bookPanel.add(buyButton);
-        productsMenuFrame.add(bookPanel, BorderLayout.CENTER); //TODO: fix layout.
+        cMenuFrame.add(bookPanel, BorderLayout.CENTER); //TODO: fix layout.
+        String[] option = new String[1];
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == returnButton) {
+                    option[0] = "RETURN";
+                    cMenuFrame.setVisible(false);
+                }
                 if (e.getSource() == searchButton) {
                         //TODO: getText from searchText
                     String searchText = searchField.getText();
+                    searchProducts(searchText);
+                    option[0] = "SEARCH";
                 }
-                if (e.getSource() == returnButton) {
-                        productsMenuFrame.setVisible(false);
+                if (e.getSource() == logoutButton) {
+                    cMenuFrame.setVisible(false);
+                    option[0] = "LOGOUT";
                 }
                 if (e.getSource() == buyButton) {
                     boolean invalidInput = false;
-                    if (bookDisplay.selectedBook() != null) {
+                    String amount;
+                    Book selection = bookDisplay.selectedBook();
+                    if (selection != null) {
                         do {
-                            String amount = JOptionPane.showInputDialog("How much would you like to buy?");
+                            amount = JOptionPane.showInputDialog("How much would you like to buy?");
                             if (amount == null) {
                                 break;
                             } else if (!Util.isNumeric(amount)) {
                                 JOptionPane.showMessageDialog(null, "Please input a numeric value", "Error",
                                         JOptionPane.ERROR_MESSAGE);
                                 invalidInput = true;
+                            } else {
+                                option[0] = "BUY," + amount + "," + selection.toCSVFormat();
                             }
                         } while (invalidInput);
                     } else {
                         JOptionPane.showMessageDialog(null, "Please select an item to purchase");
+                        option[0] = "";
                     }
                 }
                 if (e.getSource() == cartButton) {
-                    JOptionPane.showMessageDialog(null, "TODO");
+                    Book selection = bookDisplay.selectedBook();
+                    String amount = "";
+                    if (selection != null) {
+                        amount = JOptionPane.showInputDialog(null, "How much would you like to add to your " +
+                                "cart?");
+                        if (!Util.isNumeric(amount) || Integer.parseInt(amount) < 0 || Integer.parseInt(amount) > selection.getQuantity()) {
+                            JOptionPane.showMessageDialog(null, "Please input a valid quantity to purchase.");
+                        } else {
+                            System.out.println("Adding " + amount + " to cart.");
+                            ((Customer) user).addToCart(selection, Integer.parseInt(amount));
+                        }
+                    }
+                    option[0] = "ADD TO CART," + amount + "," + selection.toCSVFormat();
+                }
+                if (e.getSource() == viewCartButton) {
+                    ArrayList<Book> cartList = ((Customer) user).getCart();
+                    JFrame cartFrame = new JFrame();
+                    cartFrame.setSize(new Dimension(500, 400));
+                    BookPanel holder = new BookPanel(cartList);
+                    JPanel cartBookPanel = holder.getBookPanel();
+
+                    JPanel buttonPanel = new JPanel();
+                    JButton allButton = new JButton("Purchase All");
+                    JButton oneButton = new JButton("Purchase Selection");
+                    buttonPanel.add(allButton);
+                    buttonPanel.add(oneButton);
+
+                    cartFrame.add(cartBookPanel, BorderLayout.CENTER);
+                    cartFrame.add(buttonPanel, BorderLayout.SOUTH);
+                    cartFrame.add(new JLabel("Your Cart"), BorderLayout.NORTH);
+                    cartFrame.setVisible(true);
+                }
+                if (e.getSource() == pastButton) {
+                    option[0] = "PAST";
                 }
             }
         };
 
         searchButton.addActionListener(al);
-        returnButton.addActionListener(al);
+        logoutButton.addActionListener(al);
         buyButton.addActionListener(al);
         cartButton.addActionListener(al);
+        viewCartButton.addActionListener(al);
+        pastButton.addActionListener(al);
 
-        productsMenuFrame.setVisible(true);
-
-//        Scanner scan = new Scanner(System.in);
-//        boolean repeat;
-//        String[] options = {"View All Books", "Search for a Book by Keyword", "Return"};
-//
-//    do {
-//            repeat = false;
-//            String choice = (String) JOptionPane.showInputDialog(null, "", "Market",
-//                    JOptionPane.OK_CANCEL_OPTION, null, options, options[0]);
-//
-//            if (choice.equals(options[0])) { //if "View All Books" is selected
-//                ArrayList<String> books = this.marketProducts(); //array of all the books available
-//                if (books.isEmpty()) {
-//                    JOptionPane.showMessageDialog(null, "Sorry! There are no products available to purchase.");
-//                }
-//                String selection = (String) JOptionPane.showInputDialog(null, "", "Market", JOptionPane.OK_CANCEL_OPTION,
-//                       null, books.toArray(), books.get(0)); //displays list of all books as dropdown menu
-//                for (Book product : this.listedProducts) {
-//                    if (product.getName().equals(selection)) {
-//                        //TODO: fix this. selection is no longer just the name of the book.
-//                        Book viewing = product;
-//                        System.out.println(viewing.getName());
-//                        System.out.println("Store: " + viewing.getStore());
-//                        System.out.println("Description: " + viewing.getDescription());
-//                        System.out.println("Amount in Stock: " + viewing.getQuantity());
-//                        System.out.println("$" + viewing.getPrice());
-//
-//                        //mini little menu within
-//                        boolean looping;
-//                        do {
-//                            looping = false;
-//                            System.out.println("1 - Purchase");
-//                            System.out.println("2 - Add To Cart");
-//                            System.out.println("3 - Cancel");
-//                            String buy = scan.nextLine();
-//                            boolean incorrectInput;
-//                            if (buy.equals("1")) {
-//                                do {
-//                                    incorrectInput = false;
-//                                    System.out.println("How much would you like to purchase? Type CANCEL to exit.");
-//                                    String amt = scan.nextLine();
-//                                    if (amt.equals("CANCEL")) {
-//                                        return true;
-//                                    } else if (!Util.isNumeric(amt)) {
-//                                        System.out.println("Please input a number.");
-//                                        incorrectInput = true;
-//                                    } else if (Integer.parseInt(amt) > viewing.getQuantity()) {
-//                                        System.out.println("Please input a valid quantity.");
-//                                        incorrectInput = true;
-//                                    } else {
-//                                        System.out.println("Purchasing...");
-//                                        viewing.removeQuantity(Integer.parseInt(amt));
-//                                        //removes inputted amount from the product
-//                                        this.updateListedProducts(product, viewing); //updates the list
-//                                        ((Customer) user).addToPastPurchases(product, Integer.parseInt(amt));
-//                                        ((Customer) user).exportToFile();
-//                                        System.out.println("You have bought " + amt + " " + viewing.getName());
-//                                        //add to purchase history as well
-//                                        return true;
-//                                    }
-//                                } while (incorrectInput);
-//                            } else if (buy.equals("2")) {
-//                                System.out.println("How much of this item would you like to add to your cart?");
-//                                String amt = scan.nextLine();
-//                                if (!Util.isNumeric(amt)) {
-//                                    // throw new InvalidInputError();
-//                                    System.out.println("Please input a number.");
-//                                } else if (Integer.parseInt(amt) > viewing.getQuantity() || Integer.parseInt(amt) <= 0) {
-//                                    // throw new InvalidQuantityError();
-//                                    System.out.println("Please input a valid quantity to add to cart.");
-//                                } else {
-//                                    System.out.println(Integer.parseInt(amt));
-//                                    ((Customer) user).addToCart(product, Integer.parseInt(amt));
-//                                    ((Customer) user).exportToFile();
-//                                    //add this quantity to cart
-//                                    //added to customer cart
-//                                    System.out.println("Successfully added to cart!");
-//                                    System.out.println("Returning to market...");
-//                                }
-//                                return true;
-//                            } else if (buy.equals("3")) {
-//                                looping = false;
-//                            } else {
-//                                System.out.println("Please select a valid option.");
-//                                looping = true;
-//                            }
-//                        } while (looping);
-//                    }
-//                }
-//                System.out.println("No matching books found.");
-//            } else if (choice.equals(options[1])) {
-//                System.out.println("What would you like to search for?");
-//                String search = scan.nextLine();
-//                ArrayList<Book> results = this.searchProducts(search);
-//                if (results.isEmpty()) {
-//                    System.out.println("No matching products found.");
-//                } else {
-//                    System.out.println("Your Search Results: ");
-//                    for (Book book : results) {
-//                        book.displayProduct();
-//                    }
-//                }
-//                repeat = true;
-//            } else if (choice.equals("3")) {
-//                System.out.println("Exiting market...");
-//                return false;
-//            }
-//        } while (repeat);
-        return true;
+        cMenuFrame.setVisible(true);
+        while (option[0] == null || option[0].isEmpty()) {
+            System.out.println();
+        }
+        return option[0];
     }
 
     /**
@@ -428,7 +334,7 @@ public class Market {
      * @param input to search for
      * @return Searches for all books that match a given input, and returns a list.
      */
-    public ArrayList<Book> searchProducts(String input) {
+    public JFrame searchProducts(String input) {
         ArrayList<Book> matches = new ArrayList<>();
         input = input.toUpperCase();
         //loop through listedProducts
@@ -450,7 +356,78 @@ public class Market {
                 matches.add(book);
             }
         }
-        return matches;
+        JFrame searchFrame = new JFrame();
+        JButton searchButton = new JButton("Search");
+        JTextField searchField = new JTextField(10);
+        JButton logoutButton = new JButton("Log Out");
+        JButton viewCartButton = new JButton("View Cart");
+        JButton pastButton = new JButton("Past Purchases");
+
+        JPanel topPanel = new JPanel();
+        topPanel.add(logoutButton);
+        topPanel.add(searchField);
+        topPanel.add(searchButton);
+
+
+        searchFrame.add(topPanel, BorderLayout.NORTH);
+        BookPanel bookDisplay = new BookPanel(matches);
+        JPanel bookPanel = bookDisplay.getBookPanel(); //calls method to set up panel for books
+        JButton cartButton = new JButton("Add to Cart");
+        JButton buyButton = new JButton("Buy");
+
+        bookPanel.add(cartButton);
+        bookPanel.add(buyButton);
+        bookPanel.add(viewCartButton);
+        bookPanel.add(pastButton);
+        searchFrame.add(bookPanel, BorderLayout.CENTER); //TODO: fix layout.
+        ActionListener al = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == searchButton) {
+                    //TODO: getText from searchText
+                    String searchText = searchField.getText();
+                    searchProducts(searchText);
+                }
+                if (e.getSource() == logoutButton) {
+                    searchFrame.setVisible(false);
+                }
+                if (e.getSource() == buyButton) {
+                    boolean invalidInput = false;
+                    if (bookDisplay.selectedBook() != null) {
+                        do {
+                            String amount = JOptionPane.showInputDialog("How much would you like to buy?");
+                            if (amount == null) {
+                                break;
+                            } else if (!Util.isNumeric(amount)) {
+                                JOptionPane.showMessageDialog(null, "Please input a numeric value", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                                invalidInput = true;
+                            }
+                        } while (invalidInput);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Please select an item to purchase");
+                    }
+                }
+                if (e.getSource() == cartButton) {
+                    JOptionPane.showMessageDialog(null, "TODO");
+                }
+                if (e.getSource() == viewCartButton) {
+
+                }
+                if (e.getSource() == pastButton) {
+
+                }
+            }
+        };
+
+        searchButton.addActionListener(al);
+        logoutButton.addActionListener(al);
+        buyButton.addActionListener(al);
+        cartButton.addActionListener(al);
+        viewCartButton.addActionListener(al);
+        pastButton.addActionListener(al);
+
+        return searchFrame;
     }
 
     /**

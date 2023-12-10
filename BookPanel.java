@@ -67,7 +67,7 @@ public class BookPanel {
                         author.setText("Author: " + books[index].getAuthor());
                         genre.setText("Genre: " + books[index].getGenre().name());
                         desc.setText("Summary: " + books[index].getDescription());
-                        quantity.setText("Quantity Available: " + books[index].getQuantity());
+                        quantity.setText("Quantity: " + books[index].getQuantity());
                         price.setText("$" + (books[index].getPrice()));
                         store.setText("Sold by: " + (books[index].getStore()));
                     }

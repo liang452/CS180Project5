@@ -83,7 +83,7 @@ public abstract class Util {
      * into a book.
      * @throws IOException
      */
-    public static ArrayList<Book> readCSVToBook (String input) throws IOException {
+    public synchronized static ArrayList<Book> readCSVToBook (String input) throws IOException {
         ArrayList<Book> books = new ArrayList<>();
         if (input.contains(".csv")) { //if it's a filename
             BufferedReader bfr = new BufferedReader(new FileReader(input));
@@ -108,7 +108,10 @@ public abstract class Util {
             }
         } else { //if it's not a filename
             if (!input.isEmpty()) {
-                String[] productDetails = input.split(",");
+                String[] productDetails = input.split(",", 0);
+                System.out.println(productDetails.length);
+                System.out.println(productDetails.length < 7);
+                System.out.println(productDetails[0]);
                 if (productDetails.length < 7) {
                     System.out.println("Please input a properly formatted file.");
                 } else {
