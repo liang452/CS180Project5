@@ -1,6 +1,6 @@
 # CS 180 Project 5
 ## How to Run:
-Main.java is where the marketplace is actually implemented.
+To run the code, first run the Server.java class, then run the Driver.java class to start the application.
 ### Notes on Formatting:
 - Don't use commas in descriptions.
 - When selecting an item from the market list, make sure to match case.
@@ -8,7 +8,7 @@ Main.java is where the marketplace is actually implemented.
 - The customer class first lists out all past purchases in one line, then all cart items in one line
   
 ## Who Submitted What
-Ashish - Submitted Report on Brightspace.
+Mrigas - Submitted Report on Brightspace.
 Ruiwen - Submitted cod on Vocareum
 
 
