@@ -15,10 +15,6 @@ Ruiwen - Submitted cod on Vocareum
 ## Documentation
 ### Book
 The Book class is the product in our marketplace. 
-#### readGenre()
-Takes in a String, and checks if it matches a value in the Genre enum, and returns that value.
-#### displayProduct()
-Displays the book that calls this method in the format Customers will see it in, in the marketplace.
 ### Store
 The Store class contains data for a store. It stores a store name and a list of books.
 ### Seller
@@ -30,8 +26,15 @@ Useful methods that didn't belong in any particular class.
 ### Market
 Where the information from all the Sellers and Customers is loaded into, and processed through various methods to 
 then be presented.
-### Main
-Where everything is implemented.
+### BookPanel
+Where the graphical component for displaying the books in the bookstore is created.
+### User
+Where a user in the system is stored and managed, for things like passwords, usernames, and emails. 
+### Server
+The Server class creates the server for port 8484 to which the client connects.
+### Driver
+The Driver class gives users access to the application and its features.
+
 
 
 ## Description of Classes
@@ -44,6 +47,14 @@ Includes an enumeration Genre for different book genres.
 Provides a method createBookFromUserInput() to create a book by taking input from the user.
 
 Testing: The class has methods for setting and getting attributes, and these can be tested by creating instances of the Book class and manipulating its properties.
+
+### Store Class:
+
+Functionality: Represents a customer user, extending the User class. 
+Manages a shopping cart, past purchases, and includes methods to add, remove, and view items in the cart. 
+Provides methods to export user data to a file.
+
+Testing: The class can be tested by creating a Customer object, adding items to the cart, and performing operations like viewing the cart and past purchases.
 
 ### Customer Class:
 
@@ -74,17 +85,33 @@ Functionality: Provides utility methods used across the project, such as reading
 
 Testing: The utility methods can be tested by creating instances of the Util class and calling these methods with various inputs.
 
-### Main Class:
+### BookPanel Class:
 
 Functionality: Contains the main method and serves as the entry point for the application. 
 Handles user authentication, account creation, and interaction with the market.
 
 Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
 
-### InvalidInputError and InvalidQuantityError Classes:
+### User Class:
 
-Functionality: Represent custom error classes for handling invalid input and quantity errors. 
-Extend the Error class to provide more specific error messages.
+Functionality: Contains the main method and serves as the entry point for the application. 
+Handles user authentication, account creation, and interaction with the market.
 
-Testing: Testing involves intentionally triggering these errors and verifying that they are caught and handled appropriately.
+Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+
+### Server Class:
+
+Functionality: Contains the main method and serves as the entry point for the application. 
+Handles user authentication, account creation, and interaction with the market.
+
+Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+
+### Driver Class:
+
+Functionality: Contains the main method and serves as the entry point for the application. 
+Handles user authentication, account creation, and interaction with the market.
+
+Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+
+
 
