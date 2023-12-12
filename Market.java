@@ -602,7 +602,7 @@ public class Market {
                     }
                 }
                 user.setCart(placeholder);
-                user.exportToFile();
+                //user.exportToFile();
                 System.out.println("Removed " + item + " from cart.");
                 loop = true;
             } else if (input.equals("3")) {
@@ -635,7 +635,7 @@ public class Market {
                         user.setCart(failed);
                     }
                 }
-                user.exportToFile();
+                //user.exportToFile();
                 System.out.println("Exiting...");
                 loop = false;
             } else if (input.equals("4")) {

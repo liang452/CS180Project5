@@ -1,36 +1,25 @@
 import java.io.*;
 import java.util.ArrayList;
 
-public class Customer extends User {
+public class Customer extends User implements Serializable {
+    private String username;
+    private String email;
+    private String password;
     private ArrayList<Book> cart;
     private ArrayList<Book> pastPurchases;
 
     public Customer(String username, String email, String password) throws IOException {
         super(username, email, password);
-        this.cart = new ArrayList<>();
-        this.pastPurchases = new ArrayList<>();
+        this.cart = null;
+        this.pastPurchases = null;
+        this.username = username;
+        this.email = email;
+        this.password = password;
         //FORMAT OF FILE:
         /*
-         * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
          * CART - separated by commas
+         * PAST PURCHASES - product details separated by commas, but quantity is amount purchased instead of stock
          */
-
-        //if existing customer:
-        if (User.isExistingUser(username) && User.isExistingEmail(email)) {
-            BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
-            String line = bfr.readLine(); // past purchases line
-            if (line != null && !line.isEmpty()) {
-                this.pastPurchases = Util.readCSVToBook(line);
-            }
-            line = bfr.readLine(); //cart line
-            if (line != null && !line.isEmpty()) {
-                this.cart = Util.readCSVToBook(line);
-            }
-            bfr.close();
-        } else {
-            File f = new File(username + ".csv");
-            f.createNewFile();
-        }
     }
 
     public void addToPastPurchases(Book product, int quantity) {
@@ -38,17 +27,11 @@ public class Customer extends User {
         this.pastPurchases.add(product);
     }
 
-    public void addToCart(Book product, int quantity) {
-        product.setQuantity(quantity); //sets quantity of
-        this.cart.add(product);
-        //if already exists in cart, just add quantity onto it?
-        //TODO
+    public void setPastPurchases(ArrayList<Book> purchases) {
+        this.pastPurchases = purchases;
     }
 
 
-    /*
-
-    Can use this method
     
     public void addToCart(Book product, int quantity) {
         product.setQuantity(quantity);
@@ -65,9 +48,7 @@ public class Customer extends User {
         if (!productExists) {
             this.cart.add(product);
         }
-    }
-    
-    */
+    } //TODO: test
 
 
     public ArrayList<Book> getCart() {
@@ -147,35 +128,62 @@ public class Customer extends User {
      * Exports customer information to their information on file.
      * @throws IOException
      */
-    public void exportToFile() throws IOException {
+    public synchronized void exportToFile() throws IOException {
         //TODO: make synchronized? does this need to be only one at a time?
-        if (!User.isExistingUser(this.getUsername())) {
+        if (!User.isExistingUser(this.username)) {
             BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
-            bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "CUSTOMER");
+            bw.write(this.username + "," + this.email + "," + this.password + "," + "CUSTOMER");
             bw.write("\n");
             bw.close();
         }
 
-        File f = new File(this.getUsername() + ".csv");
+        File f = new File(this.username + ".csv");
         if (!f.exists()) {
             f.createNewFile();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+            bw.write("CART\n");
+            bw.flush();
+            bw.write("PAST\n");
+            bw.flush();
+        } else {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
+            //write in cart data
+            String pastItems = "";
+            String cartItems = "";
+            if (this.cart == null || this.cart.isEmpty()) {
+                System.out.println("EMPTY CART");
+                bw.write("CART\n");
+                bw.flush();
+            } else {
+                for (Book cartProd : cart) {
+                    cartItems += cartProd.toCSVFormat();
+                }
+                System.out.println("Cart items: " + cartItems);
+                bw.write(cartItems + "\n");
+                bw.flush();
+                bw.close();
+            }
+
+            //write in past purchases
+            bw = new BufferedWriter((new FileWriter(f, true))); //appends into file
+            if (this.pastPurchases == null || this.pastPurchases.isEmpty()) {
+                System.out.println("NO PAST PURCHASES");
+                bw.write("PAST\n");
+                bw.flush();
+            } else {
+                for (Book pastItem : pastPurchases) {
+                    pastItems += pastItem.toCSVFormat();
+                }
+                System.out.println("Past items: " + pastItems);
+                bw.write(pastItems + "\n");
+                bw.flush();
+
+            }
         }
-        BufferedWriter bw = new BufferedWriter(new FileWriter(f)); //overwrites existing file
-        //write in cart data
-        String details = "";
-        for (Book pastItem : pastPurchases) {
-            details += pastItem.toCSVFormat();
-        }
-        bw.write(details + "\n");
-        bw.close();
-        //write in past purchases
-        bw = new BufferedWriter((new FileWriter(f, true))); //appends into file
-        String cartItems = "";
-        for (Book cartProd : cart) {
-            cartItems += cartProd.toCSVFormat();
-        }
-        bw.write(cartItems);
-        bw.close();
+        BufferedReader bfr = new BufferedReader(new FileReader(f));
+        System.out.println(this.getUsername() + ".csv");
+        System.out.println("CART: " + bfr.readLine());
+        System.out.println("PAST: " + bfr.readLine());
     }
 
     public boolean exportPastPurchases(String filename) throws IOException {

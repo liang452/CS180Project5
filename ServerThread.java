@@ -82,8 +82,25 @@ public class ServerThread extends Thread {
                         oos.flush();
                         oos.writeObject(User.getUserFromEmail(email)); //writes out username
                         oos.flush();
-                        oos.writeObject(User.accountType(email)); //writes out account type
+                        String accountType = User.accountType(email);
+                        oos.writeObject(accountType); //writes out account type
                         oos.flush();
+                        BufferedReader bfr = new BufferedReader(new FileReader(User.getUserFromEmail(email) + ".csv"));
+                        String line = bfr.readLine();
+                        if (accountType.equals("CUSTOMER")) {
+                            if (line.equals("CART")) {
+                                oos.writeObject("EMPTY");
+                                oos.flush();
+                            } else {
+                                oos.writeObject(line);
+                            }
+                            line = bfr.readLine();
+                            if (line.equals("PAST")) {
+                                oos.writeObject("EMPTY");
+                            } else {
+                                oos.writeObject(line);
+                            }
+                        }
                         break;
                     }
                     case "CREATE ACCOUNT": {
@@ -97,6 +114,12 @@ public class ServerThread extends Thread {
                             oos.flush();
                             loginWriter.write(User.toCSV(accountDetails));
                             (new File(accountDetails[0])).createNewFile();
+                            if (accountDetails[3].equals("CUSTOMER")) {
+                                BufferedWriter bw = new BufferedWriter(new FileWriter(accountDetails[0] + ".csv"));
+                                bw.write("CART" + "\n");
+                                bw.flush();
+                                bw.write("PAST" + "\n");
+                            }
                         }
                         break;
                     }
@@ -156,6 +179,16 @@ public class ServerThread extends Thread {
                                                     ".csv"));
                                     System.out.println("What's in the seller file before calling updateProduct: " + bfr2.readLine());
                                     System.out.println("Changed successfully? " + Seller.updateProduct(selection, holder, selection.getBookSeller(sellerNames)));
+                                    Customer customer = (Customer) ois.readObject();
+                                    customer.exportToFile(); //saves to file
+                                    System.out.println("Successfully saved.");
+
+                                    BufferedReader bfr3 = new BufferedReader(new FileReader(username + ".csv"));
+                                    //null by here.
+                                    String line = bfr3.readLine();
+                                    System.out.println("CART: " + line);
+                                    line = bfr3.readLine();
+                                    System.out.println("PAST: " + line);
                                     break;
                                 case "ADD TO CART":
                                     break;
