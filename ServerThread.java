@@ -270,9 +270,29 @@ public class ServerThread extends Thread {
                     case "CART": {
                         input = (String) ois.readObject();
                         switch(input) {
-                            case "ALL": {}
+                            case "ALL": {
+                                System.out.println("Buying all items in cart...");
+                                Customer customer = (Customer) ois.readObject();
+                                customer.exportToFile();
+                                //TODO: update seller.
+                                ArrayList<Book> cart = (ArrayList<Book>) ois.readObject();
+                                for (Book book : cart) {
+                                    for (Book b : this.allBooks) {
+                                        if (book.equals(b)) {
+                                            int newQuantity = b.getQuantity() - book.getQuantity();
+                                            Book placeholder = book;
+                                            placeholder.setQuantity(newQuantity);
+                                            Seller.updateProduct(b, placeholder, b.getBookSeller(sellerNames));
+                                            int index = allBooks.indexOf(b);
+                                            allBooks.set(index, placeholder);
+                                        }
+                                    }
+                                }
+                                oos.writeObject(allBooks);
+                                oos.flush();
+                            }
                             case "ONE": {
-                                int amount = (int) ois.readObject();
+                                int amount = Integer.parseInt((String) ois.readObject());
                                 System.out.println("Amount: " + amount);
                                 Book selection = (Book) ois.readObject();
                                 String username = (String) ois.readObject();

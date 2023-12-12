@@ -175,7 +175,7 @@ public class Customer extends User implements Serializable {
                 bw.flush();
             } else {
                 for (Book cartProd : cart) {
-                    cartItems += cartProd.toCSVFormat();
+                    cartItems += cartProd.toCSVFormat() + ",";
                 }
                 System.out.println("Cart items: " + cartItems);
                 bw.write(cartItems + "\n");

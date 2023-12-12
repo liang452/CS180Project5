@@ -201,7 +201,7 @@ public class Driver {
             do {
                 repeat = false;
                 String[] options = {"View Marketplace","View Your Cart","View Your Past Purchases", "Edit " +
-                        "Account", "Log Out"};
+                        "Account", "Logout"};
                 String input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
                         JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
                 boolean loop;
@@ -256,7 +256,7 @@ public class Driver {
                             String[] cartAddition = output.split(",", 3);
                             int amount = Integer.parseInt(cartAddition[1]);
                             Book cartBook = new ArrayList<>(Util.readCSVToBook(cartAddition[2])).get(0);
-
+                            ((Customer) user).addToCart(cartBook, amount);
                             oos.writeObject(user);
                             oos.flush();
                             loop = true;
@@ -319,9 +319,18 @@ public class Driver {
                         if (userInput.equals("ALL")) {
                             oos.writeObject("ALL");
                             oos.flush();
+                            ArrayList<Book> entireCart = ((Customer) user).getCart();
+                            for (Book book : entireCart) {
+                                ((Customer) user).addToPastPurchases(book, book.getQuantity());
+                            }
+                            ((Customer) user).setCart(null);
                             oos.writeObject((Customer) user);
                             oos.flush();
-                            //do its own thing here
+                            oos.writeObject(entireCart);
+                            oos.flush();
+                            market.setListedProducts((ArrayList<Book>) ois.readObject());
+                            repeat = true;
+                            loop = true;
                         } else if (userInput.contains("ONE")) {
                             String[] purchase = userInput.split(",", 3);
                             int amount = Integer.parseInt(purchase[1]);
@@ -341,8 +350,6 @@ public class Driver {
 
                             System.out.println("Finished writing info to server!");
                             System.out.println("Awaiting output...");
-                            ois.readObject();
-                            ois.readObject();
                             String newBookString = (String) ois.readObject();
                             System.out.println("Driver received: " + newBookString);
                             ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
@@ -377,9 +384,9 @@ public class Driver {
                             loop = true;
                         }
                     } while(loop);
-                } else if (input.equals("3")) { //edit account
+                } else if (input.equals(options[3])) { //edit account
 
-                } else if (input.equals("4")) {
+                } else if (input.equals(options[4])) {
                     JOptionPane.showMessageDialog(null, "Have a good day!");
                     oos.writeObject("LOGOUT");
                     oos.flush();

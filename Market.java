@@ -290,11 +290,12 @@ public class Market {
                             JOptionPane.showMessageDialog(null, "Please input a valid quantity to purchase.");
                         } else {
                             System.out.println("Adding " + amount + " to cart.");
-                            ((Customer) user).addToCart(selection, Integer.parseInt(amount));
+                            option[0]= "ADD TO CART," + amount + "," + selection.toCSVFormat();
                             cMenuFrame.setVisible(false);
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Please select an item from the list.");
                     }
-                    option[0] = "ADD TO CART," + amount + "," + selection.toCSVFormat();
                 }
             }
         };
@@ -520,6 +521,7 @@ public class Market {
                 if (e.getSource() == allButton) {
                     //buy all.
                     option[0] = "ALL";
+                    cartFrame.setVisible(false);
                 }
                 if (e.getSource() == oneButton) {
                     if (holder.selectedBook() == null) {
@@ -527,6 +529,7 @@ public class Market {
                     } else {
                         //purchases amount in cart automatically
                         option[0] = "ONE," + holder.selectedBook().getQuantity() + "," + holder.selectedBook().toCSVFormat();
+                        cartFrame.setVisible(false);
                     }
                 }
                 if (e.getSource() == returnButton) {
