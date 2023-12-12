@@ -445,6 +445,7 @@ public class Driver {
                     oos.writeObject("CUSTOMER SHOPPING CARTS\n");
                     oos.flush();
                     //view customer shopping carts
+                    market.viewShoppingCarts();
                 } else if (input.equals(options[4])) {
                     boolean deleted;
                     do {
