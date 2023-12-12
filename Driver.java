@@ -70,6 +70,8 @@ public class Driver {
                                 password = loginDetails[2];
                                 accountType = loginDetails[3];
                                 JOptionPane.showMessageDialog(null, "Logged in successfully. Welcome back!");
+                                ois.readObject();
+                                ois.readObject();
                                 if (accountType.equals("CUSTOMER")) {
                                     String cartLine = (String) ois.readObject();
                                     if (!cartLine.equals("EMPTY")) {
@@ -264,10 +266,12 @@ public class Driver {
                 } else if (input.equals(options[1])) { //view cart
                     System.out.println("hi");
                 } else if (input.equals(options[2])) { //view past purchases
+                    oos.writeObject("PAST PURCHASES");
+                    oos.flush();
                     do {
                         loop = false;
-                        String output = market.pastPurchasesMenu(user); //FOR SOME REASON PASTPURCHASES IS EMPTY WHEN
-                        // IT SHOULDN"T BE - FIX
+                        String output = market.pastPurchasesMenu(user);
+                        oos.writeObject(user);
                         if (output.equals("RETURN")) {
                             loop = false;
                             repeat = true;
