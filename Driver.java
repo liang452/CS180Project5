@@ -255,6 +255,10 @@ public class Driver {
                             oos.flush();
                             String[] cartAddition = output.split(",", 3);
                             int amount = Integer.parseInt(cartAddition[1]);
+                            Book cartBook = new ArrayList<>(Util.readCSVToBook(cartAddition[2])).get(0);
+
+                            oos.writeObject(user);
+                            oos.flush();
                             loop = true;
                         } else if (output.contains("SEARCH")) {
                             oos.writeObject("SEARCH");
@@ -307,7 +311,57 @@ public class Driver {
                         }
                     } while(loop);
                 } else if (input.equals(options[1])) { //view cart
-                    System.out.println("hi");
+                    oos.writeObject("CART");
+                    oos.flush();
+                    do {
+                        loop = false;
+                        String userInput = market.viewCartMenu((Customer) user);
+                        if (userInput.equals("ALL")) {
+                            oos.writeObject("ALL");
+                            oos.flush();
+                            oos.writeObject((Customer) user);
+                            oos.flush();
+                            //do its own thing here
+                        } else if (userInput.contains("ONE")) {
+                            String[] purchase = userInput.split(",", 3);
+                            int amount = Integer.parseInt(purchase[1]);
+                            System.out.println("Purchasing: " + purchase[2]);
+                            ArrayList<Book> boughtBooks = Util.readCSVToBook(purchase[2]);
+                            Book boughtBook = boughtBooks.get(0);
+                            ((Customer) user).addToPastPurchases(boughtBook, amount); //adds to local
+
+                            oos.writeObject("ONE");
+                            oos.flush();
+                            oos.writeObject(amount);
+                            oos.flush();
+                            oos.writeObject(boughtBook);
+                            oos.flush();
+                            oos.writeObject(username);
+                            oos.flush();
+
+                            System.out.println("Finished writing info to server!");
+                            System.out.println("Awaiting output...");
+                            ois.readObject();
+                            ois.readObject();
+                            String newBookString = (String) ois.readObject();
+                            System.out.println("Driver received: " + newBookString);
+                            ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
+
+                            market.setListedProducts(newBookList);
+
+                            oos.writeObject(user);
+                            oos.flush();
+
+                            BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
+                            String line = bfr.readLine();
+                            System.out.println("CART: " + line);
+                            line = bfr.readLine();
+                            System.out.println("PAST: " + line);
+                            loop = true;
+                        } else if (userInput.equals("RETURN")) {
+                            repeat = true;
+                        }
+                    } while(loop);
                 } else if (input.equals(options[2])) { //view past purchases
                     oos.writeObject("PAST PURCHASES");
                     oos.flush();

@@ -191,6 +191,8 @@ public class ServerThread extends Thread {
                                     System.out.println("PAST: " + line);
                                     break;
                                 case "ADD TO CART":
+                                    customer = (Customer) ois.readObject();
+                                    customer.exportToFile();
                                     break;
                                 case "SEARCH": {
 
@@ -265,6 +267,75 @@ public class ServerThread extends Thread {
                         case "RETURN": {
                             break;
                         }
+                    case "CART": {
+                        input = (String) ois.readObject();
+                        switch(input) {
+                            case "ALL": {}
+                            case "ONE": {
+                                int amount = (int) ois.readObject();
+                                System.out.println("Amount: " + amount);
+                                Book selection = (Book) ois.readObject();
+                                String username = (String) ois.readObject();
+
+                                System.out.println(username + " is buying " + amount + " of " + selection.getName());
+                                BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
+                                BufferedWriter bw = new BufferedWriter(new FileWriter(username + ".csv"));
+                                Book holder = null;
+                                boolean found = false;
+                                for (int i = 0; i < this.allBooks.size(); i++) {
+                                    holder = this.allBooks.get(i);
+                                    if (holder.equals(selection)) {
+                                        this.allBooks.remove(i);
+                                        int newQuantity = holder.getQuantity() - amount;
+                                        System.out.println("New quantity: " + newQuantity);
+                                        holder.setQuantity(amount); //quantity purchased
+                                        String cartLine = bfr.readLine(); //cart is first line of customer file
+                                        String pastPurchases = bfr.readLine(); //pastpurchases is second line
+                                        if (pastPurchases != null && !pastPurchases.equals("")) {
+                                            pastPurchases += holder.toCSVFormat();
+                                        } else {
+                                            pastPurchases = "";
+                                        }
+                                        bw.write(cartLine + "\n");
+                                        bw.flush();
+                                        bw.write(pastPurchases + "\n");
+                                        bw.flush();
+                                        found = true;
+                                        holder.setQuantity(newQuantity);
+                                        break;
+                                    }
+                                }
+                                if (found) {
+                                    this.allBooks.add(holder);
+                                }
+                                String updatedBooks = ""; //arraylist of all books
+                                for (Book book : this.allBooks) {
+                                    updatedBooks += book.toCSVFormat() + ",";
+                                }
+                                oos.writeObject(updatedBooks); //updated list of all books in csv format
+                                oos.flush();
+                                System.out.println("Wrote: " + updatedBooks);
+                                //update seller.
+                                System.out.println("Book is sold by: " + selection.getBookSeller(sellerNames));
+
+                                System.out.println("Changed successfully? " + Seller.updateProduct(selection, holder, selection.getBookSeller(sellerNames)));
+
+                                Customer customer = (Customer) ois.readObject();
+                                System.out.println("Server received " + customer.getUsername() + " data.");
+                                customer.removeFromCart(holder.getName(), amount);
+                                customer.exportToFile(); //saves to file
+                                System.out.println("Successfully saved.");
+
+                                BufferedReader bfr3 = new BufferedReader(new FileReader(username + ".csv"));
+                                //null by here.
+                                String line = bfr3.readLine();
+                                System.out.println("CART: " + line);
+                                line = bfr3.readLine();
+                                System.out.println("PAST: " + line);
+                                break;
+                            }
+                        }
+                    }
                         case "PAST PURCHASES": {
                             Customer customer = (Customer) ois.readObject();
                             System.out.println(customer.getPastPurchases().get(0).getName());

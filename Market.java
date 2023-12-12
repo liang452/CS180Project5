@@ -220,8 +220,6 @@ public class Market {
 
         JButton searchButton = new JButton("Search");
         JTextField searchField = new JTextField(10);
-        JButton viewCartButton = new JButton("View Cart");
-        JButton pastButton = new JButton("Past Purchases");
         JButton returnButton = new JButton("Return");
 
         JPanel topPanel = new JPanel();
@@ -293,30 +291,10 @@ public class Market {
                         } else {
                             System.out.println("Adding " + amount + " to cart.");
                             ((Customer) user).addToCart(selection, Integer.parseInt(amount));
+                            cMenuFrame.setVisible(false);
                         }
                     }
                     option[0] = "ADD TO CART," + amount + "," + selection.toCSVFormat();
-                }
-                if (e.getSource() == viewCartButton) {
-                    ArrayList<Book> cartList = ((Customer) user).getCart();
-                    JFrame cartFrame = new JFrame();
-                    cartFrame.setSize(new Dimension(500, 400));
-                    BookPanel holder = new BookPanel(cartList);
-                    JPanel cartBookPanel = holder.getBookPanel();
-
-                    JPanel buttonPanel = new JPanel();
-                    JButton allButton = new JButton("Purchase All");
-                    JButton oneButton = new JButton("Purchase Selection");
-                    buttonPanel.add(allButton);
-                    buttonPanel.add(oneButton);
-
-                    cartFrame.add(cartBookPanel, BorderLayout.CENTER);
-                    cartFrame.add(buttonPanel, BorderLayout.SOUTH);
-                    cartFrame.add(new JLabel("Your Cart"), BorderLayout.NORTH);
-                    cartFrame.setVisible(true);
-                }
-                if (e.getSource() == pastButton) {
-                    option[0] = "PAST";
                 }
             }
         };
@@ -324,8 +302,6 @@ public class Market {
         searchButton.addActionListener(al);
         buyButton.addActionListener(al);
         cartButton.addActionListener(al);
-        viewCartButton.addActionListener(al);
-        pastButton.addActionListener(al);
         returnButton.addActionListener(al);
 
         cMenuFrame.setVisible(true);
@@ -510,133 +486,64 @@ public class Market {
      * @param user user to search shopping cart for
      * @throws IOException
      */
-    public void viewCartMenu(Customer user) throws IOException {
-        //read cart of this user - method in Customer?
-        JButton checkoutButton = new JButton("Checkout");
-        JButton returnButton = new JButton("Return");
-        JFrame cartMenu = new JFrame();
-        JPanel buttonPane = new JPanel();
+    public String viewCartMenu(Customer user) throws IOException {
+        ArrayList<Book> cartList = ((Customer) user).getCart();
+        if (cartList == null) {
+            cartList = new ArrayList<Book>();
+        }
+        JFrame cartFrame = new JFrame();
+        cartFrame.setSize(new Dimension(500, 400));
+        BookPanel holder = new BookPanel(cartList);
+        JPanel cartPanel = holder.getBookPanel();
 
-        buttonPane.add(returnButton);
-        buttonPane.add(checkoutButton);
+        JPanel buttonPanel = new JPanel();
+        JButton allButton = new JButton("Purchase All");
+        JButton oneButton = new JButton("Purchase Selection");
+        JButton returnButton = new JButton("Return");
+        buttonPanel.add(allButton);
+        buttonPanel.add(oneButton);
+        String[] option = new String[1];
+
+        JPanel topPane = new JPanel();
+        topPane.add(new JLabel("Your Cart"), BorderLayout.NORTH);
+        topPane.add(returnButton);
+
+        cartFrame.add(cartPanel, BorderLayout.CENTER);
+        cartFrame.add(buttonPanel, BorderLayout.SOUTH);
+        cartFrame.add(topPane, BorderLayout.NORTH);
+        cartFrame.setSize(new Dimension(500, 300));
+        //read cart of this user - method in Customer?
+
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == checkoutButton) {
-                    //getText from searchText
+                if (e.getSource() == allButton) {
+                    //buy all.
+                    option[0] = "ALL";
+                }
+                if (e.getSource() == oneButton) {
+                    if (holder.selectedBook() == null) {
+                        JOptionPane.showMessageDialog(null, "Please select a book first.");
+                    } else {
+                        //purchases amount in cart automatically
+                        option[0] = "ONE," + holder.selectedBook().getQuantity() + "," + holder.selectedBook().toCSVFormat();
+                    }
                 }
                 if (e.getSource() == returnButton) {
-                    cartMenu.setVisible(false);
+                    cartFrame.setVisible(false);
+                    option[0] = "RETURN";
                 }
             }
         };
         returnButton.addActionListener(al);
-        checkoutButton.addActionListener(al);
+        allButton.addActionListener(al);
+        oneButton.addActionListener(al);
+        cartFrame.setVisible(true);
 
-        JPanel cartPane = new JPanel();
-        JScrollPane itemsPane = new JScrollPane();
-        ArrayList<Book> shoppingCart = new ArrayList<>(); //TODO: put in shopping cart info.
-        JList itemList = new JList((ListModel) shoppingCart);
-        itemsPane.add(itemList);
-
-        ListSelectionListener listener = new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                //TODO
-            }
-        };
-
-        cartPane.add(itemsPane);
-
-        Scanner scan = new Scanner(System.in);
-        user.viewCart();
-        System.out.println("1 - Purchase an Item from Cart");
-        System.out.println("2 - Remove an Item From Cart");
-        System.out.println("3 - Purchase All Items in Cart");
-        System.out.println("4 - Return to Main Menu");
-        String input = scan.nextLine();
-        boolean loop;
-        do {
-            loop = false;
-            if (input.equals("1")) { //purchase item
-                System.out.println("Which item would you like to purchase?");
-                String item = scan.nextLine();
-                boolean incorrectInput;
-                do {
-                    incorrectInput = false;
-                    System.out.println("How much of this item would you like to buy?");
-                    String quantity = scan.nextLine();
-                    if (!Util.isNumeric(quantity)) {
-                        System.out.println("Please input a valid quantity.");
-                        incorrectInput = true;
-                    } else if (Integer.parseInt(quantity) <= 0) {
-                        System.out.println("Please input a valid quantity.");
-                        incorrectInput = true;
-                    } else {
-                        //actually buy thing. add to past purchases, remove from cart.
-                        //loop through cart?
-                        incorrectInput = user.removeFromCart(item, Integer.parseInt(quantity));
-                        if (incorrectInput) {
-                            System.out.println("Successfully purchased!");
-                        }
-                    }
-                    loop = true;
-                } while (incorrectInput);
-            } else if (input.equals("2")) {
-                System.out.println("Which book would you like to remove?"); //multiple items having same name will have
-                // problems
-                String item = scan.nextLine();
-                ArrayList placeholder = new ArrayList<>();
-                for (Book book : user.getCart()) {
-                    if (!book.getName().equals(item)) {
-                        placeholder.add(book);
-                    }
-                }
-                user.setCart(placeholder);
-                //user.exportToFile();
-                System.out.println("Removed " + item + " from cart.");
-                loop = true;
-            } else if (input.equals("3")) {
-                ArrayList<Book> purchasedCart = user.purchaseShoppingCart();
-                ArrayList<Book> placeholder = this.listedProducts;
-                ArrayList<Book> failed = new ArrayList<Book>();
-                ArrayList<Book> succeeded = new ArrayList<Book>();
-                for (Book book : placeholder) {
-                    for (Book bk : purchasedCart) {
-                        if (book.equals(bk)) {
-                            if (bk.getQuantity() > book.getQuantity()) {
-                                //if the amount you're trying to buy is greater than the amount that exists
-                                failed.add(bk);
-                            } else {
-                                this.updateListedProducts(book, bk);
-                                succeeded.add(bk);
-                            }
-                        }
-                    }
-                    System.out.println("You bought: ");
-                    for (Book bought : succeeded) {
-                        bought.displayProductInfo();
-                        user.addToPastPurchases(bought, bought.getQuantity());
-                    }
-                    if (!failed.isEmpty()) {
-                        System.out.println("Failed to purchase: ");
-                        for (Book fail : failed) {
-                            fail.displayProductInfo();
-                        }
-                        user.setCart(failed);
-                    }
-                }
-                //user.exportToFile();
-                System.out.println("Exiting...");
-                loop = false;
-            } else if (input.equals("4")) {
-                System.out.println("Exiting cart...");
-                loop = false;
-            } else {
-                System.out.println("Please input a valid option.");
-                loop = true;
-            }
-        } while(loop);
+        while (option[0] == null || option[0].isEmpty()) {
+            System.out.println("");
+        }
+        return option[0];
 }
 
     /**

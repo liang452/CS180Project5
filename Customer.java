@@ -27,7 +27,9 @@ public class Customer extends User implements Serializable {
     }
     public void addToPastPurchases(Book product, int quantity) {
         product.setQuantity(quantity);
-
+        if (pastPurchases == null) {
+            pastPurchases = new ArrayList<>();
+        }
         boolean productExists = false;
         for (Book cartProduct : pastPurchases) {
             if (cartProduct.equals(product)) {
@@ -51,7 +53,9 @@ public class Customer extends User implements Serializable {
     }
     public void addToCart(Book product, int quantity) {
         product.setQuantity(quantity);
-        
+        if (cart == null) {
+            cart = new ArrayList<Book>();
+        }
         boolean productExists = false;
         for (Book cartProduct : cart) {
             if (cartProduct.equals(product)) {
@@ -145,7 +149,6 @@ public class Customer extends User implements Serializable {
      * @throws IOException
      */
     public synchronized void exportToFile() throws IOException {
-        //TODO: make synchronized? does this need to be only one at a time?
         if (!User.isExistingUser(this.username)) {
             BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
             bw.write(this.username + "," + this.email + "," + this.password + "," + "CUSTOMER");
