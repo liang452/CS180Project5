@@ -132,7 +132,6 @@ public class Driver {
             //if not a previously existing seller
             if (!existingAccount) {
                 boolean cancel;
-                Store store = null;
                 String storeName = "";
                 do {
                     cancel = false;
@@ -149,34 +148,26 @@ public class Driver {
                             }
                             repeat = Util.yesNo("Would you like to create another product?", "Store Set-up");
                         } while (repeat); //loops book creation process until user is happy
-                        store = new Store(storeName, products); //creates new store with storename and products
                         ((Seller) user).addProducts(products);
                     } else {
                         String filename = JOptionPane.showInputDialog("Please input a .csv file name to upload your products.");
                         boolean checker;
                         if (filename != null) {
-                            do {
-                                store = new Store(username,filename); //automatically reads in
-                                checker = true;
-                                if (!store.getProducts().isEmpty()) { //if store isn't empty
-                                    checker = false;
-                                }
-                            } while (checker);
-                            store.displayStore();
+                            ((Seller) user).addProducts(Util.readCSVToBook(filename));
                             JOptionPane.showMessageDialog(null, "Successfully imported!");
                         } else {
                             cancel = true;
                         }
                     }
 
-                    if (!cancel) { //TODO: fix. this is messy. if cancel is false
-                        store.displayStore();
+                    if (!cancel) {
+                        ((Seller) user).displayProducts();
                         boolean ans = Util.yesNo("Is this what you want?", "Store Set-up");
 
                         if (ans) {
                             System.out.println("OK! Saving data...");
                             //initial creation of store
-                            ((Seller) user).addStore(store);
+
                             ((Seller) user).exportToFile();
                             System.out.println("Successfully saved!");
                         } else {
@@ -406,9 +397,43 @@ public class Driver {
                 if (input == null) {
                     break;
                 } else if (input.equals(options[0])) {
-                    oos.writeObject("VIEW PRODUCTS\n");
-                    oos.flush();
-                    market.viewSellerProducts();
+                    boolean loop;
+                    do {
+                        loop = false;
+                        oos.writeObject("VIEW PRODUCTS");
+                        oos.flush();
+                        String input2 = market.viewSellerProducts((Seller) user);
+                        if (input2.contains("EDIT")) {
+                            oos.writeObject("EDIT");
+                            oos.flush();
+                            String[] edited = input2.split(",", 2);
+                            ArrayList<Book> books = Util.readCSVToBook(edited[1]);
+                            ((Seller) user).updateProduct(books.get(0), books.get(1)); //update locally
+                            oos.writeObject(user); //send over to save to file in server
+                            oos.flush();
+                            ; //split EDIT,PRODUCT1,PRODUCT2 into 2 strings
+
+                            market.updateListedProducts(books.get(0), books.get(1)); //update market locally
+                            oos.writeObject(market.getListedProducts());
+                            oos.flush();
+                            loop = true;
+                        } else if (input2.equals("ADD PRODUCT")) {
+                            oos.writeObject("ADD PRODUCT");
+                            oos.flush();
+                            String[] added = input2.split(",", 2);
+                            Book addedBook = Util.readCSVToBook(added[1]).get(0);
+                            ((Seller) user).addProduct(addedBook);
+                            oos.writeObject(addedBook);
+                            oos.flush();
+
+                            oos.writeObject(user);
+                            oos.flush();
+                            market.setListedProducts((ArrayList) ois.readObject());
+                        } else if (input2.equals("RETURN")) {
+                            repeat = true;
+                        }
+                    } while(loop);
+
                 } else if (input.equals(options[1])) {
                     oos.writeObject("VIEW SALES\n");
                     oos.flush();
@@ -441,7 +466,7 @@ public class Driver {
                         System.out.println("Returning to main menu...");
                     }
                 }
-            } while(input == null && !input.equals("0"));
+            } while(repeat);
         }
     }
 }

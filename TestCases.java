@@ -23,18 +23,5 @@ public class TestCases {
         } else {
             System.out.println("Seller failed checks.");
         }
-
-        Store store = new Store("Jane's Knickknacks", "mystore.csv");
-        if (store.getName().equals("Jane's Knickknacks")) {
-            System.out.println("Store passed checks.");
-        } else {
-            System.out.println("Store failed checks.");
-        }
-        if (store.getProducts().get(0).getName().equals("Pride and Prejudice")
-        && store.getProducts().get(0).getAuthor().equals("Jane Austen")) {
-            System.out.println("Book passed checks.");
-        } else {
-            System.out.println("Book failed checks.");
-        }
     }
 }

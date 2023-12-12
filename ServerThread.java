@@ -176,7 +176,8 @@ public class ServerThread extends Thread {
                                     //update seller.
                                     System.out.println("Book is sold by: " + selection.getBookSeller(sellerNames));
 
-                                    System.out.println("Changed successfully? " + Seller.updateProduct(selection, holder, selection.getBookSeller(sellerNames)));
+                                    System.out.println("Changed successfully? " + Seller.updateProductFile(selection,
+                                            holder, selection.getBookSeller(sellerNames)));
 
                                     Customer customer = (Customer) ois.readObject();
                                     System.out.println("Server received " + customer.getUsername() + " data.");
@@ -282,7 +283,7 @@ public class ServerThread extends Thread {
                                             int newQuantity = b.getQuantity() - book.getQuantity();
                                             Book placeholder = book;
                                             placeholder.setQuantity(newQuantity);
-                                            Seller.updateProduct(b, placeholder, b.getBookSeller(sellerNames));
+                                            Seller.updateProductFile(b, placeholder, b.getBookSeller(sellerNames));
                                             int index = allBooks.indexOf(b);
                                             allBooks.set(index, placeholder);
                                         }
@@ -338,7 +339,8 @@ public class ServerThread extends Thread {
                                 //update seller.
                                 System.out.println("Book is sold by: " + selection.getBookSeller(sellerNames));
 
-                                System.out.println("Changed successfully? " + Seller.updateProduct(selection, holder, selection.getBookSeller(sellerNames)));
+                                System.out.println("Changed successfully? " + Seller.updateProductFile(selection, holder
+                                        , selection.getBookSeller(sellerNames)));
 
                                 Customer customer = (Customer) ois.readObject();
                                 System.out.println("Server received " + customer.getUsername() + " data.");
@@ -365,6 +367,25 @@ public class ServerThread extends Thread {
                             this.interrupt();
                             break;
                         }
+                    case "VIEW PRODUCTS": {
+                        input = (String) ois.readObject();
+                        if (input.equals("EDIT")) {
+                            Seller seller = (Seller) ois.readObject();
+                            seller.exportToFile();
+                            this.allBooks = (ArrayList<Book>) ois.readObject();
+                        } else if (input.equals("RETURN")) {
+                            System.out.println("Returning...");
+                        } else if (input.contains("ADD PRODUCT")) {
+                            Book addedBook = (Book) ois.readObject();
+                            this.allBooks.add(addedBook);
+                            oos.writeObject(this.allBooks);
+                            oos.flush();
+
+                            Seller seller = (Seller) ois.readObject();
+                            seller.exportToFile();
+                        }
+                        break;
+                    }
                     }
                 input = (String) ois.readObject();
                 System.out.println("New input: " + input);
