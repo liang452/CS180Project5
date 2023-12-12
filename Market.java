@@ -774,10 +774,17 @@ public class Market {
         JPanel topPanel = new JPanel();
         JButton returnButton = new JButton("Return");
         JButton exportButton = new JButton("Export as File");
-        BookPanel purchasesPanel = new BookPanel(((Customer) user).getPastPurchases());
-        ArrayList<Book> pastPurchases = ((Customer) user).getPastPurchases();
+        ArrayList<Book> pastPurchases;
+        if (((Customer) user).getPastPurchases() == null) {
+            BookPanel purchasesPanel = new BookPanel(new ArrayList<>());
+            pastPurchases = new ArrayList<>();
+            pastFrame.add(purchasesPanel.getBookPanel(), BorderLayout.CENTER);
+        } else {
+            BookPanel purchasesPanel = new BookPanel(((Customer) user).getPastPurchases());
+            pastPurchases = ((Customer) user).getPastPurchases();
+            pastFrame.add(purchasesPanel.getBookPanel(), BorderLayout.CENTER);
+        }
         pastFrame.add(topPanel, BorderLayout.NORTH);
-        pastFrame.add(purchasesPanel.getBookPanel(), BorderLayout.CENTER);
         String[] result = new String[1];
         ActionListener al = new ActionListener() {
             @Override

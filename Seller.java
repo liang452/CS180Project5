@@ -57,11 +57,11 @@ public class Seller extends User implements Serializable {
     }
     public boolean exportToFile() throws IOException {
         //logins.csv:
-        if (!User.isExistingUser(this.getUsername()) && !User.isExistingEmail(this.getEmail())) {
+        if (!User.isExistingUser(super.getUsername()) && !User.isExistingEmail(super.getEmail())) {
             //if not an existing username or email
             try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter("logins.csv", true));
-                bw.write(this.getUsername() + "," + this.getEmail() + "," + this.getPassword() + "," + "SELLER");
+                bw.write(super.getUsername() + "," + super.getEmail() + "," + super.getPassword() + "," + "SELLER");
                 bw.write("\n");
                 bw.close();
             } catch (IOException e) {
@@ -73,10 +73,9 @@ public class Seller extends User implements Serializable {
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.getUsername() + ".csv"));
             //overwrites file every time
             for (Book book : this.products) { //loops through entire list of products
-                bw.write(book.toCSVFormat());
-                bw.newLine();
+                bw.write(book.toCSVFormat() + "\n");
+                bw.flush();
             }
-            bw.close();
             return true;
         } catch (IOException e) {
             return false;

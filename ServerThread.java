@@ -381,8 +381,9 @@ public class ServerThread extends Thread {
                             oos.writeObject(this.allBooks);
                             oos.flush();
 
-                            Seller seller = (Seller) ois.readObject();
-                            seller.exportToFile();
+                            User seller = (Seller) ois.readObject();
+                            System.out.println("Seller: " + seller.getUsername());
+                            ((Seller) seller).exportToFile();
                         }
                         break;
                     }
