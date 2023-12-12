@@ -417,27 +417,30 @@ public class Market {
     public static boolean editAccountMenu(String username, String email, String password) throws IOException {
         //TODO
 
-        JFrame frame = new JFrame("Account Editing");
-        frame.setLayout(new FlowLayout());
-        frame.setSize(400, 200);
+        JFrame frame = new JFrame("Edit Account");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new BorderLayout());
 
+        JPanel buttonPanel = new JPanel();
         JButton changeEmailButton = new JButton("Change Email");
         JButton changePasswordButton = new JButton("Change Password");
         JButton changeUsernameButton = new JButton("Change Username");
         JButton deleteAccountButton = new JButton("Delete Account");
         JButton returnButton = new JButton("Return to Main Menu");
 
-        frame.add(changeEmailButton);
-        frame.add(changePasswordButton);
-        frame.add(changeUsernameButton);
-        frame.add(deleteAccountButton);
-        frame.add(returnButton);
+        buttonPanel.add(changeEmailButton);
+        buttonPanel.add(changePasswordButton);
+        buttonPanel.add(changeUsernameButton);
+        buttonPanel.add(deleteAccountButton);
+        buttonPanel.add(returnButton);
+
+        frame.add(buttonPanel, BorderLayout.CENTER);
 
         changeEmailButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String newEmail = JOptionPane.showInputDialog("Enter new email:");
+                String newEmail = JOptionPane.showInputDialog(frame, "Enter new email:");
                 if (newEmail != null) {
                     try {
                         System.out.println("Email changed to: " + newEmail);
@@ -451,7 +454,7 @@ public class Market {
         changePasswordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String newPassword = JOptionPane.showInputDialog("Enter new password:");
+                String newPassword = JOptionPane.showInputDialog(frame, "Enter new password:");
                 if (newPassword != null) {
                     try {
                         System.out.println("Password changed to: " + newPassword);
@@ -465,7 +468,7 @@ public class Market {
         changeUsernameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String newUsername = JOptionPane.showInputDialog("Enter new username:");
+                String newUsername = JOptionPane.showInputDialog(frame, "Enter new username:");
                 if (newUsername != null) {
                     try {
                         System.out.println("Username changed to: " + newUsername);
@@ -479,7 +482,7 @@ public class Market {
         deleteAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete your account?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         System.out.println("Account deleted!");
