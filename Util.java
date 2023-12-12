@@ -67,15 +67,6 @@ public abstract class Util {
         return true;
     }
 
-    public static boolean isExistingStore(String storeName, ArrayList<Store> stores) {
-        for (Store store : stores) {
-            if (storeName.equals(store.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      *
      * @param input

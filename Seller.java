@@ -1,24 +1,24 @@
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 
 /*
  */
 
-public class Seller extends User {
-    private ArrayList<Store> stores;
+public class Seller extends User implements Serializable {
     private ArrayList<Book> products;
     private ArrayList<String> storeNames;
 
     public Seller(String username, String email, String password) throws IOException {
         super(username, email, password);
-        this.stores = new ArrayList<Store>();
-
+        storeNames = new ArrayList<>();
         File f = new File(username + ".csv");
         if (f.exists()) {
             this.products = Util.readCSVToBook(username + ".csv"); //products is instantiated
-            ArrayList<Book> iterator = this.products;
-            for (Book book : iterator) {
-                this.addToStore(book.getStore(), book);
+            for (Book book : products) {
+                if (!storeNames.contains(book.getStore())) {
+                    storeNames.add(book.getStore());
+                }
             }
         } else {
             this.products = new ArrayList<>();
@@ -27,35 +27,10 @@ public class Seller extends User {
     public Seller getSeller() {
         return this;
     }
-    public void addStore(Store store) {
-        this.stores.add(store);
+    public ArrayList<String> getStoreNames() {
+        return this.storeNames;
     }
-    public ArrayList<Store> getStore() {
-        return this.stores;
-    }
-    public void addToStore(String storeName, Book book) {
-        ArrayList<Store> placeholder = new ArrayList<>(); //placeholder array
-        Store addedStore = null; //new store to be added
-        boolean existing = false;
-        for (Store store : this.stores) { //for every store in this seller already
-            if (!store.getName().equals(storeName)) { //if stores do not equal each other
-                placeholder.add(store); //add into placeholder
-                existing = true;
-            } else {
-                addedStore = store; //if stores do equal each other
-                addedStore.addProduct(book);
-                existing = true;
-            }
-        }
-        if (!existing) { //if no such store name was found
-            addedStore = new Store(storeName);
-            addedStore.addProduct(book);
-        }
-        if (addedStore != null) {
-            placeholder.add(addedStore);
-        }
-        this.stores = placeholder;
-    }
+
     public ArrayList<Book> getProducts() {
         return this.products;
     }
@@ -64,9 +39,6 @@ public class Seller extends User {
     }
     public void addProducts(ArrayList<Book> newBooks) {
         this.products.addAll(newBooks);
-        for (Book book : newBooks) {
-            this.addToStore(book.getStore(), book);
-        }
     }
     public void addProduct(Book book) {
         this.products.add(book);
@@ -110,8 +82,19 @@ public class Seller extends User {
             return false;
         }
     }
+    public JPanel displayProducts() {
+        BookPanel productPanel = new BookPanel(this.getProducts());
+        return productPanel.getBookPanel();
+    }
 
-    public synchronized static boolean updateProduct(Book oldBook, Book newBook, String seller) throws IOException {
+    public void updateProduct(Book oldBook, Book newBook) {
+        //update product locally
+        if (products.contains(oldBook)) {
+            int index = products.indexOf(oldBook);
+            products.set(index, newBook);
+        }
+    }
+    public synchronized static boolean updateProductFile(Book oldBook, Book newBook, String seller) throws IOException {
         ArrayList<Book> oldProductsList = Util.readCSVToBook(seller + ".csv");
         BufferedWriter bw = new BufferedWriter(new FileWriter(seller + ".csv"));
         System.out.println("First product: " + oldProductsList.get(0).getName() + " " + oldProductsList.get(0).getAuthor());

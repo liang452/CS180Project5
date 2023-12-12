@@ -662,7 +662,6 @@ public class Market {
             if (input.equals("1")) {
                 Book product = Book.createBookFromUserInput("");
                 user.addProduct(product);
-                user.addToStore(product.getStore(), product);
                 this.listedProducts.add(product);
                 System.out.println("You have added " + product.getName() + " to " + product.getStore());
                 user.exportToFile();
@@ -827,12 +826,12 @@ public class Market {
      */
     public void viewSalesByStore() {
         //use boughtProducts list.
-        ArrayList<Store> stores = ((Seller) user).getStore();
+        ArrayList<String> stores = ((Seller) user).getStoreNames();
         ArrayList<Book> sold = new ArrayList<>();
         boolean unique = true;
-        for (Store store: stores) {
+        for (String store: stores) {
             for (Book book : boughtProducts) { //iterates through all bought products
-                if (book.getStore().equals(store.getName())) { //if the store name of the book matches the display store
+                if (book.getStore().equals(store)) { //if the store name of the book matches the display store
                     for (Book check : sold) { //iterates through sold; checks if it's an already existing item added in
                         if (check.equals(book)) {
                             unique = false; //book is not unique
@@ -846,13 +845,11 @@ public class Market {
                 }
 
             }
-            store.setProducts(sold);
-            store.displayData();
         }
     }
 
-    public void viewSellerProducts() {
-            BookPanel sellerProducts = new BookPanel(this.getListedProducts());
+    public String viewSellerProducts(Seller seller) {
+            BookPanel sellerProducts = new BookPanel(seller.getProducts());
             JFrame productsFrame = new JFrame();
             productsFrame.setLayout(new BorderLayout());
             productsFrame.setSize(new Dimension(500, 300));
@@ -877,37 +874,91 @@ public class Market {
             bottomPane.add(deleteButton);
             productsFrame.add(topPane, BorderLayout.NORTH);
             productsFrame.add(bottomPane, BorderLayout.SOUTH);
-            final String[] input = new String[1];
+            String[] input = new String[1];
             ActionListener al = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (e.getSource() == returnButton) {
                         productsFrame.setVisible(false);
+                        input[0] = "RETURN";
                     }
                     if (e.getSource() == editButton) {
-                        String[] options = new String[]{"Title", "Author", "Genre", "Description", "Store", "Quantity",
-                                "Price"}; //return what was changed eventually
-                        String selection = (String) JOptionPane.showInputDialog(null, "What would you like to change?",
-                                "Edit " + sellerProducts.selectedBook().getName(),
-                                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                        String newInput = "";
-                        if (selection.equals(options[0])) {
-                            newInput = JOptionPane.showInputDialog("What would you like the new title to be?");
-                        } else if (selection.equals(options[1])) {
-                            newInput = JOptionPane.showInputDialog("What would you like the new author to be?");
-                        } else if (selection.equals(options[2])) {
-                            newInput = JOptionPane.showInputDialog("What would you like the new genre to be?");
-                        } else if (selection.equals(options[3])) {
-                            newInput = JOptionPane.showInputDialog("What would you like the new description to be?");
+                        boolean unsatisfied = false;
+                        Book selection = sellerProducts.selectedBook();
+                        Book placeholder = selection;
+                        if (selection != null) {
+                            do {
+                                unsatisfied = false;
+                                String[] options = new String[]{"Title", "Author", "Genre", "Description",
+                                        "Store",
+                                        "Quantity",
+                                        "Price"}; //return what was changed eventually
+                                String toChange = (String) JOptionPane.showInputDialog(null, "What would you like to change?",
+                                        "Edit " + sellerProducts.selectedBook().getName(),
+                                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                                String newInput = "";
+                                if (toChange.equals(options[0])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new title to be?");
+                                    placeholder.setName(newInput);
+                                } else if (toChange.equals(options[1])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new author to be?");
+                                    placeholder.setAuthor(newInput);
+                                } else if (toChange.equals(options[2])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new genre to be?");
+                                    placeholder.setGenre(newInput);
+                                } else if (toChange.equals(options[3])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new description to be?");
+                                    placeholder.setDescription(newInput);
+                                } else if (toChange.equals(options[4])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new store to be?");
+                                    placeholder.setStore(newInput);
+                                } else if (toChange.equals(options[5])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new quantity to be?");
+                                    placeholder.setQuantity(Integer.parseInt(newInput));
+                                } else if (toChange.equals(options[6])) {
+                                    newInput = JOptionPane.showInputDialog("What would you like the new price to be?");
+                                    placeholder.setPrice(Double.parseDouble(newInput));
+                                }
+                                int confirmation = JOptionPane.showConfirmDialog(null,
+                                        "Title: " + placeholder.getName() + "\n"
+                                                + "Author: " + placeholder.getAuthor() + "\n" +
+                                                "Genre: " + placeholder.getGenre() + "\n" +
+                                                "Store: " + placeholder.getStore() + "\n" +
+                                                "Quantity: " + placeholder.getQuantity() + "\n" +
+                                                "Price: " + placeholder.getStore() + "\n" +
+                                                "Is this what you want?", null,
+                                        JOptionPane.YES_NO_OPTION);
+                                if (confirmation == JOptionPane.YES_OPTION) {
+                                    unsatisfied = false;
+                                } else {
+                                    //repeat
+                                    unsatisfied = true;
+                                }
+                            } while(unsatisfied);
+                            input[0] = "EDIT," + selection.toCSVFormat() + "," + placeholder.toCSVFormat();
+                            productsFrame.setVisible(false);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Please select an item to edit.");
                         }
+                    }
+                    if (e.getSource() == addButton) {
+                        Book newBook = Book.createBookFromUserInput("");
+                        input[0] = "ADD PRODUCT," + newBook.toCSVFormat();
+                        productsFrame.setVisible(false);
                     }
                     if (e.getSource() == exportButton) {
                         //write to server to export to file
+                        input[0] = "EXPORT";
                     }
                 }
             };
             editButton.addActionListener(al);
             returnButton.addActionListener(al);
+            addButton.addActionListener(al);
             productsFrame.setVisible(true);
+            while (input[0] == null || input[0].isEmpty()) {
+                System.out.println("");
+            }
+            return input[0];
     }
 }
