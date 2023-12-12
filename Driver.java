@@ -220,12 +220,16 @@ public class Driver {
                     oos.writeObject("VIEWING PRODUCTS\n");
                     oos.flush();
                     market.viewSellerProducts();
-                } else if (input.equals("2")) {
+                } else if (input.equals(options[1])) {
+                    oos.writeObject("VIEWING SALES\n");
+                    oos.flush();
                     //view sales by store
                     market.viewSalesByStore();
-                } else if (input.equals("3")) {
+                } else if (input.equals(options[2])) {
                     //statistics
-                } else if (input.equals("4")) {
+                } else if ((input.equals(options[3])) {
+                    oos.writeObject("VIEWING SHOPPING CARTS\n");
+                    oos.flush();
                     //view customer shopping carts
                 } else if (input.equals("5")) {
                     boolean deleted;
