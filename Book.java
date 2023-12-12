@@ -26,6 +26,7 @@ public class Book implements Serializable {
         NONFICTION,
         ROMANCE,
         YOUNG_ADULT,
+        FICTION,
         INVALID_GENRE
     }
     public Book() {
@@ -91,6 +92,8 @@ public class Book implements Serializable {
             readGenre = Genre.HISTORICAL;
         } else if (genreString.equalsIgnoreCase("NONFICTION")) {
             readGenre = Genre.NONFICTION;
+        } else if (genreString.equalsIgnoreCase("FICTION")) {
+            readGenre = Genre.FICTION;
         } else if (genreString.equalsIgnoreCase("ROMANCE")) {
             readGenre = Genre.ROMANCE;
         } else if (genreString.equalsIgnoreCase("YOUNG ADULT") ||
