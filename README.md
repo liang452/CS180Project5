@@ -50,11 +50,11 @@ Testing: The class has methods for setting and getting attributes, and these can
 
 ### Store Class:
 
-Functionality: Represents a customer user, extending the User class. 
-Manages a shopping cart, past purchases, and includes methods to add, remove, and view items in the cart. 
-Provides methods to export user data to a file.
+Functionality: Represents a store for a seller to sell their books from. 
+Handles and manages a store's information including products available, quantity, price, and more. 
+Has constructors to create new stores without any initial products or through a CSV file input. 
 
-Testing: The class can be tested by creating a Customer object, adding items to the cart, and performing operations like viewing the cart and past purchases.
+Testing: The class can be tested by creating a Store object, adding books to your store, and performing operations like viewing products available and modifying the details of those products.
 
 ### Customer Class:
 
@@ -87,31 +87,31 @@ Testing: The utility methods can be tested by creating instances of the Util cla
 
 ### BookPanel Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: Graphical component that was created to display the different books available in the marketplace as well as 
+any corresponding information about those books. 
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by logging in as a customer and viewing the marketplace for the available books and their details for each one.
 
 ### User Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: Represents a user in the system, storing information like usernames, emails, and passwords. Has methods to check for existing emails 
+and passwords as well as to modify them. Can delete users from the system by removing them from 'logins.csv'.
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by running the application and creating an account by entering a username, email, password, and type of user (Customer or Seller).
 
 ### Server Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: Creates the server on which the application is run. Listens for connections and creates 
+new threads to handle connections with clients. 
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by running first the Server.java class, then the Driver.java class, which will connect to the server at port 8484.
 
 ### Driver Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: The main entry point for the application and establishes a connection to the server. 
+Intiaties the login and account creation process, and leads users to certain interfaces depending on if they are a customer or seller. 
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by running the Server.java class, and then running the Driver.java class, which will connect to the server and begin the account login/sign-up process.
 
 
 

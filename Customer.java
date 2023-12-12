@@ -45,6 +45,31 @@ public class Customer extends User {
         //TODO
     }
 
+
+    /*
+
+    Can use this method
+    
+    public void addToCart(Book product, int quantity) {
+        product.setQuantity(quantity);
+        
+        boolean productExists = false;
+        for (Book cartProduct : cart) {
+            if (cartProduct.equals(product)) {
+                cartProduct.addQuantity(quantity);
+                productExists = true;
+                break;
+            }
+        }
+
+        if (!productExists) {
+            this.cart.add(product);
+        }
+    }
+    
+    */
+
+
     public ArrayList<Book> getCart() {
         return this.cart;
     }
