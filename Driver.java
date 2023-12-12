@@ -420,7 +420,7 @@ public class Driver {
                     oos.writeObject("CUSTOMER SHOPPING CARTS\n");
                     oos.flush();
                     //view customer shopping carts
-                } else if (input.equals("5")) {
+                } else if (input.equals(options[4])) {
                     boolean deleted;
                     do {
                         deleted = Market.editAccountMenu(username, email, password); //returns true if account has been deleted
@@ -430,7 +430,7 @@ public class Driver {
                             break;
                         } //if user chooses to cancel, just keep looping
                     } while (!deleted); //loops if deleted is false.
-                } else if (input.equals("6")) {
+                } else if (input.equals(options[5])) {
                     //logout
                     boolean logout = Util.yesNo("Are you sure you want to log out?", "Logout");
                     if (logout) {
