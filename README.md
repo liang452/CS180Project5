@@ -48,6 +48,14 @@ Provides a method createBookFromUserInput() to create a book by taking input fro
 
 Testing: The class has methods for setting and getting attributes, and these can be tested by creating instances of the Book class and manipulating its properties.
 
+### Store Class:
+
+Functionality: Represents a customer user, extending the User class. 
+Manages a shopping cart, past purchases, and includes methods to add, remove, and view items in the cart. 
+Provides methods to export user data to a file.
+
+Testing: The class can be tested by creating a Customer object, adding items to the cart, and performing operations like viewing the cart and past purchases.
+
 ### Customer Class:
 
 Functionality: Represents a customer user, extending the User class. 
@@ -77,17 +85,33 @@ Functionality: Provides utility methods used across the project, such as reading
 
 Testing: The utility methods can be tested by creating instances of the Util class and calling these methods with various inputs.
 
-### Main Class:
+### BookPanel Class:
 
 Functionality: Contains the main method and serves as the entry point for the application. 
 Handles user authentication, account creation, and interaction with the market.
 
 Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
 
-### InvalidInputError and InvalidQuantityError Classes:
+### User Class:
 
-Functionality: Represent custom error classes for handling invalid input and quantity errors. 
-Extend the Error class to provide more specific error messages.
+Functionality: Contains the main method and serves as the entry point for the application. 
+Handles user authentication, account creation, and interaction with the market.
 
-Testing: Testing involves intentionally triggering these errors and verifying that they are caught and handled appropriately.
+Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+
+### Server Class:
+
+Functionality: Contains the main method and serves as the entry point for the application. 
+Handles user authentication, account creation, and interaction with the market.
+
+Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+
+### Driver Class:
+
+Functionality: Contains the main method and serves as the entry point for the application. 
+Handles user authentication, account creation, and interaction with the market.
+
+Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+
+
 
