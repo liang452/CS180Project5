@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -219,16 +220,14 @@ public class Market {
 
         JButton searchButton = new JButton("Search");
         JTextField searchField = new JTextField(10);
-        JButton logoutButton = new JButton("Log Out");
         JButton viewCartButton = new JButton("View Cart");
         JButton pastButton = new JButton("Past Purchases");
         JButton returnButton = new JButton("Return");
 
         JPanel topPanel = new JPanel();
-        topPanel.add(logoutButton);
+        topPanel.add(returnButton);
         topPanel.add(searchField);
         topPanel.add(searchButton);
-        topPanel.add(returnButton);
 
 
         cMenuFrame.add(topPanel, BorderLayout.NORTH);
@@ -253,10 +252,6 @@ public class Market {
                     String searchText = searchField.getText();
                     searchProducts(searchText);
                     option[0] = "SEARCH";
-                }
-                if (e.getSource() == logoutButton) {
-                    cMenuFrame.setVisible(false);
-                    option[0] = "LOGOUT";
                 }
                 if (e.getSource() == buyButton) {
                     boolean invalidInput = false;
@@ -322,7 +317,6 @@ public class Market {
         };
 
         searchButton.addActionListener(al);
-        logoutButton.addActionListener(al);
         buyButton.addActionListener(al);
         cartButton.addActionListener(al);
         viewCartButton.addActionListener(al);
@@ -366,12 +360,10 @@ public class Market {
         JFrame searchFrame = new JFrame();
         JButton searchButton = new JButton("Search");
         JTextField searchField = new JTextField(10);
-        JButton logoutButton = new JButton("Log Out");
         JButton viewCartButton = new JButton("View Cart");
         JButton pastButton = new JButton("Past Purchases");
 
         JPanel topPanel = new JPanel();
-        topPanel.add(logoutButton);
         topPanel.add(searchField);
         topPanel.add(searchButton);
 
@@ -394,9 +386,6 @@ public class Market {
                     //TODO: getText from searchText
                     String searchText = searchField.getText();
                     searchProducts(searchText);
-                }
-                if (e.getSource() == logoutButton) {
-                    searchFrame.setVisible(false);
                 }
                 if (e.getSource() == buyButton) {
                     boolean invalidInput = false;
@@ -428,7 +417,6 @@ public class Market {
         };
 
         searchButton.addActionListener(al);
-        logoutButton.addActionListener(al);
         buyButton.addActionListener(al);
         cartButton.addActionListener(al);
         viewCartButton.addActionListener(al);
@@ -775,24 +763,57 @@ public class Market {
      * @param user
      * @throws IOException if file not found
      */
-    public void pastPurchasesMenu(User user) throws IOException {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("1 - Export as File");
-        System.out.println("2 - Return to Main Menu");
-        String input = scan.nextLine();
-        if (input.equals("1")) {
-            System.out.println("Input the filename: ");
-            String filename = scan.nextLine();
-            if (!filename.contains(".csv")) {
-                filename += ".csv";
+    public String pastPurchasesMenu(User user) throws IOException {
+        JFrame pastFrame = new JFrame();
+        pastFrame.setSize(new Dimension(400, 400));
+        JPanel topPanel = new JPanel();
+        JButton returnButton = new JButton("Return");
+        JButton exportButton = new JButton("Export as File");
+        BookPanel purchasesPanel = new BookPanel(((Customer) user).getPastPurchases());
+        ArrayList<Book> pastPurchases = ((Customer) user).getPastPurchases();
+        pastFrame.add(topPanel, BorderLayout.NORTH);
+        pastFrame.add(purchasesPanel.getBookPanel(), BorderLayout.CENTER);
+        String[] result = new String[1];
+        ActionListener al = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == returnButton) {
+                    result[0] = "RETURN";
+                    pastFrame.setVisible(false);
+                }
+                if (e.getSource() == exportButton) {
+                    boolean invalidInput = false;
+                    do {
+                        String file = JOptionPane.showInputDialog("Input a filename: ");
+                        File f = new File(file);
+                        try {
+                            if (f.createNewFile()) {
+                                BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+                                for (Book book : pastPurchases) {
+                                    bw.write(book.toCSVFormat() + "\n");
+                                    bw.flush();
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "That's already an existing file!");
+                                invalidInput = true;
+                            }
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, "Whoops! Something went wrong.");
+                            invalidInput = true;
+                        }
+                    } while(invalidInput);
+                }
             }
-            ((Customer) user).exportPastPurchases(filename);
-            System.out.println("Exported successfully to " + filename + "!");
-        } else if (input.equals("2")) {
-            System.out.println("Exiting...");
-        } else {
-            System.out.println("Please select a valid option.");
+        };
+        returnButton.addActionListener(al);
+        exportButton.addActionListener(al);
+        topPanel.add(returnButton);
+        topPanel.add(exportButton);
+        pastFrame.setVisible(true);
+        while (result[0] == null || result[0].isEmpty()) {
+            System.out.println("");
         }
+        return result[0];
     }
 
     /**

@@ -24,15 +24,28 @@ public class Customer extends User implements Serializable {
 
     public void addToPastPurchases(Book product, int quantity) {
         product.setQuantity(quantity);
-        this.pastPurchases.add(product);
+
+        boolean productExists = false;
+        for (Book cartProduct : pastPurchases) {
+            if (cartProduct.equals(product)) {
+                cartProduct.addQuantity(quantity);
+                productExists = true;
+                break;
+            }
+        }
+
+        if (!productExists) {
+            this.pastPurchases.add(product);
+        }
     }
 
     public void setPastPurchases(ArrayList<Book> purchases) {
         this.pastPurchases = purchases;
     }
 
-
-    
+    public ArrayList<Book> getPastPurchases() {
+        return this.pastPurchases;
+    }
     public void addToCart(Book product, int quantity) {
         product.setQuantity(quantity);
         

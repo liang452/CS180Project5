@@ -202,7 +202,9 @@ public class Driver {
                 String input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
                         JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
                 boolean loop;
-                if (input.equals(options[0])) {
+                if (input == null) {
+                    break;
+                } else if (input.equals(options[0])) {
                     do {
                         loop = false;
                         oos.writeObject("MARKET");
@@ -260,6 +262,19 @@ public class Driver {
                     } while(loop);
                 } else if (input.equals(options[1])) { //view cart
                     System.out.println("hi");
+                } else if (input.equals(options[2])) { //view past purchases
+                    do {
+                        loop = false;
+                        String output = market.pastPurchasesMenu(user); //FOR SOME REASON PASTPURCHASES IS EMPTY WHEN
+                        // IT SHOULDN"T BE - FIX
+                        if (output.equals("RETURN")) {
+                            loop = false;
+                            repeat = true;
+                            break;
+                        } else {
+                            loop = true;
+                        }
+                    } while(loop);
                 }
             } while (repeat);
         }
