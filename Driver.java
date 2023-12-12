@@ -214,9 +214,6 @@ public class Driver {
                         if (output.equals("RETURN")) {
                             repeat = true;
                             oos.writeObject("RETURN");
-                        } else if (output.equals("LOG OUT")) {
-                            JOptionPane.showMessageDialog(null, "Have a good day!");
-                            break;
                         } else if (output.contains("BUY")) {
                             String[] purchase = output.split(",", 3);
                             int amount = Integer.parseInt(purchase[1]);
@@ -237,8 +234,6 @@ public class Driver {
                             System.out.println("Finished writing info to server!");
                             System.out.println("Awaiting output...");
 
-                            ois.readObject();
-                            ois.readObject();
                             String newBookString = (String) ois.readObject();
                             System.out.println("Driver received: " + newBookString);
                             ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
@@ -260,6 +255,54 @@ public class Driver {
                             String[] cartAddition = output.split(",", 3);
                             int amount = Integer.parseInt(cartAddition[1]);
                             loop = true;
+                        } else if (output.contains("SEARCH")) {
+                            oos.writeObject("SEARCH");
+                            oos.flush();
+                            loop = true;
+                            String[] searchResults = output.split(",", 3);
+                            String keyword = searchResults[1];
+                            String bookResults = searchResults[2];
+                            ArrayList<Book> matches = Util.readCSVToBook(bookResults);
+                            output = Market.searchFrame(keyword, matches);
+                            if (output.contains("BUY")) {
+                                String[] purchase = output.split(",", 3);
+                                int amount = Integer.parseInt(purchase[1]);
+                                System.out.println("Purchasing: " + purchase[2]);
+                                ArrayList<Book> boughtBooks = Util.readCSVToBook(purchase[2]);
+                                Book boughtBook = boughtBooks.get(0);
+                                ((Customer) user).addToPastPurchases(boughtBook, amount); //adds to local
+
+                                oos.writeObject("BUY");
+                                oos.flush();
+                                oos.writeObject(amount);
+                                oos.flush();
+                                oos.writeObject(boughtBook);
+                                oos.flush();
+                                oos.writeObject(username);
+                                oos.flush();
+
+                                System.out.println("Finished writing info to server!");
+                                System.out.println("Awaiting output...");
+                                ois.readObject();
+                                ois.readObject();
+                                String newBookString = (String) ois.readObject();
+                                System.out.println("Driver received: " + newBookString);
+                                ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
+
+                                market.setListedProducts(newBookList);
+
+                                oos.writeObject(user);
+                                oos.flush();
+                                loop = true;
+
+                                BufferedReader bfr = new BufferedReader(new FileReader(username + ".csv"));
+                                String line = bfr.readLine();
+                                System.out.println("CART: " + line);
+                                line = bfr.readLine();
+                                System.out.println("PAST: " + line);
+                            } else if (output.contains("ADD TO CART")) {
+                                System.out.println("hi");
+                            }
                         }
                     } while(loop);
                 } else if (input.equals(options[1])) { //view cart
@@ -279,6 +322,13 @@ public class Driver {
                             loop = true;
                         }
                     } while(loop);
+                } else if (input.equals("3")) { //edit account
+
+                } else if (input.equals("4")) {
+                    JOptionPane.showMessageDialog(null, "Have a good day!");
+                    oos.writeObject("LOGOUT");
+                    oos.flush();
+                    return;
                 }
             } while (repeat);
         }

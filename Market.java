@@ -250,8 +250,13 @@ public class Market {
                 if (e.getSource() == searchButton) {
                         //TODO: getText from searchText
                     String searchText = searchField.getText();
-                    searchProducts(searchText);
-                    option[0] = "SEARCH";
+                    ArrayList<Book> matches = searchProducts(searchText);
+                    String matchString = "";
+                    for (Book book : matches) {
+                        matchString += book.toCSVFormat() + ",";
+                    }
+                    cMenuFrame.setVisible(false);
+                    option[0] = "SEARCH" + "," + searchText + "," + matchString;
                 }
                 if (e.getSource() == buyButton) {
                     boolean invalidInput = false;
@@ -335,7 +340,7 @@ public class Market {
      * @param input to search for
      * @return Searches for all books that match a given input, and returns a list.
      */
-    public JFrame searchProducts(String input) {
+    public ArrayList<Book> searchProducts(String input) {
         ArrayList<Book> matches = new ArrayList<>();
         input = input.toUpperCase();
         //loop through listedProducts
@@ -357,15 +362,14 @@ public class Market {
                 matches.add(book);
             }
         }
+        return matches;
+    }
+    public static String searchFrame (String keyword, ArrayList<Book> matches) {
         JFrame searchFrame = new JFrame();
-        JButton searchButton = new JButton("Search");
-        JTextField searchField = new JTextField(10);
-        JButton viewCartButton = new JButton("View Cart");
-        JButton pastButton = new JButton("Past Purchases");
+        JButton searchResults = new JButton("Search Results from " + keyword);
 
         JPanel topPanel = new JPanel();
-        topPanel.add(searchField);
-        topPanel.add(searchButton);
+        topPanel.add(searchResults);
 
 
         searchFrame.add(topPanel, BorderLayout.NORTH);
@@ -373,19 +377,20 @@ public class Market {
         JPanel bookPanel = bookDisplay.getBookPanel(); //calls method to set up panel for books
         JButton cartButton = new JButton("Add to Cart");
         JButton buyButton = new JButton("Buy");
+        JButton returnButton = new JButton("Return");
 
         bookPanel.add(cartButton);
         bookPanel.add(buyButton);
-        bookPanel.add(viewCartButton);
-        bookPanel.add(pastButton);
+        bookPanel.add(returnButton);
         searchFrame.add(bookPanel, BorderLayout.CENTER); //TODO: fix layout.
+        String[] option = new String[1];
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == searchButton) {
+                if (e.getSource() == returnButton) {
                     //TODO: getText from searchText
-                    String searchText = searchField.getText();
-                    searchProducts(searchText);
+                    option[0] = "RETURN";
+                    searchFrame.setVisible(false);
                 }
                 if (e.getSource() == buyButton) {
                     boolean invalidInput = false;
@@ -407,24 +412,22 @@ public class Market {
                 if (e.getSource() == cartButton) {
                     JOptionPane.showMessageDialog(null, "TODO");
                 }
-                if (e.getSource() == viewCartButton) {
-
-                }
-                if (e.getSource() == pastButton) {
-
-                }
             }
         };
 
-        searchButton.addActionListener(al);
         buyButton.addActionListener(al);
         cartButton.addActionListener(al);
-        viewCartButton.addActionListener(al);
-        pastButton.addActionListener(al);
+        returnButton.addActionListener(al);
+        searchFrame.setSize(new Dimension(500, 350));
+        searchFrame.setVisible(true);
+        searchFrame.setLocation(new Point(1000, 1000));
 
-        return searchFrame;
+        while(option[0] == null || option[0].isEmpty()) {
+            System.out.println((""));
+        }
+
+        return option[0];
     }
-
     /**
      * Displays menu for users editing their accounts.
      * @param username username

@@ -22,6 +22,9 @@ public class Customer extends User implements Serializable {
          */
     }
 
+    public String getUsername() {
+        return this.username;
+    }
     public void addToPastPurchases(Book product, int quantity) {
         product.setQuantity(quantity);
 
@@ -185,7 +188,7 @@ public class Customer extends User implements Serializable {
                 bw.flush();
             } else {
                 for (Book pastItem : pastPurchases) {
-                    pastItems += pastItem.toCSVFormat();
+                    pastItems += pastItem.toCSVFormat() + ",";
                 }
                 System.out.println("Past items: " + pastItems);
                 bw.write(pastItems + "\n");

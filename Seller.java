@@ -126,11 +126,9 @@ public class Seller extends User {
             oldProductsList.add(newBook);
             StringBuilder newBooksList = new StringBuilder();
             for (Book b : oldProductsList) {
-                newBooksList.append(b.toCSVFormat()).append(",");
+                bw.write(b.toCSVFormat() + "\n");
+                bw.flush();
             }
-            System.out.println("New books: " + newBooksList);
-            bw.write(newBooksList.toString() + "\n");
-            bw.flush();
             return true;
         } else {
             String oldBooks = "";
