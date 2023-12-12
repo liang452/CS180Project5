@@ -765,7 +765,7 @@ public class Market {
      */
     public String pastPurchasesMenu(User user) throws IOException {
         JFrame pastFrame = new JFrame();
-        pastFrame.setSize(new Dimension(400, 400));
+        pastFrame.setSize(new Dimension(500, 300));
         JPanel topPanel = new JPanel();
         JButton returnButton = new JButton("Return");
         JButton exportButton = new JButton("Export as File");

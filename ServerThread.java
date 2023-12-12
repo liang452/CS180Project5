@@ -93,12 +93,16 @@ public class ServerThread extends Thread {
                                 oos.flush();
                             } else {
                                 oos.writeObject(line);
+                                oos.flush();
                             }
                             line = bfr.readLine();
                             if (line.equals("PAST")) {
                                 oos.writeObject("EMPTY");
+                                oos.flush();
                             } else {
                                 oos.writeObject(line);
+                                oos.flush();
+                                System.out.println("Past Purchases: " + line);
                             }
                         }
                         break;
@@ -196,6 +200,11 @@ public class ServerThread extends Thread {
                             break;
                     }
                     case "RETURN": {
+                        break;
+                    }
+                    case "PAST PURCHASES": {
+                        Customer customer = (Customer) ois.readObject();
+                        System.out.println(customer.getPastPurchases().get(0).getName());
                         break;
                     }
                 }
