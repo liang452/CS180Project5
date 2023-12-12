@@ -961,4 +961,87 @@ public class Market {
             }
             return input[0];
     }
+
+
+
+/*
+    To be used in viewShoppingCarts()
+        
+    public String promptSeller()
+    {
+        JPanel panel = new JPanel();
+
+        JLabel label = new JLabel("Which cart do you want to view?");
+        panel.add(label);
+
+        JTextField textField = new JTextField(20);
+        panel.add(textField);
+
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Select Cart",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            return textField.getText();
+        } else {
+            return null;
+        }
+    }
+
+
+    public String viewShoppingCarts()
+    {
+
+        ArrayList<Book> cartList = ((Customer) user).getCart();
+        if (cartList == null) {
+            cartList = new ArrayList<Book>();
+        }
+        JFrame cartFrame = new JFrame();
+        cartFrame.setSize(new Dimension(500, 400));
+        BookPanel holder = new BookPanel(cartList);
+        JPanel cartPanel = holder.getBookPanel();
+
+        JPanel buttonPanel = new JPanel();
+        JButton returnButton = new JButton("Return");
+
+        String[] option = new String[1];
+
+        JPanel topPane = new JPanel();
+        topPane.add(new JLabel("Your Cart"), BorderLayout.NORTH);
+        topPane.add(returnButton);
+
+        cartFrame.add(cartPanel, BorderLayout.CENTER);
+        cartFrame.add(buttonPanel, BorderLayout.SOUTH);
+        cartFrame.add(topPane, BorderLayout.NORTH);
+        cartFrame.setSize(new Dimension(500, 300));
+
+        ActionListener al = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == returnButton) {
+                    cartFrame.setVisible(false);
+                    option[0] = "RETURN";
+                }
+            }
+        };
+        returnButton.addActionListener(al);
+        cartFrame.setVisible(true);
+
+        while (option[0] == null || option[0].isEmpty()) {
+            System.out.println("");
+        }
+        return option[0];
+    }
+
+
+    */
+
+
+
+
+    
 }
