@@ -3,6 +3,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -222,6 +223,16 @@ public class Book implements Serializable {
                 storeName + "," + quantity + "," + price;
         return csv;
     }
-
+    public synchronized String getBookSeller(ArrayList<String> sellerNames) throws IOException {
+        for (String name : sellerNames) {
+            ArrayList<Book> sellerBooks = Util.readCSVToBook(name + ".csv");
+            for (Book book : sellerBooks) {
+                if (book.equals(this)) {
+                    return name;
+                }
+            }
+        }
+        return "INVALID ITEM";
+    }
 }
 

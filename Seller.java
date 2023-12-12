@@ -109,16 +109,38 @@ public class Seller extends User {
         }
     }
 
-    public void displayProducts() {
-        BookPanel sellerProducts = new BookPanel(this.products);
-        for (Book product : this.products) {
-            System.out.println(product.getName());
-            System.out.println(product.getAuthor());
-            System.out.println(product.getGenre().toString());
-            System.out.println("Description: " + product.getDescription());
-            System.out.println("Associated Store: " + product.getStore());
-            System.out.println("Amount in Stock: " + product.getQuantity());
-            System.out.println("$" + product.getPrice() + "\n");
+    public synchronized static boolean updateProduct(Book oldBook, Book newBook, String seller) throws IOException {
+        ArrayList<Book> oldProductsList = Util.readCSVToBook(seller + ".csv");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(seller + ".csv"));
+        System.out.println("First product: " + oldProductsList.get(0).getName() + " " + oldProductsList.get(0).getAuthor());
+        int index = -1;
+        for (Book book: oldProductsList) {
+            System.out.println("List item: " + book.getName() + " VS. Item being searched for: " +  oldBook.getName());
+            if (book.equals(oldBook)) {
+                index = oldProductsList.indexOf(book);
+                System.out.println("Index of item: " + index);
+            }
+        }
+        if (index != -1) {
+            oldProductsList.remove(index);
+            oldProductsList.add(newBook);
+            StringBuilder newBooksList = new StringBuilder();
+            for (Book b : oldProductsList) {
+                newBooksList.append(b.toCSVFormat()).append(",");
+            }
+            System.out.println("New books: " + newBooksList);
+            bw.write(newBooksList.toString() + "\n");
+            bw.flush();
+            return true;
+        } else {
+            String oldBooks = "";
+            for (Book b : oldProductsList) {
+                oldBooks += b.toCSVFormat() + ",";
+            }
+            System.out.println("Stays the same: " + oldBooks);
+            bw.write(oldBooks + "\n");
+            bw.flush();
+            return false;
         }
     }
 

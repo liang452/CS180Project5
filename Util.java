@@ -83,37 +83,39 @@ public abstract class Util {
      * into a book.
      * @throws IOException
      */
-    public synchronized static ArrayList<Book> readCSVToBook (String input) throws IOException {
-        System.out.println("Input is: " + input);
+    public static ArrayList<Book> readCSVToBook(String input) throws IOException {
         ArrayList<Book> books = new ArrayList<>();
         if (input.contains(".csv")) { //if it's a filename
+            System.out.println("Filename: " + input);
             BufferedReader bfr = new BufferedReader(new FileReader(input));
             String line = bfr.readLine();
-            while (line != null && !line.isEmpty()) {
-                String[] productDetails = line.split(",");
-                if (productDetails.length != 7) {
-                    System.out.println("Please input a properly formatted file.");
-                } else {
-                    for (int i = 0; i < productDetails.length; i += 7) {
-                        String name = productDetails[i];
-                        String author = productDetails[i + 1];
-                        String genre = productDetails[i + 2];
-                        String description = productDetails[i + 3];
-                        String storeName = productDetails[i + 4];
-                        int quantity = Integer.parseInt(productDetails[i + 5]);
-                        double price = Double.parseDouble(productDetails[i + 6]);
-                        books.add(new Book(name, author, genre, description, storeName, quantity, price));
+            if (line == null || line.isEmpty()) {
+                System.out.println("Empty file!");
+            } else {
+                while (line != null && !line.isEmpty()) {
+                    String[] productDetails = line.split(",");
+                    if (productDetails.length < 7) {
+                        System.out.println("Please input a properly formatted file.");
+                    } else {
+                        for (int i = 0; i < productDetails.length; i += 7) {
+                            String name = productDetails[i];
+                            String author = productDetails[i + 1];
+                            String genre = productDetails[i + 2];
+                            String description = productDetails[i + 3];
+                            String storeName = productDetails[i + 4];
+                            int quantity = Integer.parseInt(productDetails[i + 5]);
+                            double price = Double.parseDouble(productDetails[i + 6]);
+                            books.add(new Book(name, author, genre, description, storeName, quantity, price));
+                        }
                     }
+                    line = bfr.readLine();
                 }
-                line = bfr.readLine();
             }
         } else { //if it's not a filename
             if (!input.isEmpty()) {
                 String[] productDetails = input.split(",", 0);
-                System.out.println(productDetails.length);
-                System.out.println(productDetails.length < 7);
                 if (productDetails.length < 7) {
-                    System.out.println("Please input a properly formatted file.");
+                    System.out.println("Please input a properly formatted string.");
                 } else {
                     for (int i = 0; i < productDetails.length; i += 7) {
                         String name = productDetails[i];

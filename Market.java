@@ -153,6 +153,10 @@ public class Market {
         return this.listedProducts;
     }
 
+    public void setListedProducts(ArrayList<Book> newList) {
+        this.listedProducts = newList;
+    }
+
     public void updateListedProducts(Book oldProduct, Book updatedProduct) {
         //TODO: this might need to combined with the method below? if multiple users are accessing at once.
         ArrayList<Book> iterator = new ArrayList<>();
@@ -269,6 +273,8 @@ public class Market {
                                 invalidInput = true;
                             } else {
                                 option[0] = "BUY," + amount + "," + selection.toCSVFormat();
+                                cMenuFrame.removeAll();
+                                cMenuFrame.setVisible(false);
                             }
                         } while (invalidInput);
                     } else {
@@ -321,6 +327,7 @@ public class Market {
         cartButton.addActionListener(al);
         viewCartButton.addActionListener(al);
         pastButton.addActionListener(al);
+        returnButton.addActionListener(al);
 
         cMenuFrame.setVisible(true);
         while (option[0] == null || option[0].isEmpty()) {

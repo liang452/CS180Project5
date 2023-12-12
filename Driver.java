@@ -185,37 +185,49 @@ public class Driver {
                         "Account", "Log Out"};
                 String input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
                         JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                boolean loop;
                 if (input.equals(options[0])) {
-                    oos.writeObject("MARKET");
-                    String output = market.displayCustomerMenu();
-                    if (output.equals("RETURN")) {
-                        repeat = true;
-                    } else if (output.equals("LOG OUT")) {
-                        JOptionPane.showMessageDialog(null, "Have a good day!");
-                        break;
-                    } else if (output.contains("BUY")) {
-                        String[] purchase = output.split(",", 3);
-                        int amount = Integer.parseInt(purchase[1]);
-                        System.out.println(purchase[2]);
-                        ArrayList<Book> boughtBooks = Util.readCSVToBook(purchase[2]);
-                        Book boughtBook = boughtBooks.get(0);
-                        oos.writeObject("BUY");
-                        oos.flush();
-                        oos.writeObject(amount);
-                        oos.flush();
-                        oos.writeObject(boughtBook);
-                        oos.flush();
-                        oos.writeObject(username);
-                        oos.flush();
-                        String newBookString = (String) ois.readObject(); //FOR SOME REASON THIS IS INVALID
-                        System.out.println("Driver received: " + newBookString);
-                        ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
-                    } else if (output.contains("ADD TO CART")) {
-                        oos.writeObject("ADD TO CART");
-                        oos.flush();
-                        String[] cartAddition = output.split(",", 3);
-                        int amount = Integer.parseInt(cartAddition[1]);
-                    }
+                    do {
+                        loop = false;
+                        oos.writeObject("MARKET");
+                        String output = market.displayCustomerMenu();
+                        if (output.equals("RETURN")) {
+                            repeat = true;
+                            oos.writeObject("RETURN");
+                        } else if (output.equals("LOG OUT")) {
+                            JOptionPane.showMessageDialog(null, "Have a good day!");
+                            break;
+                        } else if (output.contains("BUY")) {
+                            String[] purchase = output.split(",", 3);
+                            int amount = Integer.parseInt(purchase[1]);
+                            System.out.println("Purchasing: " + purchase[2]);
+                            ArrayList<Book> boughtBooks = Util.readCSVToBook(purchase[2]);
+                            Book boughtBook = boughtBooks.get(0);
+                            oos.writeObject("BUY");
+                            oos.flush();
+                            oos.writeObject(amount);
+                            oos.flush();
+                            oos.writeObject(boughtBook);
+                            oos.flush();
+                            oos.writeObject(username);
+                            oos.flush();
+                            System.out.println("Finished writing info to server!");
+                            System.out.println("Awaiting output...");
+                            ois.readObject();
+                            ois.readObject();
+                            String newBookString = (String) ois.readObject(); //FOR SOME REASON THIS IS READING USERNAME
+                            System.out.println("Driver received: " + newBookString);
+                            ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
+                            market.setListedProducts(newBookList);
+                            loop = true;
+                        } else if (output.contains("ADD TO CART")) {
+                            oos.writeObject("ADD TO CART");
+                            oos.flush();
+                            String[] cartAddition = output.split(",", 3);
+                            int amount = Integer.parseInt(cartAddition[1]);
+                            loop = true;
+                        }
+                    } while(loop);
                 }
             } while (repeat);
         }
