@@ -94,24 +94,24 @@ Testing: The class can be tested by logging in as a customer and viewing the mar
 
 ### User Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: Represents a user in the system, storing information like usernames, emails, and passwords. Has methods to check for existing emails 
+and passwords as well as to modify them. Can delete users from the system by removing them from 'logins.csv'.
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by running the application and creating an account by entering a username, email, password, and type of user (Customer or Seller).
 
 ### Server Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: Creates the server on which the application is run. Listens for connections and creates 
+new threads to handle connections with clients. 
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by running first the Server.java class, then the Driver.java class, which will connect to the server at port 8484.
 
 ### Driver Class:
 
-Functionality: Contains the main method and serves as the entry point for the application. 
-Handles user authentication, account creation, and interaction with the market.
+Functionality: The main entry point for the application and establishes a connection to the server. 
+Intiaties the login and account creation process, and leads users to certain interfaces depending on if they are a customer or seller. 
 
-Testing: Testing involves running the entire application and verifying that user authentication, account creation, and market interactions work as expected.
+Testing: The class can be tested by running the Server.java class, and then running the Driver.java class, which will connect to the server and begin the account login/sign-up process.
 
 
 
