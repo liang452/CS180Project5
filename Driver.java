@@ -156,12 +156,13 @@ public class Driver {
                         boolean checker;
                         if (filename != null) {
                             do {
-                                store = new Store(filename); //automatically reads in
+                                store = new Store(username,filename); //automatically reads in
                                 checker = true;
                                 if (!store.getProducts().isEmpty()) { //if store isn't empty
                                     checker = false;
                                 }
                             } while (checker);
+                            store.displayStore();
                             JOptionPane.showMessageDialog(null, "Successfully imported!");
                         } else {
                             cancel = true;

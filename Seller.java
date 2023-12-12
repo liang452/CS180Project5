@@ -76,6 +76,7 @@ public class Seller extends User {
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
             for (Book book : products) {
                 bw.write(book.toCSVFormat());
+                bw.newLine();
             }
             return true;
         } catch (IOException e) {
