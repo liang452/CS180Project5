@@ -417,7 +417,7 @@ public class Driver {
                             oos.writeObject(market.getListedProducts());
                             oos.flush();
                             loop = true;
-                        } else if (input2.equals("ADD PRODUCT")) {
+                        } else if (input2.contains("ADD PRODUCT")) {
                             oos.writeObject("ADD PRODUCT");
                             oos.flush();
                             String[] added = input2.split(",", 2);
@@ -426,9 +426,10 @@ public class Driver {
                             oos.writeObject(addedBook);
                             oos.flush();
 
+                            market.setListedProducts((ArrayList) ois.readObject());
                             oos.writeObject(user);
                             oos.flush();
-                            market.setListedProducts((ArrayList) ois.readObject());
+                            loop = true;
                         } else if (input2.equals("RETURN")) {
                             repeat = true;
                         }
@@ -439,13 +440,11 @@ public class Driver {
                     oos.flush();
                     //view sales by store
                     market.viewSalesByStore();
-                } else if (input.equals(options[2])) {
-                    //statistics
-                } else if ((input.equals(options[3]))) {
+                } else if ((input.equals(options[2]))) {
                     oos.writeObject("CUSTOMER SHOPPING CARTS\n");
                     oos.flush();
                     //view customer shopping carts
-                } else if (input.equals(options[4])) {
+                } else if (input.equals(options[3])) {
                     boolean deleted;
                     do {
                         deleted = Market.editAccountMenu(username, email, password); //returns true if account has been deleted
@@ -455,7 +454,7 @@ public class Driver {
                             break;
                         } //if user chooses to cancel, just keep looping
                     } while (!deleted); //loops if deleted is false.
-                } else if (input.equals(options[5])) {
+                } else if (input.equals(options[4])) {
                     //logout
                     boolean logout = Util.yesNo("Are you sure you want to log out?", "Logout");
                     if (logout) {
