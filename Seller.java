@@ -76,7 +76,7 @@ public class Seller extends User {
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
             for (Book book : products) {
                 bw.write(book.toCSVFormat());
-                bw.newLine();
+
             }
             return true;
         } catch (IOException e) {
@@ -102,6 +102,7 @@ public class Seller extends User {
             //overwrites file every time
             for (Book book : this.products) { //loops through entire list of products
                 bw.write(book.toCSVFormat());
+                bw.newLine();
             }
             bw.close();
             return true;
