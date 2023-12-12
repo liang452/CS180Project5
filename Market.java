@@ -413,9 +413,99 @@ public class Market {
      * @return true/false
      * @throws IOException if file not found
      */
+
     public static boolean editAccountMenu(String username, String email, String password) throws IOException {
         //TODO
-        Scanner scan = new Scanner(System.in);
+
+        JFrame frame = new JFrame("Account Editing");
+        frame.setLayout(new FlowLayout());
+        frame.setSize(400, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JButton changeEmailButton = new JButton("Change Email");
+        JButton changePasswordButton = new JButton("Change Password");
+        JButton changeUsernameButton = new JButton("Change Username");
+        JButton deleteAccountButton = new JButton("Delete Account");
+        JButton returnButton = new JButton("Return to Main Menu");
+
+        frame.add(changeEmailButton);
+        frame.add(changePasswordButton);
+        frame.add(changeUsernameButton);
+        frame.add(deleteAccountButton);
+        frame.add(returnButton);
+
+        changeEmailButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newEmail = JOptionPane.showInputDialog("Enter new email:");
+                if (newEmail != null) {
+                    try {
+                        System.out.println("Email changed to: " + newEmail);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        changePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newPassword = JOptionPane.showInputDialog("Enter new password:");
+                if (newPassword != null) {
+                    try {
+                        System.out.println("Password changed to: " + newPassword);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        changeUsernameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newUsername = JOptionPane.showInputDialog("Enter new username:");
+                if (newUsername != null) {
+                    try {
+                        System.out.println("Username changed to: " + newUsername);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        deleteAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        System.out.println("Account deleted!");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+            }
+        });
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        return false;
+    }
+
+        // **** WORKING ACCOUNT EDITING CODE IN TERMINAL BELOW ****
+
+        /* Scanner scan = new Scanner(System.in);
         boolean repeat;
         do {
             repeat = false;
@@ -480,7 +570,7 @@ public class Market {
             }
         } while (repeat);
         return false;
-    }
+        */
 
     /**
      * Displays menu for customers viewing their shopping carts.
