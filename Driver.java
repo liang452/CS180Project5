@@ -34,26 +34,31 @@ public class Driver {
             if (init.equals("0")) {
                 //if login is selected
                 existingAccount = true;
-                oos.writeObject("LOGIN"); //sends to server
-                oos.flush();
                 boolean invalid = false;
                 do {
+                    oos.writeObject("LOGIN"); //sends to server
+                    oos.flush();
                     String[] loginDetails = Market.userLogin();
                     if (!loginDetails[0].equals("CANCEL")) {
-                        oos.writeObject(loginDetails[1] + "\n"); //email
+                        oos.writeObject(loginDetails[1]); //email
                         oos.flush();
                         System.out.println(loginDetails[1] + " sent to server");
                         String confirm = (String) ois.readObject();
+                        System.out.println("Received " + confirm);
+                        System.out.println(confirm.equals("INVALID"));
                         if (confirm.equals("INVALID")) {
-                            JOptionPane.showMessageDialog(null, "Invalid Email");
+                            JOptionPane.showMessageDialog(null, "Invalid email. Try again!");
                             invalid = true;
                         } else {
-                            oos.writeObject(loginDetails[2] + "\n"); //password
+                            oos.writeObject(loginDetails[2]); //password
                             oos.flush();
                             confirm = (String) ois.readObject();
-                            if (confirm.equals("CANCEL")) {
-                                JOptionPane.showMessageDialog(null, "Incorrect Password");
+                            System.out.println("Password: " + confirm);
+                            if (confirm.equals("INVALID")) {
+                                JOptionPane.showMessageDialog(null, "Incorrect password. Try again!");
                                 invalid = true;
+                            } else if (confirm.equals("CANCEL")) {
+                                repeat = true;
                             } else {
                                 username = loginDetails[0];
                                 email = loginDetails[1];
@@ -181,6 +186,7 @@ public class Driver {
                 String input = (String) JOptionPane.showInputDialog(null, "What would you like to do?", "Menu",
                         JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
                 if (input.equals(options[0])) {
+                    oos.writeObject("MARKET");
                     String output = market.displayCustomerMenu();
                     if (output.equals("RETURN")) {
                         repeat = true;
@@ -201,7 +207,15 @@ public class Driver {
                         oos.flush();
                         oos.writeObject(username);
                         oos.flush();
-                    } else if (output.contains("ADD TO CART")) {}
+                        String newBookString = (String) ois.readObject(); //FOR SOME REASON THIS IS INVALID
+                        System.out.println("Driver received: " + newBookString);
+                        ArrayList<Book> newBookList = Util.readCSVToBook(newBookString);
+                    } else if (output.contains("ADD TO CART")) {
+                        oos.writeObject("ADD TO CART");
+                        oos.flush();
+                        String[] cartAddition = output.split(",", 3);
+                        int amount = Integer.parseInt(cartAddition[1]);
+                    }
                 }
             } while (repeat);
         }
@@ -217,18 +231,18 @@ public class Driver {
                 if (input == null) {
                     break;
                 } else if (input.equals(options[0])) {
-                    oos.writeObject("VIEWING PRODUCTS\n");
+                    oos.writeObject("VIEW PRODUCTS\n");
                     oos.flush();
                     market.viewSellerProducts();
                 } else if (input.equals(options[1])) {
-                    oos.writeObject("VIEWING SALES\n");
+                    oos.writeObject("VIEW SALES\n");
                     oos.flush();
                     //view sales by store
                     market.viewSalesByStore();
                 } else if (input.equals(options[2])) {
                     //statistics
-                } else if ((input.equals(options[3])) {
-                    oos.writeObject("VIEWING SHOPPING CARTS\n");
+                } else if ((input.equals(options[3]))) {
+                    oos.writeObject("CUSTOMER SHOPPING CARTS\n");
                     oos.flush();
                     //view customer shopping carts
                 } else if (input.equals("5")) {

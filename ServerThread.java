@@ -55,33 +55,34 @@ public class ServerThread extends Thread {
                         System.out.println("Logging in...");
                         String email = (String) ois.readObject(); //reads in email. checks logins.csv for email.
                         System.out.println("Received " + email);
-                        if (!User.isExistingEmail(email)) { //while this is false, loop
+                        if (!User.isExistingEmail(email)) { //if this is false, loop
                             if (email.equals("CANCEL")) {
                                 System.out.println("Cancelled!");
                                 break;
                             }
-                            oos.writeObject("INVALID\n");
+                            oos.writeObject("INVALID");
                             System.out.println("Invalid email!");
                             oos.flush();
-                            email = (String) ois.readObject();
+                            break;
                         }
                         oos.writeObject("VALID\n");
                         System.out.println("Valid email!");
                         oos.flush();
 
                         String password = (String) ois.readObject();
-                        while (!User.checkPassword(email, password)) {
+                        if (!User.checkPassword(email, password)) {
                             if (password.equals("CANCEL")) {
                                 break;
                             }
-                            oos.writeObject("INVALID\n");
+                            oos.writeObject("INVALID");
                             oos.flush();
+                            break;
                         }
-                        oos.writeObject("VALID\n");
+                        oos.writeObject("VALID");
                         oos.flush();
-                        oos.writeObject(User.getUserFromEmail(email) + "\n"); //writes out username
+                        oos.writeObject(User.getUserFromEmail(email)); //writes out username
                         oos.flush();
-                        oos.writeObject(User.accountType(email) + "\n"); //writes out account type
+                        oos.writeObject(User.accountType(email)); //writes out account type
                         oos.flush();
                         break;
                     }
@@ -97,6 +98,7 @@ public class ServerThread extends Thread {
                             loginWriter.write(User.toCSV(accountDetails));
                             (new File(accountDetails[0])).createNewFile();
                         }
+                        break;
                     }
                     case "MARKET": {
                         String newInput = (String) ois.readObject();
@@ -131,9 +133,13 @@ public class ServerThread extends Thread {
                                 String updatedBooks = ""; //arraylist of all books
                                 for (Book book : this.allBooks) {
                                     updatedBooks += book.toCSVFormat();
+                                    System.out.println(updatedBooks);
                                 }
                                 oos.writeObject(updatedBooks); //updated list of all books in csv format
                                 oos.flush();
+                                break;
+                            case "ADD TO CART":
+                                break;
                         }
                     }
                 }
